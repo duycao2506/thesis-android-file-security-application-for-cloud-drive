@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_local"
+        android:icon="@drawable/ic_lock_white_24dp"
+        android:title="Your Local Storage" />
+    <item
+        android:id="@+id/nav_cloud"
+        android:icon="@drawable/ic_lock_white_24dp"
+        android:title="Your Clouds" />
+
+    <item
+        android:id="@+id/nav_auther"
+        android:icon="@drawable/ic_lock_white_24dp"
+        android:title="Authenticator" />
+    <item
+        android:id="@+id/nav_tasks"
+        android:icon="@drawable/ic_lock_white_24dp"
+        android:title="Syncing Tasks" />
+    <item
+        android:id="@+id/nav_rate"
+        android:icon="@drawable/ic_lock_white_24dp"
+        android:title="Rating" />
+    <item
+        android:id="@+id/nav_feedback"
+        android:icon="@drawable/ic_lock_white_24dp"
+        android:title="Feedback" />
+    <item
+        android:id="@+id/nav_about"
+        android:icon="@drawable/ic_lock_white_24dp"
+        android:title="About us" />
+
+    <item
+        android:id="@+id/nav_sigout"
+        android:icon="@drawable/ic_lock_white_24dp"
+        android:title="Sign out" />
+</menu>

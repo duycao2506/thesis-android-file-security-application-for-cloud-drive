@@ -1,0 +1,81 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorSecondary</item>
+
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="KasperButton" parent="Widget.AppCompat.Button.Colored">
+        <item name="colorAccent">@color/white</item>
+        <item name="colorButtonNormal">@color/colorSecondary</item>
+        <item name="android:textColor">@color/secondary_text</item>
+    </style>
+
+    <style name="KasperLightButton" parent="Widget.AppCompat.Button.Colored">
+        <item name="colorAccent">@color/white</item>
+        <item name="colorButtonNormal">@color/secondary_text</item>
+        <item name="android:textColor">@color/colorSecondary</item>
+    </style>
+
+    <style name="CustomDialogTheme" parent="android:Theme.Dialog">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
+    <style name="progress_animation_in_out">
+        <item name="android:windowEnterAnimation">@anim/fade_int</item>
+        <item name="android:windowExitAnimation">@anim/fade_out</item>
+    </style>
+
+
+    <style name="Theme.App.WhiteText" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorControlNormal">#e0e0e0</item>
+        <item name="colorControlActivated">@color/whiteBack</item>
+        <item name="colorControlHighlight">@color/white</item>
+    </style>
+
+
+
+    <style name="text_shadow">
+        <item name="android:shadowColor">#000000</item>
+        <item name="android:shadowDx">1</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowRadius">3</item>
+    </style>
+
+    <style name="text_on_light" parent="AppTheme">
+        <item name="colorControlActivated">@color/colorSecondaryLight</item>
+        <item name="colorControlNormal">@color/colorSecondaryDark</item>
+    </style>
+
+
+
+    <style name="AppTheme.BottomSheetDialog" parent="Theme.Design.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/AppTheme.BottomSheetStyle</item>
+    </style>
+
+    <style name="AppTheme.BottomSheetStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="behavior_hideable">true</item>
+        <item name="behavior_skipCollapsed">true</item>
+    </style>
+    <style name="AppTheme.BottomSheetDialog.Custom" parent="AppTheme.BottomSheetDialog">
+        <item name="bottomSheetBuilderItemTextColor">@color/colorSheetTitle</item>
+        <item name="bottomSheetBuilderBackgroundColor">@android:color/white</item>
+        <item name="bottomSheetBuilderTitleTextColor">@color/colorPrimaryDark</item>
+    </style>
+
+</resources>

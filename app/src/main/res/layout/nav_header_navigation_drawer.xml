@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/nav_header_height"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/bg_gradient_blue">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/nav_header_height"
+        android:adjustViewBounds="true"
+        android:contentDescription=""
+        android:cropToPadding="true"
+        android:paddingBottom="0sp"
+        android:scaleType="fitEnd"
+        android:tint="@color/white"
+        app:srcCompat="@drawable/headerpic" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_gravity="center"
+        android:gravity="center"
+        >
+        <de.hdodenhof.circleimageview.CircleImageView
+            app:civ_border_color="@color/white"
+            android:layout_width="@dimen/news_avatar"
+            android:id="@+id/imvAvatarUser"
+            android:layout_height="@dimen/news_avatar"
+            app:civ_border_width="@dimen/padding_8"
+            android:src="@drawable/girl"/>
+        <TextView
+            android:id="@+id/tvUserName"
+            android:layout_marginTop="@dimen/margin_20"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="@dimen/textSize_18"
+            android:textColor="@color/colorPrimaryDark"
+            android:text="@string/testname"
+            />
+    </LinearLayout>
+
+
+</FrameLayout>

@@ -1,0 +1,67 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin">16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="nav_header_height">200sp</dimen>
+
+    <!-- TEXT SIZE -->
+    <dimen name="textSize_16">16sp</dimen>
+    <dimen name="textSize_18">18sp</dimen>
+    <dimen name="textSize_20">20sp</dimen>
+    <dimen name="textSize_25">25sp</dimen>
+    <dimen name="textSize_30">30sp</dimen>
+
+
+    <!-- MARGIN -->
+    <dimen name="margin_10">10sp</dimen>
+    <dimen name="margin_20">20sp</dimen>
+    <dimen name="margin_30">30sp</dimen>
+    <dimen name="margin_40">40sp</dimen>
+    <dimen name="margin_50">50sp</dimen>
+    <dimen name="margin_60">60sp</dimen>
+    <dimen name="margin_70">70sp</dimen>
+
+    <!--PADDING-->
+    <dimen name="padding_2">2sp</dimen>
+    <dimen name="padding_3">3sp</dimen>
+    <dimen name="padding_4">4sp</dimen>
+    <dimen name="padding_5">5sp</dimen>
+    <dimen name="padding_8">8sp</dimen>
+    <dimen name="padding_16">16sp</dimen>
+    <dimen name="padding_24">24sp</dimen>
+    <!-- LOG IN -->
+    <dimen name="image_size">200sp</dimen>
+
+    <!-- SIMPLE SEARCH -->
+    <dimen name="carousel_height">250sp</dimen>
+    <dimen name="search_height">56sp</dimen>
+
+    <!--PROFILE-->
+    <dimen name="profile_header_height">150sp</dimen>
+
+    <!-- REGISTER -->
+    <dimen name="item_height">90sp</dimen>
+    <dimen name="CommentHeight">90sp</dimen>
+    <dimen name="textSize_14">14sp</dimen>
+    <dimen name="fab_margin">16dp</dimen>
+    <dimen name="news_avatar">80sp</dimen>
+    <dimen name="button_height">60sp</dimen>
+    <dimen name="small_bar_height">30sp</dimen>
+    <dimen name="unsubscribe_width">120sp</dimen>
+    <dimen name="unsubscribeHeigth">25sp</dimen>
+
+    <!--SCHOOL LIST-->
+    <dimen name="card_school_height">200sp</dimen>
+    <dimen name="photogridColumW">90dp</dimen>
+    <dimen name="margin_90">90sp</dimen>
+    <dimen name="margin_100">100sp</dimen>
+
+    <!-- ICON -->
+    <dimen name="small_icon_size">20sp</dimen>
+    <dimen name="medium_icon_size">30sp</dimen>
+    <dimen name="big_icon_size">40sp</dimen>
+    <dimen name="other_user_profile_view_avatar">80sp</dimen>
+    <dimen name="drive_signal_thickness">3sp</dimen>
+    <dimen name="file_gridview_item_size">200sp</dimen>
+    <dimen name="file_gridview_title_height">50sp</dimen>
+</resources>

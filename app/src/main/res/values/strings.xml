@@ -1,0 +1,71 @@
+<resources>
+    <string name="colorPrimary">#6dc7e9</string>
+    <string name="colorPrimaryDark">#0277bd</string>
+    <string name="colorAccent">#fbc02d</string>
+
+    <string name="colorPrimaryLight">#64c1ff</string>
+    <string name="colorSecondary">#64dd17</string>
+
+    <string name="colorSecondaryDark">#1faa00</string>
+
+    <string name="colorSecondaryLight">#9cff57</string>
+
+    <string name="colorActiveControl">#36d696</string>
+    <string name="primary_text">#e1f5fe</string>
+    <string name="secondary_text">#f1f8e9</string>
+    <string name="icons">#FFFFFF</string>
+    <string name="divider">#BDBDBD</string>
+    <string name="white">#ffffff</string>
+    <string name="whiteBack">#fafeff</string>
+    <string name="black">#212121</string>
+    <string name="blue_link">#3385ff</string>
+    <string name="grey_disable">#a0a0a0</string>
+    <string name="grey_light_background">#cccccc</string>
+    <string name="transparent">#00000000</string>
+
+
+    <string name="gray">#ebebeb</string>
+    <string name="gray_light">#e8e8e8</string>
+    <string name="gray_transparent">#a6efefef</string>
+    <string name="gray_dark_transparent">#ae858585</string>
+    <string name="ivory">#f8efe6</string>
+    <string name="ivory_dark">#f7e8d9</string>
+    <string name="green">#38be55</string>
+    <string name="green_dark">#2da346</string>
+    <string name="red">#e94f4f</string>
+    <string name="orange">#ffd54f</string>
+
+
+    <string name="app_name">S-Cloud</string>
+    <string name="cant_internet">Cannot Connect to Internet</string>
+    <string name="error_check_internet">Error checking internet connection</string>
+    <string name="OK">ok</string>
+    <string name="not_connect_internet">No network available</string>
+    <string name="title_activity_stateful">StatefulActivity</string>
+    <string name="close">Close</string>
+    <string name="password">Password</string>
+    <string name="username">Username</string>
+    <string name="sign_in">Sign In</string>
+    <string name="login_with_google">Login with Google</string>
+    <string name="login_with_facebook">Login with Facebook</string>
+    <string name="tap_here">Tap here</string>
+    <string name="don_t_have_an_account">Don\'t have an account?</string>
+    <string name="search">Search</string>
+    <string name="viewmode">View Mode</string>
+    <string name="navigation_drawer_open">Open Navigation Drawer</string>
+    <string name="navigation_drawer_close">Close Navigation Drawer</string>
+    <string name="testname">Le Thi Truong Giang</string>
+    <string name="fail_login">Fail to login</string>
+    <string name="exit_app_tit">Exit Application</string>
+    <string name="ext_app_mess">Do you want to stop application here?</string>
+    <string name="no">NO</string>
+    <string name="file_menu">File Menu</string>
+    <string name="upload">Transfer to…</string>
+    <string name="sync_with">Sync with…</string>
+    <string name="save_to_local_storage">Save to local storage</string>
+    <string name="g_drive">Google Drive</string>
+    <string name="dbox">Dropbox</string>
+    <string name="local_storage">Local Storage</string>
+    <string name="which_drive">Which Drive?</string>
+    <string name="wtdn">What to do now?</string>
+</resources>

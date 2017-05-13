@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/upload"
+        android:title="@string/upload"
+        app:showAsAction="ifRoom|collapseActionView"
+        android:icon="@drawable/ic_cloud_upload_black_24dp"
+        />
+    <item
+        android:id="@+id/sync"
+        android:title="@string/sync_with"
+        android:icon="@drawable/ic_sync_black_24dp"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/save"
+        android:title="@string/save_to_local_storage"
+        android:icon="@drawable/ic_save_black_24dp"
+        app:showAsAction="always" />
+
+
+</menu>
