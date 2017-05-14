@@ -11,7 +11,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import thesis.tg.com.s_cloud.entities.SDriveFile;
+import thesis.tg.com.s_cloud.framework_components.utils.EventBroker;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
+import thesis.tg.com.s_cloud.utils.DriveType;
+import thesis.tg.com.s_cloud.utils.EventConst;
 import thesis.tg.com.s_cloud.utils.SFileOutputStream;
 
 /**
@@ -47,14 +50,13 @@ public class GoogleDownloadTask {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            caller.callback("Cool",1,null);
+            EventBroker.getInstance().publish(EventConst.FINISH_DOWNLOADING, DriveType.GOOGLE, file);
         }
     };
 
-    public void start(SDriveFile file, MyCallBack caller){
+    public void start(SDriveFile file){
         this.file = file;
         at.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,file.getId());
-        this.caller = caller;
 
     }
 }

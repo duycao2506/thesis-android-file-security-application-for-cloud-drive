@@ -17,4 +17,6 @@ public interface EventConst {
     String ERROR = "Error";
     String FILE_MENU = "FILE_MENU";
     int FILE_SELECT_REQUEST_CODE = 29;
+    String FINISH_UPLOADING = "finish_upload";
+    String FINISH_DOWNLOADING = "finish_download";
 }

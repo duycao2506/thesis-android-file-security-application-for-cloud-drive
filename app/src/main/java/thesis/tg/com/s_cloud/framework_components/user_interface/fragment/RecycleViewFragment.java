@@ -54,9 +54,12 @@ public class RecycleViewFragment extends KasperFragment implements OnRefreshList
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         listView.setLayoutManager(layoutManager);
         listView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
+                Log.d("DY", String.valueOf(dy));
+                if (dy == 0) return;
                 scrollEvent(recyclerView, dx, dy);
             }
         });
