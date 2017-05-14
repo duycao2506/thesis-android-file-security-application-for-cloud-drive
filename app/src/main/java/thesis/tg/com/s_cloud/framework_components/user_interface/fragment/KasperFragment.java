@@ -7,17 +7,34 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import thesis.tg.com.s_cloud.framework_components.utils.EventBroker;
+import thesis.tg.com.s_cloud.framework_components.utils.GlobalEventListennerDelegate;
+import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
+
 /**
  * Created by admin on 4/2/17.
  */
 
-public class KasperFragment extends Fragment {
+public class KasperFragment extends Fragment implements GlobalEventListennerDelegate{
+
+
+
+    String fragmentName;
     View parent;
     private int res;
 
     public KasperFragment() {
 
     }
+
+    public String getFragmentName() {
+        return fragmentName;
+    }
+
+    public void setFragmentName(String fragmentName) {
+        this.fragmentName = fragmentName;
+    }
+
 
     /**
      * set custom layout for fragments
@@ -44,5 +61,20 @@ public class KasperFragment extends Fragment {
      */
     protected void onKasperViewCreate(View parent) {
 
+    }
+
+    @Override
+    public void register(String[] events, MyCallBack caller) {
+        for (String i : events){
+            EventBroker.getInstance().register(caller, i);
+        }
+
+    }
+
+    @Override
+    public void unRegister(String[] events, MyCallBack caller) {
+        for (String i : events){
+            EventBroker.getInstance().unRegister(caller, i);
+        }
     }
 }

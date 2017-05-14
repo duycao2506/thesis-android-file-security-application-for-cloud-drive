@@ -31,6 +31,7 @@ import java.net.URISyntaxException;
 import thesis.tg.com.s_cloud.R;
 import thesis.tg.com.s_cloud.data.from_third_party.GoogleDriveWrapper;
 import thesis.tg.com.s_cloud.data.from_third_party.GoogleUploadTask;
+import thesis.tg.com.s_cloud.entities.SDriveFolder;
 import thesis.tg.com.s_cloud.framework_components.user_interface.activity.KasperActivity;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
 import thesis.tg.com.s_cloud.user_interface.fragment.FileListFragment;
@@ -114,7 +115,9 @@ public class HomeActivity extends KasperActivity implements
 
     @Override
     protected void initFragment() {
-        this.mainFragment = new FileListFragment();
+        FileListFragment flf = new FileListFragment();
+        flf.setFragmentName(getString(R.string.g_drive));
+        this.mainFragment = flf;
     }
 
     @Override
@@ -178,9 +181,11 @@ public class HomeActivity extends KasperActivity implements
         int countStack = getSupportFragmentManager().getBackStackEntryCount();
         if (countStack > 1)
         {
-            getSupportFragmentManager().popBackStack();
+            getSupportFragmentManager().popBackStackImmediate();
             if (countStack == 2)
                 toggle.setDrawerIndicatorEnabled(true);
+            getSupportActionBar().setTitle(getTopFragment().getFragmentName());
+            GoogleDriveWrapper.getInstance().popListFileTask();
         }else{
             drawer.openDrawer(GravityCompat.START);
         }
@@ -232,10 +237,14 @@ public class HomeActivity extends KasperActivity implements
         switch (message){
             case EventConst.OPEN_FOLDER:
                 toggle.setDrawerIndicatorEnabled(false);
+                SDriveFolder sdfo = (SDriveFolder) data;
                 FileListFragment fileListFragment = new FileListFragment();
+                fileListFragment.setFragmentName(sdfo.getName());
+                GoogleDriveWrapper.getInstance().addNewListFileTask(sdfo.getId());
                 this.addFragmentToStack(fileListFragment,FragmentStackName.FILES);
                 this.callback(HomeActivity.START,1,null);
                 fileListFragment.loadRefresh(this);
+                getSupportActionBar().setTitle(fileListFragment.getFragmentName());
                 break;
             case EventConst.LOGIN_FAIL:
                 Intent intent = new Intent(this,LoginActivity.class);
@@ -293,12 +302,7 @@ public class HomeActivity extends KasperActivity implements
                         Toast.makeText(this, "Cannot access this file", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    gut.start(type,path, new MyCallBack() {
-                        @Override
-                        public void callback(String message, int code, Object data) {
-                            Toast.makeText(HomeActivity.this, "Upload", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    gut.start(type,path);
                     Log.d("TAG", "File Path: " + path);
                 }
                 break;
@@ -316,6 +320,8 @@ public class HomeActivity extends KasperActivity implements
             if (countStack == 2)
                 toggle.setDrawerIndicatorEnabled(true);
             super.onBackPressed();
+            getSupportActionBar().setTitle(getTopFragment().getFragmentName());
+            GoogleDriveWrapper.getInstance().popListFileTask();
         }
     }
 }

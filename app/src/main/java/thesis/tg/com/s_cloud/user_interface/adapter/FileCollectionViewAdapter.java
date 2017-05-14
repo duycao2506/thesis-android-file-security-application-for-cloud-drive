@@ -50,13 +50,10 @@ public class FileCollectionViewAdapter extends KasperRecycleAdapter{
             @Override
             public void onClick(View v) {
                 //TODO Open folder or open file
-                new GoogleDownloadTask(GoogleDriveWrapper.getInstance().getDriveService()).start((SDriveFile) entities.get(position), new MyCallBack() {
-                    @Override
-                    public void callback(String message, int code, Object data) {
-                        Toast.makeText(context,"YEAHHHH",Toast.LENGTH_LONG).show();
-                    }
-                });
-                ((MyCallBack)context).callback(EventConst.OPEN_FOLDER,position,null);
+                SDriveFile sdf = (SDriveFile) entities.get(position);
+                if (!(sdf instanceof SDriveFolder)) return;
+                ((MyCallBack)context).callback(EventConst.OPEN_FOLDER,position
+                        ,sdf);
             }
         });
 

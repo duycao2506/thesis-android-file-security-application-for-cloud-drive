@@ -42,6 +42,8 @@ public class FileListFragment extends RecycleViewFragment {
     }
 
     ViewMode vm;
+    String[] globalEvents = {EventConst.FINISH_DOWNLOADING,EventConst.FINISH_UPLOADING};
+
 
     public ViewMode getVm() {
         return vm;
@@ -54,8 +56,19 @@ public class FileListFragment extends RecycleViewFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        register(globalEvents, this);
         return super.onCreateView(inflater, container, savedInstanceState);
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        unRegister(globalEvents,this);
+
+    }
+
+
 
     @Override
     protected void onKasperViewCreate(View parent) {
@@ -142,7 +155,6 @@ public class FileListFragment extends RecycleViewFragment {
                     List<SDriveFile> tempFileList = (List<SDriveFile>) data;
                     listViewAdapter.addEntities(tempFileList);
                     listViewAdapter.notifyDataSetChanged();
-                    Toast.makeText(getActivity(), "Size" + listViewAdapter.getItemCount(), Toast.LENGTH_LONG).show();
                 } else {
                     caller.callback(message, code, data);
                 }
@@ -160,7 +172,6 @@ public class FileListFragment extends RecycleViewFragment {
                     List<SDriveFile> tempFileList = (List<SDriveFile>) data;
                     listViewAdapter.setEntities(new ArrayList<>());
                     listViewAdapter.addEntities(tempFileList);
-                    Toast.makeText(getActivity(), "Size" + listViewAdapter.getItemCount(), Toast.LENGTH_LONG).show();
                 } else {
                     caller.callback(message, code, data);
                 }
@@ -177,6 +188,15 @@ public class FileListFragment extends RecycleViewFragment {
     @Override
     public void callback(String message, int code, Object data) {
         switch (message) {
+            case EventConst.FINISH_DOWNLOADING:
+                Toast.makeText(this.getContext()
+                        , "Finish downloading file "+((SDriveFile)data).getName()
+                        ,Toast.LENGTH_SHORT).show();
+                break;
+            case EventConst.FINISH_UPLOADING:
+                this.swipeLayout.setRefreshing(true);
+                this.onRefresh();
+                break;
             case HomeActivity.FINISH:
                 this.swipeLayout.setRefreshing(false);
                 this.listViewAdapter.setLoadingmore(false);

@@ -1,10 +1,13 @@
 package thesis.tg.com.s_cloud.data.from_third_party;
 
+import android.widget.Toast;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 import thesis.tg.com.s_cloud.entities.SDriveFile;
+import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
 import thesis.tg.com.s_cloud.utils.DriveType;
 import thesis.tg.com.s_cloud.utils.SFileInputStream;
 
@@ -29,6 +32,7 @@ public class DrivesManager {
     public void transferDataTo(int driveType, SDriveFile data, boolean sync){
         switch (driveType){
             case DriveType.LOCAL:
+                new GoogleDownloadTask(GoogleDriveWrapper.getInstance().getDriveService()).start(data);
                 break;
 
             case DriveType.GOOGLE:

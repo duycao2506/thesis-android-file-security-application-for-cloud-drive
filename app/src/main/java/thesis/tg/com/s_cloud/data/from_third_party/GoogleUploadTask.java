@@ -17,7 +17,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 
+import thesis.tg.com.s_cloud.entities.SDriveFile;
+import thesis.tg.com.s_cloud.framework_components.utils.EventBroker;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
+import thesis.tg.com.s_cloud.utils.DriveType;
+import thesis.tg.com.s_cloud.utils.EventConst;
 import thesis.tg.com.s_cloud.utils.SFileInputStream;
 import thesis.tg.com.s_cloud.utils.SFileOutputStream;
 
@@ -28,7 +32,6 @@ import thesis.tg.com.s_cloud.utils.SFileOutputStream;
 public class GoogleUploadTask {
 
     Drive driveService;
-    MyCallBack caller;
     private String filePath;
     private String fileType;
 
@@ -71,16 +74,15 @@ public class GoogleUploadTask {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            caller.callback("Cool",1,null);
+            EventBroker.getInstance().publish(EventConst.FINISH_UPLOADING, DriveType.GOOGLE,filePath);
         }
     };
 
 
-    public void start(String fileType, String filePath, MyCallBack caller){
+    public void start(String fileType, String filePath){
         this.fileType = fileType;
         this.filePath = filePath;
         at.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        this.caller = caller;
     }
 
     class DriveContentInputStream extends AbstractInputStreamContent{
