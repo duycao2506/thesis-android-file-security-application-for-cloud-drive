@@ -10,7 +10,7 @@
         />
     <item
         android:id="@+id/viewmode"
-        android:title="@string/viewmode"
+        android:title="@string/list_mode"
         android:icon="@drawable/ic_grid"
         app:showAsAction="always" />
 

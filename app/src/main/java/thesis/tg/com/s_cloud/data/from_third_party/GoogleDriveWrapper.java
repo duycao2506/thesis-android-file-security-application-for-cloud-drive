@@ -87,12 +87,12 @@ public class GoogleDriveWrapper extends DriveWrapper implements
 
     }
 
-    private static GoogleDriveWrapper instance;
+
 
     public static GoogleDriveWrapper getInstance(){
-        if (instance == null)
-            instance = new GoogleDriveWrapper();
-        return instance;
+        if (gdinstance == null)
+            gdinstance = new GoogleDriveWrapper();
+        return gdinstance;
     }
 
 
@@ -187,9 +187,18 @@ public class GoogleDriveWrapper extends DriveWrapper implements
     }
 
 
+
     /**
      * Drive folder and files methods
      */
+
+
+    @Override
+    public void resetListFileTask() {
+        super.resetListFileTask();
+        this.glftList = new ArrayList<>();
+        addNewListFileTask("root");
+    }
 
 
     public void addNewListFileTask(String folderId){

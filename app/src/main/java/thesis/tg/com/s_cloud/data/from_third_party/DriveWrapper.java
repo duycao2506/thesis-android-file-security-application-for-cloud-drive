@@ -8,12 +8,28 @@ import java.util.Objects;
 
 import thesis.tg.com.s_cloud.entities.SDriveFile;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
+import thesis.tg.com.s_cloud.utils.DriveType;
 
 /**
  * Created by admin on 5/6/17.
  */
 
-public abstract class DriveWrapper {
+public class DriveWrapper {
+
+    protected static GoogleDriveWrapper gdinstance;
+    protected static DropboxDriveWrapper dbinstance;
+
+    public static DriveWrapper getInstance(int drivetype) {
+        switch (drivetype){
+            case DriveType.GOOGLE:
+                return GoogleDriveWrapper.getInstance();
+            case DriveType.DROPBOX:
+                return DropboxDriveWrapper.getInstance();
+            default:
+                return new DriveWrapper();
+        }
+    }
+
     public void getFilesByFolderId(boolean isMore, MyCallBack callBack){
 
     }
@@ -41,6 +57,10 @@ public abstract class DriveWrapper {
     }
 
     public void popListFileTask(){
+
+    }
+
+    public void resetListFileTask(){
 
     }
 
