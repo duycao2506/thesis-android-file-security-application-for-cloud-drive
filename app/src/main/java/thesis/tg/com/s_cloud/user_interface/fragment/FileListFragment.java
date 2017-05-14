@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import thesis.tg.com.s_cloud.R;
+import thesis.tg.com.s_cloud.data.from_third_party.DriveWrapper;
 import thesis.tg.com.s_cloud.data.from_third_party.GoogleDriveWrapper;
 import thesis.tg.com.s_cloud.entities.SDriveFile;
 import thesis.tg.com.s_cloud.framework_components.entity.SuperObject;
@@ -36,11 +37,17 @@ import thesis.tg.com.s_cloud.utils.EventConst;
 
 public class FileListFragment extends RecycleViewFragment {
 
+
+    public int getDriveType() {
+        return driveType;
+    }
+
     public enum ViewMode {
         GRID,
         LIST
     }
 
+    int driveType;
     ViewMode vm;
     String[] globalEvents = {EventConst.FINISH_DOWNLOADING,EventConst.FINISH_UPLOADING};
 
@@ -135,6 +142,7 @@ public class FileListFragment extends RecycleViewFragment {
                 fcva.setViewholder_res(R.layout.view_holder_list_file);
                 break;
         }
+        if (!this.isVisible()) return;
         listView.setAdapter(fcva);
         fcva.notifyDataSetChanged();
         listView.invalidate();
@@ -148,7 +156,7 @@ public class FileListFragment extends RecycleViewFragment {
 
     @Override
     protected void loadMore(final MyCallBack caller) {
-        GoogleDriveWrapper.getInstance().getFilesByFolderId(true, new MyCallBack() {
+        DriveWrapper.getInstance(driveType).getFilesByFolderId(true, new MyCallBack() {
             @Override
             public void callback(String message, int code, Object data) {
                 if (data != null) {
@@ -165,7 +173,7 @@ public class FileListFragment extends RecycleViewFragment {
 
     @Override
     public void loadRefresh(final MyCallBack caller) {
-        GoogleDriveWrapper.getInstance().getFilesByFolderId(false, new MyCallBack() {
+        DriveWrapper.getInstance(driveType).getFilesByFolderId(false, new MyCallBack() {
             @Override
             public void callback(String message, int code, Object data) {
                 if (data != null) {
@@ -189,11 +197,13 @@ public class FileListFragment extends RecycleViewFragment {
     public void callback(String message, int code, Object data) {
         switch (message) {
             case EventConst.FINISH_DOWNLOADING:
+                if (code != this.driveType) return;
                 Toast.makeText(this.getContext()
                         , "Finish downloading file "+((SDriveFile)data).getName()
                         ,Toast.LENGTH_SHORT).show();
                 break;
             case EventConst.FINISH_UPLOADING:
+                if (code != this.driveType) return;
                 this.swipeLayout.setRefreshing(true);
                 this.onRefresh();
                 break;
@@ -206,6 +216,38 @@ public class FileListFragment extends RecycleViewFragment {
                 String rawmess = (String) data;
                 Toast.makeText(this.getActivity(), rawmess, Toast.LENGTH_SHORT).show();
                 break;
+        }
+    }
+
+
+    /**
+     * File list fragment builder
+     */
+
+    public static class Builder {
+        private FileListFragment flf;
+        private int driveType;
+
+        public Builder() {
+            flf = new FileListFragment();
+        }
+
+        public Builder setFragmentName(String name) {
+            flf.setFragmentName(name);
+            return this;
+        }
+
+        public Builder setViewMode(ViewMode vm){
+            flf.vm = vm;
+            return this;
+        }
+
+        public Builder setDriveType(int driveType){
+            flf.driveType = driveType;
+            return this;
+        }
+        public FileListFragment build(){
+            return flf;
         }
     }
 }

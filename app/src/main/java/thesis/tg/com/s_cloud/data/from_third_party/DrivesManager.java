@@ -1,11 +1,13 @@
 package thesis.tg.com.s_cloud.data.from_third_party;
 
+import android.content.Context;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
+import thesis.tg.com.s_cloud.R;
 import thesis.tg.com.s_cloud.entities.SDriveFile;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
 import thesis.tg.com.s_cloud.utils.DriveType;
@@ -40,6 +42,19 @@ public class DrivesManager {
 
             case DriveType.DROPBOX:
                 break;
+        }
+    }
+
+    public String getDriveName(Context context, int id){
+        switch (id){
+            case DriveType.DROPBOX:
+                return context.getString(R.string.dbox);
+            case DriveType.GOOGLE:
+                return context.getString(R.string.g_drive);
+            case DriveType.LOCAL:
+                return context.getString(R.string.local_storage);
+            default:
+                return context.getString(R.string.app_name);
         }
     }
 

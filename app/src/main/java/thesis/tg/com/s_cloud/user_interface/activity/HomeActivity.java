@@ -6,11 +6,13 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,15 +29,21 @@ import com.google.api.client.util.Data;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.Map;
 
 import thesis.tg.com.s_cloud.R;
+import thesis.tg.com.s_cloud.data.from_third_party.DriveWrapper;
+import thesis.tg.com.s_cloud.data.from_third_party.DrivesManager;
 import thesis.tg.com.s_cloud.data.from_third_party.GoogleDriveWrapper;
 import thesis.tg.com.s_cloud.data.from_third_party.GoogleUploadTask;
 import thesis.tg.com.s_cloud.entities.SDriveFolder;
 import thesis.tg.com.s_cloud.framework_components.user_interface.activity.KasperActivity;
+import thesis.tg.com.s_cloud.framework_components.user_interface.fragment.KasperFragment;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
 import thesis.tg.com.s_cloud.user_interface.fragment.FileListFragment;
 import thesis.tg.com.s_cloud.utils.DataUtils;
+import thesis.tg.com.s_cloud.utils.DriveType;
 import thesis.tg.com.s_cloud.utils.EventConst;
 import thesis.tg.com.s_cloud.utils.SFileInputStream;
 import thesis.tg.com.s_cloud.utils.UiUtils;
@@ -48,6 +56,10 @@ public class HomeActivity extends KasperActivity implements
         NavigationView.OnNavigationItemSelectedListener
 {
 
+
+    SparseArray fragmentNavigator;
+    private Menu menu;
+    private FileListFragment topFragment;
 
     public interface FragmentStackName{
         String FILES = "FILES";
@@ -64,6 +76,9 @@ public class HomeActivity extends KasperActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getSupportActionBar().setHomeButtonEnabled(true);
+
+        //Create Fragment Navigator
+        this.fragmentNavigator = new SparseArray<Fragment>();
 
 
         //Sign int automatically first
@@ -115,9 +130,14 @@ public class HomeActivity extends KasperActivity implements
 
     @Override
     protected void initFragment() {
-        FileListFragment flf = new FileListFragment();
-        flf.setFragmentName(getString(R.string.g_drive));
-        this.mainFragment = flf;
+        this.mainFragment = new FileListFragment.Builder()
+                .setFragmentName(getString(R.string.g_drive))
+                .setDriveType(DriveType.GOOGLE)
+                .setViewMode(LIST)
+                .build();
+        this.topFragment = (FileListFragment) mainFragment;
+
+        getSupportActionBar().setTitle(this.topFragment.getFragmentName());
     }
 
     @Override
@@ -133,7 +153,7 @@ public class HomeActivity extends KasperActivity implements
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_home, menu);
-
+        this.menu = menu;
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -145,8 +165,7 @@ public class HomeActivity extends KasperActivity implements
                 doHomeEvent();
                 break;
             case R.id.viewmode:
-                changeViewMode(item);
-
+                changeViewMode(item, topFragment);
                 break;
         }
         return true;
@@ -164,16 +183,17 @@ public class HomeActivity extends KasperActivity implements
         return ff;
     }
 
-    private void changeViewMode(MenuItem item) {
-        FileListFragment ff = getTopFragment();
-
-        if (ff.getVm() == GRID) {
+    private void changeViewMode(MenuItem item, FileListFragment ff) {
+        String mode = item.getTitle().toString();
+        if (mode.equalsIgnoreCase(getString(R.string.grid_mode))) {
             ff.changeViewMode(LIST);
             item.setIcon(R.drawable.ic_grid);
+            item.setTitle(getString(R.string.list_mode));
         }
         else {
             item.setIcon(R.drawable.ic_list);
             ff.changeViewMode(GRID);
+            item.setTitle(getString(R.string.grid_mode));
         }
     }
 
@@ -184,8 +204,7 @@ public class HomeActivity extends KasperActivity implements
             getSupportFragmentManager().popBackStackImmediate();
             if (countStack == 2)
                 toggle.setDrawerIndicatorEnabled(true);
-            getSupportActionBar().setTitle(getTopFragment().getFragmentName());
-            GoogleDriveWrapper.getInstance().popListFileTask();
+            backFolderHandle();
         }else{
             drawer.openDrawer(GravityCompat.START);
         }
@@ -227,8 +246,36 @@ public class HomeActivity extends KasperActivity implements
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        switch (id){
+            case R.id.local:
+            case R.id.gdrive:
+            case R.id.dbox:
+                changeDrive(id);
+                break;
+        }
         return true;
     }
+
+    private void changeDrive(int id) {
+        FileListFragment fragment;
+        fragment = (FileListFragment) fragmentNavigator.get(id);
+        if (fragment == null)
+        {
+            fragment = new FileListFragment.Builder()
+                    .setViewMode(topFragment.getVm())
+                    .setDriveType(id)
+                    .setFragmentName(DrivesManager.getInstance().getDriveName(this,id))
+                    .build();
+            fragmentNavigator.put(id, fragment);
+        }
+        getSupportActionBar().setTitle(fragment.getFragmentName());
+        DriveWrapper.getInstance(id).resetListFileTask();
+        topFragment = fragment;
+        changeFragment(fragment);
+    }
+
+
 
 
     @Override
@@ -238,13 +285,19 @@ public class HomeActivity extends KasperActivity implements
             case EventConst.OPEN_FOLDER:
                 toggle.setDrawerIndicatorEnabled(false);
                 SDriveFolder sdfo = (SDriveFolder) data;
-                FileListFragment fileListFragment = new FileListFragment();
-                fileListFragment.setFragmentName(sdfo.getName());
-                GoogleDriveWrapper.getInstance().addNewListFileTask(sdfo.getId());
-                this.addFragmentToStack(fileListFragment,FragmentStackName.FILES);
+
+                DriveWrapper.getInstance(topFragment.getDriveType()).addNewListFileTask(sdfo.getId());
+                //Create new fragment
+                topFragment = new FileListFragment.Builder()
+                                .setDriveType(topFragment
+                                .getDriveType())
+                                .setFragmentName(sdfo.getName())
+                                .setViewMode(topFragment.getVm())
+                                .build();
+                this.addFragmentToStack(topFragment,FragmentStackName.FILES);
                 this.callback(HomeActivity.START,1,null);
-                fileListFragment.loadRefresh(this);
-                getSupportActionBar().setTitle(fileListFragment.getFragmentName());
+                topFragment.loadRefresh(this);
+                getSupportActionBar().setTitle(topFragment.getFragmentName());
                 break;
             case EventConst.LOGIN_FAIL:
                 Intent intent = new Intent(this,LoginActivity.class);
@@ -252,7 +305,7 @@ public class HomeActivity extends KasperActivity implements
                 break;
             case EventConst.LOGIN_SUCCESS:
                 this.callback(HomeActivity.START,1,null);
-                getTopFragment().loadRefresh(this);
+                topFragment.loadRefresh(this);
                 break;
             default:
                 break;
@@ -280,7 +333,7 @@ public class HomeActivity extends KasperActivity implements
                         break;
                     case EventConst.LOGIN_SUCCESS_RESULT_CODE:
                         this.callback(HomeActivity.START,1,null);
-                        getTopFragment().loadRefresh(this);
+                        topFragment.loadRefresh(this);
                         break;
                     default:
                         break;
@@ -320,8 +373,14 @@ public class HomeActivity extends KasperActivity implements
             if (countStack == 2)
                 toggle.setDrawerIndicatorEnabled(true);
             super.onBackPressed();
-            getSupportActionBar().setTitle(getTopFragment().getFragmentName());
-            GoogleDriveWrapper.getInstance().popListFileTask();
+            backFolderHandle();
         }
+    }
+
+
+    private void backFolderHandle(){
+        topFragment = getTopFragment();
+        getSupportActionBar().setTitle(topFragment.getFragmentName());
+        DriveWrapper.getInstance(topFragment.getDriveType()).popListFileTask();
     }
 }

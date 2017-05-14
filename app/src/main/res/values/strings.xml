@@ -68,4 +68,6 @@
     <string name="local_storage">Local Storage</string>
     <string name="which_drive">Which Drive?</string>
     <string name="wtdn">What to do now?</string>
+    <string name="list_mode">List mode</string>
+    <string name="grid_mode">Grid mode</string>
 </resources>
