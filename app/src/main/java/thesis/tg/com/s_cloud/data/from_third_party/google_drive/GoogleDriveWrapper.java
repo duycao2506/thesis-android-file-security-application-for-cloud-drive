@@ -1,9 +1,6 @@
-package thesis.tg.com.s_cloud.data.from_third_party;
+package thesis.tg.com.s_cloud.data.from_third_party.google_drive;
 
 import android.app.Activity;
-import android.app.Application;
-import android.app.DownloadManager;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.IntentSender;
 import android.os.AsyncTask;
@@ -11,7 +8,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
-import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -22,47 +18,22 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.common.api.Status;
 import com.google.api.client.extensions.android.http.AndroidHttp;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
-import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
-import com.google.api.client.googleapis.media.MediaHttpUploader;
-import com.google.api.client.googleapis.media.MediaHttpUploaderProgressListener;
-import com.google.api.client.http.AbstractInputStreamContent;
-import com.google.api.client.http.FileContent;
-import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
-import com.google.api.services.drive.model.File;
-import com.google.api.services.drive.model.FileList;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.lang.reflect.Array;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
 
-import thesis.tg.com.s_cloud.MainActivity;
+import thesis.tg.com.s_cloud.data.DriveWrapper;
 import thesis.tg.com.s_cloud.entities.DriveUser;
-import thesis.tg.com.s_cloud.entities.SDriveFile;
-import thesis.tg.com.s_cloud.entities.SDriveFolder;
-import thesis.tg.com.s_cloud.framework_components.utils.GlobalUtils;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
-import thesis.tg.com.s_cloud.user_interface.activity.LoginActivity;
 import thesis.tg.com.s_cloud.utils.EventConst;
 
 import static thesis.tg.com.s_cloud.utils.EventConst.RESOLVE_CONNECTION_REQUEST_CODE;
@@ -138,6 +109,7 @@ public class GoogleDriveWrapper extends DriveWrapper implements
                     DriveUser.getInstance().setName(acct.getDisplayName());
                     DriveUser.getInstance().setId(acct.getId());
                     DriveUser.getInstance().setEmail(acct.getEmail());
+                    DriveUser.getInstance().setAvatar(acct.getPhotoUrl());
 
                     //wait until connection is established
                     while (connection_ok == 0);
@@ -224,6 +196,7 @@ public class GoogleDriveWrapper extends DriveWrapper implements
             glftList.get(glftList.size() - 1).refreshList(driveService, caller);
         else
             glftList.get(glftList.size() - 1).getMoreList(driveService, caller);
+
     }
 
     /**

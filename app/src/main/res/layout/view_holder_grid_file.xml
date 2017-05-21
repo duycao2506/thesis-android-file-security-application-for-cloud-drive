@@ -38,7 +38,7 @@
                 android:layout_gravity="right|top"
                 android:id="@+id/ivSecured"
                 android:layout_margin="@dimen/margin_10"
-                android:tint="@color/colorSecondary"
+                android:tint="@color/colorPrimaryLight"
                 />
         </FrameLayout>
 

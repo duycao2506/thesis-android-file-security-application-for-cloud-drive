@@ -1,4 +1,4 @@
-package thesis.tg.com.s_cloud.data.from_third_party;
+package thesis.tg.com.s_cloud.data.from_third_party.google_drive;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -32,6 +32,7 @@ import java.util.List;
 import thesis.tg.com.s_cloud.entities.SDriveFile;
 import thesis.tg.com.s_cloud.entities.SDriveFolder;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
+import thesis.tg.com.s_cloud.utils.DriveType;
 import thesis.tg.com.s_cloud.utils.EventConst;
 
 /**
@@ -65,12 +66,14 @@ public class GoogleListFileTask {
         ArrayList<SDriveFile> sDriveFiles = new ArrayList<>();
         for (File file : driveFiles){
             SDriveFile sDriveFile = file.getCapabilities().getCanListChildren()? new SDriveFolder() : new SDriveFile();
+
             sDriveFile.setCreatedDate(file.getCreatedTime().toString());
             sDriveFile.setId(file.getId());
             sDriveFile.setName(file.getOriginalFilename() == null ? file.getName() : file.getOriginalFilename());
             sDriveFile.setFileSize(file.getSize() == null ? -1 : file.getSize());
             sDriveFile.setMimeType(file.getMimeType());
             sDriveFile.setExtension(file.getFullFileExtension());
+            sDriveFile.setCloud_type(DriveType.GOOGLE);
             sDriveFiles.add(sDriveFile);
         }
         return sDriveFiles;

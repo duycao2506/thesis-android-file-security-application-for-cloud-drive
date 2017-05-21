@@ -7,24 +7,18 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.google.api.services.drive.Drive;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import thesis.tg.com.s_cloud.R;
-import thesis.tg.com.s_cloud.data.from_third_party.DriveWrapper;
-import thesis.tg.com.s_cloud.data.from_third_party.GoogleDriveWrapper;
+import thesis.tg.com.s_cloud.data.DriveWrapper;
 import thesis.tg.com.s_cloud.entities.SDriveFile;
-import thesis.tg.com.s_cloud.framework_components.entity.SuperObject;
 import thesis.tg.com.s_cloud.framework_components.user_interface.adapter.KasperRecycleAdapter;
-import thesis.tg.com.s_cloud.framework_components.user_interface.fragment.KasperFragment;
 import thesis.tg.com.s_cloud.framework_components.user_interface.fragment.RecycleViewFragment;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
 import thesis.tg.com.s_cloud.user_interface.activity.HomeActivity;

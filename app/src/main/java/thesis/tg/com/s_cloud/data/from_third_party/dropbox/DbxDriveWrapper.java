@@ -1,22 +1,22 @@
-package thesis.tg.com.s_cloud.data.from_third_party;
+package thesis.tg.com.s_cloud.data.from_third_party.dropbox;
 
-import thesis.tg.com.s_cloud.entities.SDriveFile;
+import thesis.tg.com.s_cloud.data.DriveWrapper;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
 
 /**
  * Created by admin on 5/14/17.
  */
 
-public class DropboxDriveWrapper extends DriveWrapper {
-    private DropboxDriveWrapper(){
+public class DbxDriveWrapper extends DriveWrapper {
+    private DbxDriveWrapper(){
 
     }
 
 
 
-    public static DropboxDriveWrapper getInstance(){
+    public static DbxDriveWrapper getInstance(){
         if (dbinstance == null)
-            dbinstance = new DropboxDriveWrapper();
+            dbinstance = new DbxDriveWrapper();
         return dbinstance;
     }
 
@@ -28,16 +28,6 @@ public class DropboxDriveWrapper extends DriveWrapper {
     @Override
     public void getFilesByFolderId(boolean isMore, MyCallBack callBack) {
         super.getFilesByFolderId(isMore, callBack);
-    }
-
-    @Override
-    public void transferFrom(String fileId, MyCallBack caller) {
-        super.transferFrom(fileId, caller);
-    }
-
-    @Override
-    public void transferTo(SDriveFile file, MyCallBack caller) {
-        super.transferTo(file, caller);
     }
 
     @Override

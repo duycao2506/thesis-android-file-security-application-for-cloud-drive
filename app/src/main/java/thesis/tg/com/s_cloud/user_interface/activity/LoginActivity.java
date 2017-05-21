@@ -1,9 +1,7 @@
 package thesis.tg.com.s_cloud.user_interface.activity;
 
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -19,7 +17,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 
 import thesis.tg.com.s_cloud.R;
-import thesis.tg.com.s_cloud.data.from_third_party.GoogleDriveWrapper;
+import thesis.tg.com.s_cloud.data.from_third_party.google_drive.GoogleDriveWrapper;
 import thesis.tg.com.s_cloud.utils.EventConst;
 import thesis.tg.com.s_cloud.utils.DataUtils;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;

@@ -1,12 +1,8 @@
-package thesis.tg.com.s_cloud.data.from_third_party;
+package thesis.tg.com.s_cloud.data;
 
-import android.content.Context;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
-import thesis.tg.com.s_cloud.entities.SDriveFile;
+import thesis.tg.com.s_cloud.data.from_local.LocalDriveWrapper;
+import thesis.tg.com.s_cloud.data.from_third_party.dropbox.DbxDriveWrapper;
+import thesis.tg.com.s_cloud.data.from_third_party.google_drive.GoogleDriveWrapper;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
 import thesis.tg.com.s_cloud.utils.DriveType;
 
@@ -17,14 +13,17 @@ import thesis.tg.com.s_cloud.utils.DriveType;
 public class DriveWrapper {
 
     protected static GoogleDriveWrapper gdinstance;
-    protected static DropboxDriveWrapper dbinstance;
+    protected static DbxDriveWrapper dbinstance;
+    protected static LocalDriveWrapper localDriveWrapper;
 
     public static DriveWrapper getInstance(int drivetype) {
         switch (drivetype){
             case DriveType.GOOGLE:
                 return GoogleDriveWrapper.getInstance();
             case DriveType.DROPBOX:
-                return DropboxDriveWrapper.getInstance();
+                return DbxDriveWrapper.getInstance();
+            case DriveType.LOCAL:
+                return LocalDriveWrapper.getInstance();
             default:
                 return new DriveWrapper();
         }
@@ -34,23 +33,6 @@ public class DriveWrapper {
 
     }
 
-    /**
-     * Upload
-     * @param fileId
-     * @param caller
-     */
-    public void transferFrom(String fileId, MyCallBack caller){
-
-    }
-
-    /**
-     * Download
-     * @param file
-     * @param caller
-     */
-    public void transferTo(SDriveFile file, MyCallBack caller){
-
-    }
 
     public void addNewListFileTask(String folderId){
 
