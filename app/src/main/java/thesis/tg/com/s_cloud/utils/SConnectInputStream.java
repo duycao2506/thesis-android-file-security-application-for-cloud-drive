@@ -7,30 +7,39 @@ import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.lang.reflect.Array;
 
 /**
  * Created by admin on 5/12/17.
  */
 
-public class SFileInputStream extends FileInputStream {
-    public SFileInputStream(@NonNull String name) throws FileNotFoundException {
-        super(name);
-    }
+public class SConnectInputStream extends InputStream {
+    InputStream is;
 
-    public SFileInputStream(@NonNull File file) throws FileNotFoundException {
-        super(file);
-    }
 
-    public SFileInputStream(@NonNull FileDescriptor fdObj) {
-        super(fdObj);
+    public SConnectInputStream(InputStream is) {
+        this.is = is;
     }
 
     @Override
+    public int read() throws IOException {
+        return 0;
+    }
+
+    @Override
+    public int read(@NonNull byte[] b) throws IOException {
+        return super.read(b);
+    }
+
+
+
+    @Override
     public int read(@NonNull byte[] b, int off, int len) throws IOException {
-        int a =  super.read(b, off, len);
+        int n =  this.is.read(b, off, len);
         for (int i = off; i < off+len; i ++){
             b[i] = (byte) (b[i] ^ 2);
         }
-        return a;
+        return n;
     }
 }

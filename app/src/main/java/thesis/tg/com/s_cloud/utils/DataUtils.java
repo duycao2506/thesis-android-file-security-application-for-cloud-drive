@@ -20,6 +20,16 @@ import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
  */
 
 public class DataUtils {
+
+    public static byte[] getDataHeader(){
+        byte[] bytes = new byte[4];
+        bytes[0] = 1;
+        bytes[1] = 2;
+        bytes[2] = 6;
+        bytes[3] = 0;
+        return  (bytes);
+    }
+
     public static void waitFor(final long mls, final Context context, final MyCallBack handler){
         new AsyncTask<Void, Void, Void>(){
             ProgressDialog progressDialog;

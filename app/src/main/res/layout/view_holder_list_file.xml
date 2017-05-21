@@ -84,7 +84,7 @@
             android:layout_gravity="right|center_vertical"
             android:id="@+id/ivSecured"
             android:padding="@dimen/padding_5"
-            android:tint="@color/colorSecondary"
+            android:tint="@color/colorPrimaryLight"
             />
 
         <ImageButton

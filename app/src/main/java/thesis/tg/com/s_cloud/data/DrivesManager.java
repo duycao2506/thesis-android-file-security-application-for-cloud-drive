@@ -1,17 +1,17 @@
-package thesis.tg.com.s_cloud.data.from_third_party;
+package thesis.tg.com.s_cloud.data;
 
 import android.content.Context;
-import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 import thesis.tg.com.s_cloud.R;
+import thesis.tg.com.s_cloud.data.from_third_party.google_drive.GoogleDownloadTask;
+import thesis.tg.com.s_cloud.data.from_third_party.google_drive.GoogleDriveWrapper;
+import thesis.tg.com.s_cloud.data.from_third_party.google_drive.GoogleUploadTask;
 import thesis.tg.com.s_cloud.entities.SDriveFile;
-import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
 import thesis.tg.com.s_cloud.utils.DriveType;
-import thesis.tg.com.s_cloud.utils.SFileInputStream;
 
 /**
  * Created by admin on 5/12/17.
@@ -31,13 +31,29 @@ public class DrivesManager {
         return instance;
     }
 
+    //from Drive having in the data
     public void transferDataTo(int driveType, SDriveFile data, boolean sync){
         switch (driveType){
             case DriveType.LOCAL:
-                new GoogleDownloadTask(GoogleDriveWrapper.getInstance().getDriveService()).start(data);
+                if (data.getCloud_type() == DriveType.GOOGLE)
+                    new GoogleDownloadTask(GoogleDriveWrapper.getInstance().getDriveService()).start(data);
+                if (data.getCloud_type() == DriveType.DROPBOX);
                 break;
 
             case DriveType.GOOGLE:
+                if (data.getCloud_type() == DriveType.LOCAL) {
+                    File file = new File(data.getLink());
+                    FileInputStream fis;
+                    try {
+                        fis = new FileInputStream(file);
+
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+                    new GoogleUploadTask(GoogleDriveWrapper.getInstance().getDriveService()).start(data);
+                }
+
                 break;
 
             case DriveType.DROPBOX:

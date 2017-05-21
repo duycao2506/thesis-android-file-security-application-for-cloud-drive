@@ -70,4 +70,6 @@
     <string name="wtdn">What to do now?</string>
     <string name="list_mode">List mode</string>
     <string name="grid_mode">Grid mode</string>
+    <string name="name">Name</string>
+    <string name="email">Email</string>
 </resources>

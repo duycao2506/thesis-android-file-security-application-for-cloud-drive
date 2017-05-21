@@ -11,13 +11,14 @@
     <include layout="@layout/appbar_layout"/>
 
     <include layout="@layout/content_stateful" />
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fbtnAdd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
         android:layout_margin="@dimen/margin_30"
-        app:backgroundTint="@color/colorSecondaryDark"
-        android:src="@drawable/ic_add_white_24dp" />
+        android:src="@drawable/ic_add_white_24dp"
+        android:tint="@color/colorSecondaryDark" />
 
 </android.support.design.widget.CoordinatorLayout>
