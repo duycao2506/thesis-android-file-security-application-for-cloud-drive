@@ -48,9 +48,6 @@ public class KasperActivity extends AppCompatActivity implements MyCallBack {
         cl = (CoordinatorLayout) findViewById(R.id.coordinateLayout);
         loadingView = findViewById(getLoadingViewId());
         loadingView.setVisibility(View.GONE);
-        
-        changeFragment(mainFragment);
-
     }
 
     /**

@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import thesis.tg.com.s_cloud.data.DriveWrapper;
 import thesis.tg.com.s_cloud.entities.DriveUser;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
+import thesis.tg.com.s_cloud.utils.DriveType;
 import thesis.tg.com.s_cloud.utils.EventConst;
 
 import static thesis.tg.com.s_cloud.utils.EventConst.RESOLVE_CONNECTION_REQUEST_CODE;
@@ -80,6 +81,7 @@ public class GoogleDriveWrapper extends DriveWrapper implements
         scopes.add(Scopes.PROFILE);
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
+                .requestId()
                 .requestProfile()
                 .requestScopes(new Scope(DriveScopes.DRIVE))
                 .build();
@@ -97,26 +99,40 @@ public class GoogleDriveWrapper extends DriveWrapper implements
     public void handleSignInResult(final GoogleSignInResult result, final MyCallBack afterLoginCallback) {
         Log.d("HELLO", "handleSignInResult:" + result.isSuccess());
 
-        new AsyncTask<Void, Void, Boolean>(){
+        new AsyncTask<Void, Void, String>(){
             @Override
-            protected Boolean doInBackground(Void... params) {
+            protected String doInBackground(Void... params) {
                 if (result.isSuccess()) {
                     mGoogleApiClient.connect();
                     // Signed in successfully, show authenticated UI.
                     GoogleSignInAccount acct = result.getSignInAccount();
 
                     //TODO: Create User
-                    DriveUser.getInstance().setName(acct.getDisplayName());
-                    DriveUser.getInstance().setId(acct.getId());
-                    DriveUser.getInstance().setEmail(acct.getEmail());
-                    DriveUser.getInstance().setAvatar(acct.getPhotoUrl());
+                    DriveUser user = DriveUser.getInstance();
+                    if (user.isSignedIn())
+                    {
+                        user.setGoogle_id(acct.getId());
+                        //TODO: send authtoken to get add drive on server
+                        return EventConst.ADD_DRIVE;
+                    }
+
+                    //TODO: send accesstoken to get info from server
+                    user.setName(acct.getDisplayName());
+                    user.setId(acct.getId());
+                    user.setEmail(acct.getEmail());
+                    user.setAvatar(acct.getPhotoUrl());
 
                     //wait until connection is established
-                    while (connection_ok == 0);
-                    if (connection_ok == -1) return false;
+                    while (connection_ok == 0){
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    if (connection_ok == -1) return EventConst.LOGIN_FAIL;
                     mGoogleCredential = GoogleAccountCredential.usingOAuth2(context, scopes);
                     mGoogleCredential.setSelectedAccountName(DriveUser.getInstance().getEmail());
-
                     HttpTransport transport = AndroidHttp.newCompatibleTransport();
                     JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
                     driveService = new com.google.api.services.drive.Drive.Builder(
@@ -124,15 +140,15 @@ public class GoogleDriveWrapper extends DriveWrapper implements
                             .setApplicationName("S-Cloud")
                             .build();
                     addNewListFileTask("root");
-                    return true;
+                    return EventConst.LOGIN_SUCCESS;
                 }
-                return false;
+                return EventConst.LOGIN_FAIL;
             }
 
             @Override
-            protected void onPostExecute(Boolean aVoid) {
+            protected void onPostExecute(String aVoid) {
                 super.onPostExecute(aVoid);
-                afterLoginCallback.callback(connection_ok == 1 && aVoid? EventConst.LOGIN_SUCCESS : EventConst.LOGIN_FAIL,1,DriveUser.getInstance());
+                afterLoginCallback.callback(aVoid, DriveType.GOOGLE,DriveUser.getInstance());
             }
         }.execute();
 
@@ -187,7 +203,7 @@ public class GoogleDriveWrapper extends DriveWrapper implements
     }
 
     @Override
-    public void getFilesByFolderId(boolean isMore, MyCallBack caller) {
+    public void getFilesInTopFolder(boolean isMore, MyCallBack caller) {
         if (connection_ok != 1 || glftList == null) {
             caller.callback(EventConst.SERVER_NOT_CONNECTED, 1, null);
             return;

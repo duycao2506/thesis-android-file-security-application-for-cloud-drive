@@ -85,8 +85,8 @@ public class UiUtils {
                 .setMode(BottomSheetBuilder.MODE_LIST)
                 .addTitleItem(isSync ? R.string.sync_with : R.string.upload)
                 .setTitleTextColorResource(R.color.gray_dark_transparent)
-                .addItem(R.id.gdrive,R.string.g_drive,R.drawable.gdrive)
-                .addItem(R.id.dbox,R.string.dbox,R.drawable.dbox)
+                .addItem(R.id.gdrive,R.string.g_drive,R.drawable.ic_gdrive)
+                .addItem(R.id.dbox,R.string.dbox,R.drawable.ic_dbox)
                 .addItem(R.id.local,R.string.local_storage,R.drawable.localstorage)
                 .setItemClickListener(new BottomSheetItemClickListener() {
                     @Override

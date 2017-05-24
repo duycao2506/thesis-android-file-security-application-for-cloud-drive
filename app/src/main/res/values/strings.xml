@@ -46,8 +46,8 @@
     <string name="password">Password</string>
     <string name="username">Username</string>
     <string name="sign_in">Sign In</string>
-    <string name="login_with_google">Login with Google</string>
-    <string name="login_with_facebook">Login with Facebook</string>
+    <string name="login_with_google">Google Login</string>
+    <string name="login_with_dropbox">Dropbox Login</string>
     <string name="tap_here">Tap here</string>
     <string name="don_t_have_an_account">Don\'t have an account?</string>
     <string name="search">Search</string>
@@ -72,4 +72,5 @@
     <string name="grid_mode">Grid mode</string>
     <string name="name">Name</string>
     <string name="email">Email</string>
+    <string name="dbox_app_key">oel3wpyf1o67v0d</string>
 </resources>

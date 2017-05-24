@@ -1,41 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/local"
-        android:icon="@drawable/localstorage"
-        android:title="Your Local Storage" />
-    <item
-        android:id="@+id/gdrive"
-        android:icon="@drawable/gdrive"
-        android:title="Your Google Drive" />
-    <item
-        android:id="@+id/dbox"
-        android:icon="@drawable/dbox"
-        android:title="Your Dropbox" />
+    <group android:checkableBehavior="single"
+        android:id="@+id/driveGroup">
+        <item
+            android:id="@+id/local"
+            android:icon="@drawable/ic_localstorage"
+            android:title="Your Local Storage" />
+        <item
+            android:id="@+id/gdrive"
+            android:icon="@drawable/ic_gdrive"
+            android:title="Your Google Drive" />
+        <item
+            android:id="@+id/dbox"
+            android:icon="@drawable/ic_dbox"
+            android:title="Your Dropbox" />
+    </group>
 
-    <item
-        android:id="@+id/nav_auther"
-        android:icon="@drawable/ic_lock_white_24dp"
-        android:title="Authenticator" />
-    <item
-        android:id="@+id/nav_tasks"
-        android:icon="@drawable/ic_lock_white_24dp"
-        android:title="Syncing Tasks" />
-    <item
-        android:id="@+id/nav_rate"
-        android:icon="@drawable/ic_lock_white_24dp"
-        android:title="Rating" />
-    <item
-        android:id="@+id/nav_feedback"
-        android:icon="@drawable/ic_lock_white_24dp"
-        android:title="Feedback" />
-    <item
-        android:id="@+id/nav_about"
-        android:icon="@drawable/ic_lock_white_24dp"
-        android:title="About us" />
 
-    <item
-        android:id="@+id/nav_sigout"
-        android:icon="@drawable/ic_lock_white_24dp"
-        android:title="Sign out" />
+
+    <group android:id="@+id/groupFunc">
+        <item
+            android:id="@+id/nav_auther"
+            android:icon="@drawable/ic_lock_white_24dp"
+            android:title="Authenticator" />
+        <item
+            android:id="@+id/nav_tasks"
+            android:icon="@drawable/ic_lock_white_24dp"
+            android:title="Syncing Tasks" />
+
+        <item
+            android:id="@+id/nav_sigout"
+            android:icon="@drawable/ic_lock_white_24dp"
+            android:title="Sign out" />
+
+    </group>
+
+
+    <group android:id="@+id/groupProduct">
+        <item
+            android:id="@+id/nav_rate"
+            android:icon="@drawable/ic_lock_white_24dp"
+            android:title="Rating" />
+        <item
+            android:id="@+id/nav_feedback"
+            android:icon="@drawable/ic_lock_white_24dp"
+            android:title="Feedback" />
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@drawable/ic_lock_white_24dp"
+            android:title="About us" />
+    </group>
+
+
+
+
+
 </menu>

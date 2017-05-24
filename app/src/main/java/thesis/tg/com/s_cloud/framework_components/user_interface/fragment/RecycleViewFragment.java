@@ -59,7 +59,7 @@ public class RecycleViewFragment extends KasperFragment implements OnRefreshList
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 Log.d("DY", String.valueOf(dy));
-                if (dy == 0) return;
+                if (dy <= 4) return;
                 scrollEvent(recyclerView, dx, dy);
             }
         });
@@ -72,7 +72,12 @@ public class RecycleViewFragment extends KasperFragment implements OnRefreshList
 
     protected void toListViewLoadingMode() {
         listViewAdapter.setLoadingmore(true);
-        listViewAdapter.notifyDataSetChanged();
+        listView.post(new Runnable() {
+            @Override
+            public void run() {
+                listViewAdapter.notifyItemInserted(listViewAdapter.getItemCount()-1);
+            }
+        });
     }
 
     /*

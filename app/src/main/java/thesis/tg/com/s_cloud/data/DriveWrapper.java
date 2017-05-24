@@ -29,7 +29,7 @@ public class DriveWrapper {
         }
     }
 
-    public void getFilesByFolderId(boolean isMore, MyCallBack callBack){
+    public void getFilesInTopFolder(boolean isMore, MyCallBack callBack){
 
     }
 

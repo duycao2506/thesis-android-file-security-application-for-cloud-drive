@@ -22,57 +22,62 @@
         android:orientation="vertical"
 
         >
+
         <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="3"
-            >
+            android:layout_weight="3.5">
+
             <ImageView
                 android:id="@+id/cloud1"
 
                 android:layout_width="wrap_content"
-                android:scrollX="@dimen/margin_90"
+                android:layout_height="wrap_content"
                 android:alpha="0.9"
-                android:scaleY="1.4"
                 android:scaleX="1.4"
-                android:layout_height="match_parent"
+                android:scaleY="1.4"
+                android:scrollX="@dimen/margin_90"
                 android:src="@drawable/cloud"
-                android:tint="@color/white"/>
+                android:tint="@color/white" />
+
             <ImageView
 
                 android:id="@+id/cloud6"
-                android:translationY="-50dp"
                 android:layout_width="wrap_content"
-                android:scrollX="@dimen/margin_90"
-                android:alpha="0.9"
-                android:scaleY="1.4"
-                android:scaleX="1.4"
                 android:layout_height="wrap_content"
+                android:alpha="0.9"
+                android:scaleX="1.4"
+                android:scaleY="1.4"
+                android:scrollX="@dimen/margin_90"
                 android:src="@drawable/cloud"
-                android:tint="@color/white"/>
+                android:tint="@color/white"
+                android:translationY="-50dp" />
+
             <ImageView
                 android:id="@+id/cloud2"
                 android:layout_width="wrap_content"
-                android:alpha="0.8"
-                android:scrollX="-70sp"
-                android:translationY="-50dp"
-                android:translationX="-20dp"
                 android:layout_height="wrap_content"
-                android:scaleY="1.5"
+                android:alpha="0.8"
                 android:scaleX="1.5"
+                android:scaleY="1.5"
+                android:scrollX="-70sp"
                 android:src="@drawable/cloud"
-                android:tint="@color/white"/>
+                android:tint="@color/white"
+                android:translationX="-20dp"
+                android:translationY="-50dp" />
+
             <ImageView
 
                 android:id="@+id/cloud5"
                 android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:alpha="0.8"
-                android:scrollX="-70sp"
-                android:layout_height="match_parent"
-                android:scaleY="1.4"
                 android:scaleX="1.4"
+                android:scaleY="1.4"
+                android:scrollX="-70sp"
                 android:src="@drawable/cloud"
-                android:tint="@color/white"/>
+                android:tint="@color/white" />
+
             <ImageView
                 android:id="@+id/cloud3"
                 android:layout_width="wrap_content"
@@ -80,87 +85,97 @@
                 android:scaleX="1.0"
                 android:scaleY="1.0"
                 android:src="@drawable/cloud"
-                android:tint="@color/white"/>
+                android:tint="@color/white" />
+
             <ImageView
 
                 android:id="@+id/cloud4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:alpha="0.6"
                 android:scaleX="1.2"
                 android:scaleY="1.2"
-                android:alpha="0.6"
                 android:scrollX="@dimen/margin_40"
                 android:src="@drawable/cloud"
-                android:tint="@color/white"/>
+                android:tint="@color/white" />
+
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/scloud_logo"
                 android:layout_centerInParent="true"
                 android:paddingTop="@dimen/margin_90"
-                />
+                android:src="@drawable/scloud_logo" />
         </RelativeLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_weight="4"
             android:layout_height="match_parent"
             android:layout_marginLeft="@dimen/margin_10"
             android:layout_marginRight="@dimen/margin_10"
+            android:layout_marginTop="@dimen/margin_20"
+            android:layout_weight="4"
             android:orientation="vertical">
 
             <EditText
+                android:id="@+id/edtUsr"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:drawableLeft="@drawable/ic_person_white_24dp"
                 android:drawablePadding="@dimen/margin_10"
-                android:id="@+id/edtUsr"
-                android:theme="@style/Theme.App.WhiteText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:hint="@string/username"
-                android:textColorHint="@color/whiteBack"
                 android:inputType="textPersonName"
                 android:textColor="@color/white"
-                android:textSize="18sp" />
+                android:textColorHint="@color/whiteBack"
+                android:textSize="18sp"
+                android:theme="@style/Theme.App.WhiteText" />
 
             <EditText
-                android:drawableLeft="@drawable/ic_lock_white_24dp"
-                android:drawablePadding="@dimen/margin_10"
                 android:id="@+id/edtPassword"
-                android:theme="@style/Theme.App.WhiteText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/ic_lock_white_24dp"
+                android:drawablePadding="@dimen/margin_10"
                 android:hint="@string/password"
-                android:textColorHint="@color/whiteBack"
                 android:inputType="textPersonName"
                 android:textColor="@color/white"
-                android:textSize="18sp" />
+                android:textColorHint="@color/whiteBack"
+                android:textSize="18sp"
+                android:theme="@style/Theme.App.WhiteText" />
 
             <Button
                 android:id="@+id/btnlogin"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/button_height"
-                android:theme="@style/KasperButton"
+                android:text="@string/sign_in"
 
-                android:text="@string/sign_in"/>
+                android:theme="@style/KasperButton" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
-                <Button
+
+                <android.support.v7.widget.AppCompatButton
                     android:id="@+id/btnfacebook"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/button_height"
-                    android:theme="@style/KasperLightButton"
                     android:layout_weight="1"
+                    android:drawableLeft="@drawable/ic_dbox"
+                    android:text="@string/login_with_dropbox"
                     android:textColor="@color/blue_link"
-                    android:text="@string/login_with_facebook"/>
+                    android:textSize="@dimen/textSize_14"
+                    android:theme="@style/KasperLightButton" />
+
                 <Button
                     android:id="@+id/btngoogle"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/button_height"
-                    android:theme="@style/KasperLightButton"
                     android:layout_weight="1"
+                    android:drawableLeft="@drawable/ic_gdrive"
+                    android:drawablePadding="@dimen/padding_5"
+                    android:text="@string/login_with_google"
                     android:textColor="@color/red"
-                    android:text="@string/login_with_google"/>
+                    android:theme="@style/KasperLightButton" />
             </LinearLayout>
         </LinearLayout>
 

@@ -19,4 +19,5 @@ public interface EventConst {
     int FILE_SELECT_REQUEST_CODE = 29;
     String FINISH_UPLOADING = "finish_upload";
     String FINISH_DOWNLOADING = "finish_download";
+    String ADD_DRIVE = "ADD_DRIVE";
 }

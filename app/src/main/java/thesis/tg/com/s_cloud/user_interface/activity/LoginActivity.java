@@ -2,6 +2,7 @@ package thesis.tg.com.s_cloud.user_interface.activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.DropBoxManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -11,25 +12,29 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.dropbox.core.v2.DbxClientV2;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 
 import thesis.tg.com.s_cloud.R;
+import thesis.tg.com.s_cloud.data.from_third_party.dropbox.DbxDriveWrapper;
 import thesis.tg.com.s_cloud.data.from_third_party.google_drive.GoogleDriveWrapper;
+import thesis.tg.com.s_cloud.utils.DriveType;
 import thesis.tg.com.s_cloud.utils.EventConst;
 import thesis.tg.com.s_cloud.utils.DataUtils;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
 import thesis.tg.com.s_cloud.utils.UiUtils;
 
 import static thesis.tg.com.s_cloud.utils.EventConst.LOGIN_CANCEL_RESULT_CODE;
+import static thesis.tg.com.s_cloud.utils.EventConst.LOGIN_SUCCESS;
 import static thesis.tg.com.s_cloud.utils.EventConst.LOGIN_SUCCESS_RESULT_CODE;
 import static thesis.tg.com.s_cloud.utils.EventConst.RESOLVE_CONNECTION_REQUEST_CODE;
 
 public class LoginActivity extends AppCompatActivity implements  View.OnClickListener, MyCallBack{
 
-    Button btnLogin, btnFacebook, btnGoogle;
+    Button btnLogin, btnDropbox, btnGoogle;
     private GoogleApiClient mGoogleApiClient;
 //
     GoogleDriveWrapper gdwrapper;
@@ -79,6 +84,15 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        String token = com.dropbox.core.android.Auth.getOAuth2Token();
+        if (token != null){
+            this.callback(LOGIN_SUCCESS,DriveType.DROPBOX,null);
+        }
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
 //        mGoogleApiClient.connect();
@@ -123,6 +137,8 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
         btnLogin.setOnClickListener(this);
         this.btnGoogle = (Button) findViewById(R.id.btngoogle);
         btnGoogle.setOnClickListener(this);
+        this.btnDropbox = (Button) findViewById(R.id.btnfacebook);
+        btnDropbox.setOnClickListener(this);
     }
 
 
@@ -149,6 +165,8 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
                     startActivityForResult(signInIntent, RESOLVE_CONNECTION_REQUEST_CODE);
                 }
                 break;
+            case R.id.btnfacebook:
+                com.dropbox.core.android.Auth.startOAuth2Authentication(this,getString(R.string.dbox_app_key));
             default:
                 break;
         }
@@ -163,8 +181,11 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
                 if (resultCode == RESULT_OK) {
                     GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
                     progressDialog.show();
-                    gdwrapper.handleSignInResult(result, this);
+                    if (result.isSuccess())
+                        this.callback(LOGIN_SUCCESS, DriveType.GOOGLE,null);
                 }
+                break;
+            default:
                 break;
         }
 
@@ -181,9 +202,10 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
     public void callback(String message, int code, Object data) {
         switch (message){
             case EventConst.LOGIN_SUCCESS:
-                setResult(LOGIN_SUCCESS_RESULT_CODE);
-                finish();
                 progressDialog.dismiss();
+                Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
+                startActivity(intent);
+                finish();
                 break;
             case EventConst.LOGIN_FAIL:
                 Toast.makeText(this, R.string.fail_login,Toast.LENGTH_LONG).show();
