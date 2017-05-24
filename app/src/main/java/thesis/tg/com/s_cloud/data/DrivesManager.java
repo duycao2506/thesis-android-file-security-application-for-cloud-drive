@@ -18,9 +18,10 @@ import thesis.tg.com.s_cloud.utils.DriveType;
  */
 
 public class DrivesManager {
-
+    int numOfDrives = 2;
+    boolean driveTriedSignIn[];
     private DrivesManager(){
-
+        driveTriedSignIn = new boolean[numOfDrives];
     }
 
     private static DrivesManager instance;
@@ -61,6 +62,10 @@ public class DrivesManager {
         }
     }
 
+    public void autoSignIn(){
+
+    }
+
     public String getDriveName(Context context, int id){
         switch (id){
             case DriveType.DROPBOX:
@@ -75,4 +80,7 @@ public class DrivesManager {
     }
 
 
+    public int getNumDrive() {
+        return numOfDrives;
+    }
 }

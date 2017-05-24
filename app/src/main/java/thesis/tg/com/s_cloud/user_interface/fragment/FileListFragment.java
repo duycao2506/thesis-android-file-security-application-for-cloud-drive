@@ -93,34 +93,16 @@ public class FileListFragment extends RecycleViewFragment {
 
     @Override
     protected void scrollEvent(RecyclerView recyclerView, int dx, int dy) {
-        new AsyncTask<Void, Void, Boolean>() {
-            int totalItemCount, lastVisibleItem, visibleThreshold = 1;
-            final SwipeRefreshLayout finalswipe = swipeLayout;
-            LinearLayoutManager layoutManager;
-
-            @Override
-            protected void onPreExecute() {
-                layoutManager = (LinearLayoutManager) listView.getLayoutManager();
-                super.onPreExecute();
-            }
-
-            @Override
-            protected Boolean doInBackground(Void... params) {
-                totalItemCount = layoutManager.getItemCount();
-                lastVisibleItem = layoutManager.findLastVisibleItemPosition();
-                return (!listViewAdapter.isLoadingmore() && totalItemCount <= (lastVisibleItem + visibleThreshold));
-            }
-
-            @Override
-            protected void onPostExecute(Boolean aBoolean) {
-                if (aBoolean && !swipeLayout.isRefreshing()) {
-                    toListViewLoadingMode();
-                    loadMore(FileListFragment.this);
-                }
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-
+        if (listViewAdapter.isLoadingmore()) return;
+        int totalItemCount, lastVisibleItem, visibleThreshold = 1;
+        LinearLayoutManager layoutManager;
+        layoutManager = (LinearLayoutManager) listView.getLayoutManager();
+        totalItemCount = layoutManager.getItemCount();
+        lastVisibleItem = layoutManager.findLastVisibleItemPosition();
+        if (totalItemCount <= (lastVisibleItem + visibleThreshold)  && !swipeLayout.isRefreshing()) {
+            toListViewLoadingMode();
+            loadMore(FileListFragment.this);
+        }
     }
 
     public void changeViewMode(ViewMode vm) {
@@ -150,13 +132,13 @@ public class FileListFragment extends RecycleViewFragment {
 
     @Override
     protected void loadMore(final MyCallBack caller) {
-        DriveWrapper.getInstance(driveType).getFilesByFolderId(true, new MyCallBack() {
+        DriveWrapper.getInstance(driveType).getFilesInTopFolder(true, new MyCallBack() {
             @Override
             public void callback(String message, int code, Object data) {
                 if (data != null) {
                     List<SDriveFile> tempFileList = (List<SDriveFile>) data;
-                    listViewAdapter.addEntities(tempFileList);
-                    listViewAdapter.notifyDataSetChanged();
+                    if (tempFileList.size() > 0)
+                        listViewAdapter.addEntities(tempFileList);
                 } else {
                     caller.callback(message, code, data);
                 }
@@ -167,7 +149,7 @@ public class FileListFragment extends RecycleViewFragment {
 
     @Override
     public void loadRefresh(final MyCallBack caller) {
-        DriveWrapper.getInstance(driveType).getFilesByFolderId(false, new MyCallBack() {
+        DriveWrapper.getInstance(driveType).getFilesInTopFolder(false, new MyCallBack() {
             @Override
             public void callback(String message, int code, Object data) {
                 if (data != null) {
@@ -203,8 +185,13 @@ public class FileListFragment extends RecycleViewFragment {
                 break;
             case HomeActivity.FINISH:
                 this.swipeLayout.setRefreshing(false);
-                this.listViewAdapter.setLoadingmore(false);
-                this.listViewAdapter.notifyDataSetChanged();
+                listView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        listViewAdapter.setLoadingmore(false);
+                        listViewAdapter.notifyDataSetChanged();
+                    }
+                });
                 break;
             case EventConst.ERROR:
                 String rawmess = (String) data;

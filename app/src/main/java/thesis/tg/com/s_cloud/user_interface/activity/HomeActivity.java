@@ -31,12 +31,14 @@ import de.hdodenhof.circleimageview.CircleImageView;
 import thesis.tg.com.s_cloud.R;
 import thesis.tg.com.s_cloud.data.DriveWrapper;
 import thesis.tg.com.s_cloud.data.DrivesManager;
+import thesis.tg.com.s_cloud.data.from_third_party.dropbox.DbxDriveWrapper;
 import thesis.tg.com.s_cloud.data.from_third_party.google_drive.GoogleDriveWrapper;
 import thesis.tg.com.s_cloud.data.from_third_party.google_drive.GoogleUploadTask;
 import thesis.tg.com.s_cloud.entities.DriveUser;
 import thesis.tg.com.s_cloud.entities.SDriveFile;
 import thesis.tg.com.s_cloud.entities.SDriveFolder;
 import thesis.tg.com.s_cloud.framework_components.user_interface.activity.KasperActivity;
+import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
 import thesis.tg.com.s_cloud.user_interface.fragment.FileListFragment;
 import thesis.tg.com.s_cloud.utils.DataUtils;
 import thesis.tg.com.s_cloud.utils.DriveType;
@@ -52,8 +54,12 @@ public class HomeActivity extends KasperActivity implements
 
 
     SparseArray fragmentNavigator;
+    FileListFragment[] fileListFragments = new FileListFragment[DrivesManager.getInstance().getNumDrive()];
+
+
     private Menu menu;
     private FileListFragment topFragment;
+
 
 
 
@@ -61,11 +67,38 @@ public class HomeActivity extends KasperActivity implements
         String FILES = "FILES";
     }
 
-
+    private ActionBarDrawerToggle toggle;
     private DrawerLayout drawer;
     private NavigationView navigationView;
     private FloatingActionButton fab;
-    ActionBarDrawerToggle toggle;
+    private MyCallBack signInCallback = new MyCallBack() {
+        int failTimes = DrivesManager.getInstance().getNumDrive();
+        @Override
+        synchronized public void callback(String message, int code, Object data) {
+            switch (message) {
+                case EventConst.LOGIN_FAIL:
+                    failTimes--;
+                    if (failTimes > 0) return;
+                    Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
+                    startActivity(intent);
+                    finish();
+                    failTimes = 0;
+                    break;
+                case EventConst.LOGIN_SUCCESS:
+                    if (topFragment != null)
+                        return;
+                    HomeActivity.this.callback(HomeActivity.START, 1, null);
+                    updateNavHeader();
+                    topFragment = (FileListFragment) fragmentNavigator.get(code);
+                    changeFragment(topFragment);
+                    topFragment.loadRefresh(HomeActivity.this);
+                    break;
+            }
+        }
+    };
+
+
+
 
 
     @Override
@@ -81,19 +114,21 @@ public class HomeActivity extends KasperActivity implements
 
 
         //Dropbox
+        DbxDriveWrapper.getInstance().signIn(this, signInCallback);
+
 
 
         //Sign int automatically first
         final GoogleApiClient gac = GoogleDriveWrapper
                 .getInstance()
                 .googleSignInServiceInit(this);
+
         OptionalPendingResult<GoogleSignInResult> op = Auth.GoogleSignInApi.silentSignIn(gac);
         op.setResultCallback(new ResultCallback<GoogleSignInResult>() {
             @Override
             public void onResult(@NonNull GoogleSignInResult googleSignInResult) {
-
                 GoogleDriveWrapper.getInstance()
-                        .handleSignInResult(googleSignInResult, HomeActivity.this);
+                        .handleSignInResult(googleSignInResult, signInCallback);
             }
         });
 
@@ -131,14 +166,22 @@ public class HomeActivity extends KasperActivity implements
 
     @Override
     protected void initFragment() {
-        this.mainFragment = new FileListFragment.Builder()
+        fragmentNavigator.put(DriveType.GOOGLE,new FileListFragment.Builder()
                 .setFragmentName(getString(R.string.g_drive))
                 .setDriveType(DriveType.GOOGLE)
                 .setViewMode(LIST)
-                .build();
-        this.topFragment = (FileListFragment) mainFragment;
-        fragmentNavigator.put(DriveType.GOOGLE, this.topFragment);
-        getSupportActionBar().setTitle(this.topFragment.getFragmentName());
+                .build() );
+        fragmentNavigator.put(DriveType.DROPBOX, new FileListFragment.Builder()
+                .setFragmentName(getString(R.string.dbox))
+                .setDriveType(DriveType.DROPBOX)
+                .setViewMode(LIST)
+                .build());
+        fragmentNavigator.put(DriveType.LOCAL, new FileListFragment.Builder()
+                .setFragmentName(getString(R.string.local_storage))
+                .setDriveType(DriveType.LOCAL)
+                .setViewMode(LIST)
+                .build());
+        getSupportActionBar().setTitle(R.string.app_name);
     }
 
     @Override
@@ -323,15 +366,6 @@ public class HomeActivity extends KasperActivity implements
                 topFragment.loadRefresh(this);
                 getSupportActionBar().setTitle(topFragment.getFragmentName());
                 break;
-            case EventConst.LOGIN_FAIL:
-                Intent intent = new Intent(this,LoginActivity.class);
-                startActivityForResult(intent, EventConst.LOGIN_REQUEST_CODE);
-                break;
-            case EventConst.LOGIN_SUCCESS:
-                this.callback(HomeActivity.START,1,null);
-                updateNavHeader();
-                topFragment.loadRefresh(this);
-                break;
             default:
                 break;
         }
@@ -356,19 +390,6 @@ public class HomeActivity extends KasperActivity implements
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode){
-            case LOGIN_REQUEST_CODE:
-                switch (resultCode){
-                    case EventConst.LOGIN_CANCEL_RESULT_CODE:
-                        finish();
-                        break;
-                    case EventConst.LOGIN_SUCCESS_RESULT_CODE:
-                        this.callback(HomeActivity.START,1,null);
-                        topFragment.loadRefresh(this);
-                        break;
-                    default:
-                        break;
-                }
-                break;
             case EventConst.FILE_SELECT_REQUEST_CODE:
                 if (resultCode == RESULT_OK) {
                     // Get the Uri of the selected file

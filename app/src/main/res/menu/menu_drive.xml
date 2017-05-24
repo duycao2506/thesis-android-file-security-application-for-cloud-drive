@@ -5,12 +5,12 @@
         android:id="@+id/gdrive"
         android:title="@string/g_drive"
         app:showAsAction="ifRoom|collapseActionView"
-        android:icon="@drawable/gdrive"
+        android:icon="@drawable/ic_gdrive"
         />
     <item
         android:id="@+id/dbox"
         android:title="@string/dbox"
-        android:icon="@drawable/dbox"
+        android:icon="@drawable/ic_dbox"
         app:showAsAction="always" />
     <item
         android:id="@+id/local"
