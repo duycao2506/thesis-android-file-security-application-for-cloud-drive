@@ -44,6 +44,8 @@ public class FileListingTask extends SuperObject {
     }
 
     public void refreshList(MyCallBack caller){
+        nextPageToken = "";
+        this.getMoreList(caller);
     }
 
 

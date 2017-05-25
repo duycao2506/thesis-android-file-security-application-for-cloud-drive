@@ -21,7 +21,6 @@ public class DbxFilelistTask extends FileListingTask{
     DbxClientV2 dbxClientV2;
 
     public DbxFilelistTask(String folderId, DbxClientV2 dbxClientV2) {
-
         super(folderId);
         this.dbxClientV2 = dbxClientV2;
     }

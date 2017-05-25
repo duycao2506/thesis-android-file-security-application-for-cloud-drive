@@ -49,7 +49,7 @@ public class TransferTask extends SuperObject{
         return 0;
     }
 
-    public void cancel(){
+    public void  cancel(){
         this.at.cancel(true);
     }
 

@@ -31,7 +31,7 @@ import com.google.api.services.drive.DriveScopes;
 
 import java.util.ArrayList;
 
-import thesis.tg.com.s_cloud.data.DriveWrapper;
+import thesis.tg.com.s_cloud.data.CloudDriveWrapper;
 import thesis.tg.com.s_cloud.entities.DriveUser;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
 import thesis.tg.com.s_cloud.utils.DriveType;
@@ -43,7 +43,7 @@ import static thesis.tg.com.s_cloud.utils.EventConst.RESOLVE_CONNECTION_REQUEST_
  * Created by admin on 5/6/17.
  */
 
-public class GoogleDriveWrapper extends DriveWrapper implements
+public class GoogleDriveWrapper extends CloudDriveWrapper implements
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener  {
     private GoogleApiClient mGoogleApiClient;
@@ -109,14 +109,14 @@ public class GoogleDriveWrapper extends DriveWrapper implements
 
                     //TODO: Create User
                     DriveUser user = DriveUser.getInstance();
+                    user.setGoogle_id(acct.getId());
                     if (user.isSignedIn())
                     {
-                        user.setGoogle_id(acct.getId());
                         //TODO: send authtoken to get add drive on server
                         return EventConst.ADD_DRIVE;
                     }
 
-                    //TODO: send accesstoken to get info from server
+                    //TODO: send accesstoken to get userid from server
                     user.setName(acct.getDisplayName());
                     user.setId(acct.getId());
                     user.setEmail(acct.getEmail());
@@ -192,7 +192,7 @@ public class GoogleDriveWrapper extends DriveWrapper implements
     public void addNewListFileTask(String folderId){
         if (this.glftList == null)
             glftList = new ArrayList<>();
-        GoogleListFileTask glft = new GoogleListFileTask(folderId);
+        GoogleListFileTask glft = new GoogleListFileTask(driveService,folderId);
         glftList.add(glft);
     }
 
@@ -209,9 +209,9 @@ public class GoogleDriveWrapper extends DriveWrapper implements
             return;
         }
         if (!isMore)
-            glftList.get(glftList.size() - 1).refreshList(driveService, caller);
+            glftList.get(glftList.size() - 1).refreshList(caller);
         else
-            glftList.get(glftList.size() - 1).getMoreList(driveService, caller);
+            glftList.get(glftList.size() - 1).getMoreList(caller);
 
     }
 

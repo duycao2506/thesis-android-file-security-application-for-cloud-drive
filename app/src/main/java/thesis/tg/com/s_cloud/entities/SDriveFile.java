@@ -1,10 +1,17 @@
 package thesis.tg.com.s_cloud.entities;
 
+import com.dropbox.core.DbxException;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
+import thesis.tg.com.s_cloud.data.DrivesManager;
+import thesis.tg.com.s_cloud.data.from_third_party.dropbox.DbxDriveWrapper;
 import thesis.tg.com.s_cloud.framework_components.entity.SuperObject;
 import thesis.tg.com.s_cloud.utils.DriveType;
 
@@ -28,6 +35,7 @@ public class SDriveFile extends SuperObject {
     String thumbnail;
     private String iconLink;
     private String extension;
+    private String folder;
 
     public SDriveFile() {
     }
@@ -114,7 +122,13 @@ public class SDriveFile extends SuperObject {
     public InputStream getInputstream(){
         switch (cloud_type){
             case DriveType.DROPBOX:
-                return null;
+                InputStream is = null;
+                try {
+                    is =  DbxDriveWrapper.getInstance().getClient().files().download(getId()).getInputStream();
+                } catch (DbxException e) {
+                    e.printStackTrace();
+                }
+                return is;
             case DriveType.LOCAL:
                 FileInputStream fis = null;
                 try {
@@ -128,7 +142,44 @@ public class SDriveFile extends SuperObject {
         }
     }
 
+    public OutputStream getOutputStream(int driveType, String toPath){
+        switch (driveType){
+            case DriveType.DROPBOX:
+                OutputStream os = null;
+                try {
+                    os = DbxDriveWrapper.getInstance().getClient().files().upload(toPath).getOutputStream();
+                } catch (DbxException e) {
+                    e.printStackTrace();
+                }
+                return os;
+            case DriveType.LOCAL:
+                FileOutputStream fos = null;
+                String localfolder = DrivesManager.getInstance().getLocalPath();
+                File desFile = new File(localfolder, toPath);
+                try {
+                    boolean a = desFile.createNewFile();
+                    fos = new FileOutputStream(desFile);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return fos;
+            default:
+                return null;
+        }
+    }
 
+
+    /**
+     * Get Parent Folder Representative String
+     * @return
+     */
+    public String getFolder() {
+        return folder;
+    }
+
+    public void setFolder(String folder) {
+        this.folder = folder;
+    }
 }
 
 

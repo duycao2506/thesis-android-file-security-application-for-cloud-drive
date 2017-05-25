@@ -28,21 +28,11 @@ import thesis.tg.com.s_cloud.utils.EventConst;
 public class GoogleListFileTask extends FileListingTask{
     Drive driveService;
 
-    public GoogleListFileTask(String folderId) {
+    public GoogleListFileTask(Drive driveService, String folderId) {
         super(folderId);
-    }
-
-    public void getMoreList(Drive driveService, MyCallBack caller)
-    {
         this.driveService = driveService;
-        listFileTask = new ListFileTask(caller);
-        listFileTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
-    public void refreshList(Drive driveService, MyCallBack caller){
-        nextPageToken = "";
-        getMoreList(driveService, caller);
-    }
 
     @Override
     protected List<SDriveFile> getDataFromApi() throws IOException {
@@ -84,6 +74,7 @@ public class GoogleListFileTask extends FileListingTask{
             sDriveFile.setFileSize(file.getSize() == null ? -1 : file.getSize());
             sDriveFile.setMimeType(file.getMimeType());
             sDriveFile.setExtension(file.getFullFileExtension());
+            sDriveFile.setFolder(folderId);
             sDriveFile.setCloud_type(DriveType.GOOGLE);
             sDriveFiles.add(sDriveFile);
         }

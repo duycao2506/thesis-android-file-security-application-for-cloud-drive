@@ -2,7 +2,6 @@ package thesis.tg.com.s_cloud.user_interface.activity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.DropBoxManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -12,14 +11,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.dropbox.core.v2.DbxClientV2;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 
 import thesis.tg.com.s_cloud.R;
-import thesis.tg.com.s_cloud.data.from_third_party.dropbox.DbxDriveWrapper;
 import thesis.tg.com.s_cloud.data.from_third_party.google_drive.GoogleDriveWrapper;
 import thesis.tg.com.s_cloud.utils.DriveType;
 import thesis.tg.com.s_cloud.utils.EventConst;
@@ -29,7 +26,6 @@ import thesis.tg.com.s_cloud.utils.UiUtils;
 
 import static thesis.tg.com.s_cloud.utils.EventConst.LOGIN_CANCEL_RESULT_CODE;
 import static thesis.tg.com.s_cloud.utils.EventConst.LOGIN_SUCCESS;
-import static thesis.tg.com.s_cloud.utils.EventConst.LOGIN_SUCCESS_RESULT_CODE;
 import static thesis.tg.com.s_cloud.utils.EventConst.RESOLVE_CONNECTION_REQUEST_CODE;
 
 public class LoginActivity extends AppCompatActivity implements  View.OnClickListener, MyCallBack{

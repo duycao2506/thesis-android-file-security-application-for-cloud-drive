@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.SequenceInputStream;
 import java.net.URI;
+import java.util.ArrayList;
 
 import thesis.tg.com.s_cloud.data.from_third_party.task.UploadTask;
 import thesis.tg.com.s_cloud.entities.SDriveFile;
@@ -54,13 +55,20 @@ public class GoogleUploadTask extends UploadTask {
         com.google.api.services.drive.model.File fileCnt = new com.google.api.services.drive.model.File();
 
         //Getname
+        boolean isRoot = file.getFolder() == "";
+
+        if (!isRoot){
+            ArrayList<String> a = new ArrayList();
+            a.add(file.getFolder());
+            fileCnt.setParents(a);
+        }
         fileCnt.setName(file.getName());
         fileCnt.setMimeType(file.getMimeType());
         fileCnt.setOriginalFilename(file.getName());
 
         try {
             driveService.files().create(fileCnt,dvic)
-                    .setFields("id, name, originalFilename, mimeType")
+                    .setFields("id, name, originalFilename, mimeType" + (isRoot? "" : ", parents"))
                     .execute();
         } catch (IOException e) {
             e.printStackTrace();

@@ -3,6 +3,7 @@ package thesis.tg.com.s_cloud.entities;
 import android.net.Uri;
 
 import thesis.tg.com.s_cloud.framework_components.entity.SuperObject;
+import thesis.tg.com.s_cloud.utils.DriveType;
 
 /**
  * Created by admin on 5/6/17.
@@ -36,7 +37,6 @@ public class DriveUser extends SuperObject {
     }
 
     protected DriveUser(){
-
     }
 
     private static DriveUser instance;
@@ -75,5 +75,12 @@ public class DriveUser extends SuperObject {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+
+    public int getAvailableDrive() {
+        if (this.google_id != null ) return DriveType.GOOGLE;
+        if (this.dropbox_id != null) return DriveType.DROPBOX;
+        return -1;
     }
 }

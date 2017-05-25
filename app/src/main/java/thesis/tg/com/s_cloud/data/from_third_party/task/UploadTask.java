@@ -14,9 +14,6 @@ import thesis.tg.com.s_cloud.utils.EventConst;
  */
 
 public class UploadTask extends TransferTask {
-
-    InputStream is;
-
     public UploadTask() {
         super();
     }
@@ -36,5 +33,4 @@ public class UploadTask extends TransferTask {
         this.file = data;
         at.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
-
 }
