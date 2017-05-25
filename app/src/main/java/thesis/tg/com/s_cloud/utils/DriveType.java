@@ -10,7 +10,4 @@ public interface DriveType {
     int GOOGLE = R.id.gdrive;
     int DROPBOX = R.id.dbox;
     int LOCAL = R.id.local;
-    int GOOGLE_ORD = 0;
-    int DBX_ORD = 1;
-    int LCAL = 2;
 }

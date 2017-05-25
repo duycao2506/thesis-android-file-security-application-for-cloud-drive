@@ -1,9 +1,7 @@
 package thesis.tg.com.s_cloud.user_interface.fragment;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import thesis.tg.com.s_cloud.R;
-import thesis.tg.com.s_cloud.data.DriveWrapper;
+import thesis.tg.com.s_cloud.data.CloudDriveWrapper;
 import thesis.tg.com.s_cloud.entities.SDriveFile;
 import thesis.tg.com.s_cloud.framework_components.user_interface.adapter.KasperRecycleAdapter;
 import thesis.tg.com.s_cloud.framework_components.user_interface.fragment.RecycleViewFragment;
@@ -32,9 +30,8 @@ import thesis.tg.com.s_cloud.utils.EventConst;
 public class FileListFragment extends RecycleViewFragment {
 
 
-    public int getDriveType() {
-        return driveType;
-    }
+    private String folder;
+
 
     public enum ViewMode {
         GRID,
@@ -46,9 +43,6 @@ public class FileListFragment extends RecycleViewFragment {
     String[] globalEvents = {EventConst.FINISH_DOWNLOADING,EventConst.FINISH_UPLOADING};
 
 
-    public ViewMode getVm() {
-        return vm;
-    }
 
     FileCollectionViewAdapter fcva;
     LinearLayoutManager llm;
@@ -93,13 +87,13 @@ public class FileListFragment extends RecycleViewFragment {
 
     @Override
     protected void scrollEvent(RecyclerView recyclerView, int dx, int dy) {
-        if (listViewAdapter.isLoadingmore()) return;
+        if (listViewAdapter.isLoadingmore() || swipeLayout.isRefreshing()) return;
         int totalItemCount, lastVisibleItem, visibleThreshold = 1;
         LinearLayoutManager layoutManager;
         layoutManager = (LinearLayoutManager) listView.getLayoutManager();
         totalItemCount = layoutManager.getItemCount();
         lastVisibleItem = layoutManager.findLastVisibleItemPosition();
-        if (totalItemCount <= (lastVisibleItem + visibleThreshold)  && !swipeLayout.isRefreshing()) {
+        if (totalItemCount <= (lastVisibleItem + visibleThreshold)  ) {
             toListViewLoadingMode();
             loadMore(FileListFragment.this);
         }
@@ -132,7 +126,7 @@ public class FileListFragment extends RecycleViewFragment {
 
     @Override
     protected void loadMore(final MyCallBack caller) {
-        DriveWrapper.getInstance(driveType).getFilesInTopFolder(true, new MyCallBack() {
+        CloudDriveWrapper.getInstance(driveType).getFilesInTopFolder(true, new MyCallBack() {
             @Override
             public void callback(String message, int code, Object data) {
                 if (data != null) {
@@ -140,7 +134,7 @@ public class FileListFragment extends RecycleViewFragment {
                     if (tempFileList.size() > 0)
                         listViewAdapter.addEntities(tempFileList);
                 } else {
-                    caller.callback(message, code, data);
+                    caller.callback(message, code, null);
                 }
                 caller.callback(HomeActivity.FINISH, 1, null);
             }
@@ -149,7 +143,7 @@ public class FileListFragment extends RecycleViewFragment {
 
     @Override
     public void loadRefresh(final MyCallBack caller) {
-        DriveWrapper.getInstance(driveType).getFilesInTopFolder(false, new MyCallBack() {
+        CloudDriveWrapper.getInstance(driveType).getFilesInTopFolder(false, new MyCallBack() {
             @Override
             public void callback(String message, int code, Object data) {
                 if (data != null) {
@@ -157,9 +151,11 @@ public class FileListFragment extends RecycleViewFragment {
                     listViewAdapter.setEntities(new ArrayList<>());
                     listViewAdapter.addEntities(tempFileList);
                 } else {
-                    caller.callback(message, code, data);
+                    if (caller != null)
+                        caller.callback(message, code, data);
                 }
-                caller.callback(HomeActivity.FINISH, 1, null);
+                if (caller != null)
+                    caller.callback(HomeActivity.FINISH, 1, null);
             }
         });
     }
@@ -185,13 +181,8 @@ public class FileListFragment extends RecycleViewFragment {
                 break;
             case HomeActivity.FINISH:
                 this.swipeLayout.setRefreshing(false);
-                listView.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        listViewAdapter.setLoadingmore(false);
-                        listViewAdapter.notifyDataSetChanged();
-                    }
-                });
+                listViewAdapter.setLoadingmore(false);
+                listViewAdapter.notifyDataSetChanged();
                 break;
             case EventConst.ERROR:
                 String rawmess = (String) data;
@@ -199,6 +190,28 @@ public class FileListFragment extends RecycleViewFragment {
                 break;
         }
     }
+
+
+    /**
+     * Getters and Setters
+     * @return
+     */
+
+    public ViewMode getVm() {
+        return vm;
+    }
+    public int getDriveType() {
+        return driveType;
+    }
+
+    public void setFolder(String folder) {
+        this.folder = folder;
+    }
+
+    public String getFolder() {
+        return folder;
+    }
+
 
 
     /**
@@ -215,6 +228,11 @@ public class FileListFragment extends RecycleViewFragment {
 
         public Builder setFragmentName(String name) {
             flf.setFragmentName(name);
+            return this;
+        }
+
+        public Builder setFolder(String folder) {
+            flf.setFolder(folder);
             return this;
         }
 

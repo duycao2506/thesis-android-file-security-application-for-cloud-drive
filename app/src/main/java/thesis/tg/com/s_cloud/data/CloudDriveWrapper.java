@@ -10,13 +10,13 @@ import thesis.tg.com.s_cloud.utils.DriveType;
  * Created by admin on 5/6/17.
  */
 
-public class DriveWrapper {
+public class CloudDriveWrapper {
 
     protected static GoogleDriveWrapper gdinstance;
     protected static DbxDriveWrapper dbinstance;
     protected static LocalDriveWrapper localDriveWrapper;
 
-    public static DriveWrapper getInstance(int drivetype) {
+    public static CloudDriveWrapper getInstance(int drivetype) {
         switch (drivetype){
             case DriveType.GOOGLE:
                 return GoogleDriveWrapper.getInstance();
@@ -25,7 +25,7 @@ public class DriveWrapper {
             case DriveType.LOCAL:
                 return LocalDriveWrapper.getInstance();
             default:
-                return new DriveWrapper();
+                return new CloudDriveWrapper();
         }
     }
 
@@ -45,5 +45,6 @@ public class DriveWrapper {
     public void resetListFileTask(){
 
     }
+
 
 }

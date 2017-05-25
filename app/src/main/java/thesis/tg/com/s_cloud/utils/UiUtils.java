@@ -87,7 +87,7 @@ public class UiUtils {
                 .setTitleTextColorResource(R.color.gray_dark_transparent)
                 .addItem(R.id.gdrive,R.string.g_drive,R.drawable.ic_gdrive)
                 .addItem(R.id.dbox,R.string.dbox,R.drawable.ic_dbox)
-                .addItem(R.id.local,R.string.local_storage,R.drawable.localstorage)
+                .addItem(R.id.local,R.string.local_storage,R.drawable.ic_localstorage)
                 .setItemClickListener(new BottomSheetItemClickListener() {
                     @Override
                     public void onBottomSheetItemClick(MenuItem item) {

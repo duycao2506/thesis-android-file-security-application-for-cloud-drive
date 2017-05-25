@@ -73,4 +73,5 @@
     <string name="name">Name</string>
     <string name="email">Email</string>
     <string name="dbox_app_key">oel3wpyf1o67v0d</string>
+    <string name="checking_login">Checking Account Validation</string>
 </resources>

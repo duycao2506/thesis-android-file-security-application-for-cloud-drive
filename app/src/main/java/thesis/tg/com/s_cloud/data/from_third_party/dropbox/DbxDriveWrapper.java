@@ -1,7 +1,6 @@
 package thesis.tg.com.s_cloud.data.from_third_party.dropbox;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 
@@ -11,17 +10,17 @@ import com.dropbox.core.android.Auth;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.users.FullAccount;
 
-import thesis.tg.com.s_cloud.data.DriveWrapper;
+import thesis.tg.com.s_cloud.data.CloudDriveWrapper;
 import thesis.tg.com.s_cloud.entities.DriveUser;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
 import thesis.tg.com.s_cloud.utils.DriveType;
 import thesis.tg.com.s_cloud.utils.EventConst;
 
 /**
- * Created by admin on 5/14/17.
+ * Created by CKLD on 5/14/17.
  */
 
-public class DbxDriveWrapper extends DriveWrapper {
+public class DbxDriveWrapper extends CloudDriveWrapper {
     private DbxClientV2 dbxClientV2;
 
     private DbxDriveWrapper(){
@@ -105,5 +104,9 @@ public class DbxDriveWrapper extends DriveWrapper {
     @Override
     public void popListFileTask() {
         super.popListFileTask();
+    }
+
+    public DbxClientV2 getClient() {
+        return dbxClientV2;
     }
 }

@@ -72,12 +72,7 @@ public class RecycleViewFragment extends KasperFragment implements OnRefreshList
 
     protected void toListViewLoadingMode() {
         listViewAdapter.setLoadingmore(true);
-        listView.post(new Runnable() {
-            @Override
-            public void run() {
-                listViewAdapter.notifyItemInserted(listViewAdapter.getItemCount()-1);
-            }
-        });
+        listViewAdapter.notifyItemInserted(listViewAdapter.getItemCount()-1);
     }
 
     /*

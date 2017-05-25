@@ -1,5 +1,7 @@
 package thesis.tg.com.s_cloud.user_interface.activity;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -29,11 +31,10 @@ import java.io.File;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import thesis.tg.com.s_cloud.R;
-import thesis.tg.com.s_cloud.data.DriveWrapper;
+import thesis.tg.com.s_cloud.data.CloudDriveWrapper;
 import thesis.tg.com.s_cloud.data.DrivesManager;
 import thesis.tg.com.s_cloud.data.from_third_party.dropbox.DbxDriveWrapper;
 import thesis.tg.com.s_cloud.data.from_third_party.google_drive.GoogleDriveWrapper;
-import thesis.tg.com.s_cloud.data.from_third_party.google_drive.GoogleUploadTask;
 import thesis.tg.com.s_cloud.entities.DriveUser;
 import thesis.tg.com.s_cloud.entities.SDriveFile;
 import thesis.tg.com.s_cloud.entities.SDriveFolder;
@@ -47,7 +48,6 @@ import thesis.tg.com.s_cloud.utils.UiUtils;
 
 import static thesis.tg.com.s_cloud.user_interface.fragment.FileListFragment.ViewMode.GRID;
 import static thesis.tg.com.s_cloud.user_interface.fragment.FileListFragment.ViewMode.LIST;
-import static thesis.tg.com.s_cloud.utils.EventConst.LOGIN_REQUEST_CODE;
 
 public class HomeActivity extends KasperActivity implements
         NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
@@ -59,8 +59,7 @@ public class HomeActivity extends KasperActivity implements
 
     private Menu menu;
     private FileListFragment topFragment;
-
-
+    private NavigationView navigationView;
 
 
     public interface FragmentStackName{
@@ -69,10 +68,14 @@ public class HomeActivity extends KasperActivity implements
 
     private ActionBarDrawerToggle toggle;
     private DrawerLayout drawer;
-    private NavigationView navigationView;
+    private View header;
     private FloatingActionButton fab;
+
+    private ProgressDialog generalProgressDialog;
     private MyCallBack signInCallback = new MyCallBack() {
-        int failTimes = DrivesManager.getInstance().getNumDrive();
+        int failTimes = DrivesManager.getInstance().getNumDrive()-1;
+        int succTimes = failTimes;
+
         @Override
         synchronized public void callback(String message, int code, Object data) {
             switch (message) {
@@ -85,14 +88,25 @@ public class HomeActivity extends KasperActivity implements
                     failTimes = 0;
                     break;
                 case EventConst.LOGIN_SUCCESS:
-                    if (topFragment != null)
-                        return;
+                    succTimes--;
                     HomeActivity.this.callback(HomeActivity.START, 1, null);
                     updateNavHeader();
-                    topFragment = (FileListFragment) fragmentNavigator.get(code);
-                    changeFragment(topFragment);
-                    topFragment.loadRefresh(HomeActivity.this);
+                    FileListFragment flf = (FileListFragment) fragmentNavigator.get(code);
+                    MyCallBack callerRefresh = null;
+                    if (topFragment == null) {
+                        topFragment = flf;
+                        callerRefresh = HomeActivity.this;
+                        changeFragment(flf);
+                        navigationView.setCheckedItem(code);
+                    }
+                    flf.loadRefresh(callerRefresh);
                     break;
+            }
+            if (succTimes + failTimes == DrivesManager.getInstance().getNumDrive()-1){
+                if (generalProgressDialog==null)
+                    return;
+                generalProgressDialog.dismiss();
+                generalProgressDialog = null;
             }
         }
     };
@@ -103,45 +117,36 @@ public class HomeActivity extends KasperActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         //Create Fragment Navigator
         this.fragmentNavigator = new SparseArray<Fragment>();
-
-
         super.onCreate(savedInstanceState);
         getSupportActionBar().setHomeButtonEnabled(true);
 
 
 
-        //Dropbox
-        DbxDriveWrapper.getInstance().signIn(this, signInCallback);
 
-
-
-        //Sign int automatically first
-        final GoogleApiClient gac = GoogleDriveWrapper
-                .getInstance()
-                .googleSignInServiceInit(this);
-
-        OptionalPendingResult<GoogleSignInResult> op = Auth.GoogleSignInApi.silentSignIn(gac);
-        op.setResultCallback(new ResultCallback<GoogleSignInResult>() {
-            @Override
-            public void onResult(@NonNull GoogleSignInResult googleSignInResult) {
-                GoogleDriveWrapper.getInstance()
-                        .handleSignInResult(googleSignInResult, signInCallback);
-            }
-        });
-
+        setupNavigationDrawer();
 
         fab = (FloatingActionButton) findViewById(R.id.fbtnAdd);
         fab.setOnClickListener(this);
 
+        if (!DriveUser.getInstance().isSignedIn()) {
+            generalProgressDialog = new ProgressDialog(HomeActivity.this);
+            generalProgressDialog.setMessage(getString(R.string.checking_login));
+            generalProgressDialog.show();
+            DrivesManager.getInstance().autoSignIn(this, signInCallback);
+        }else{
+            int availableDrive = DriveUser.getInstance().getAvailableDrive();
+            if (availableDrive != -1)
+                signInCallback.callback(EventConst.LOGIN_SUCCESS,availableDrive,null);
+            else
+            {
+                //TODO: handle when there is no drive signed in
+            }
+        }
 
 
 
-
-
-        setupNavigationDrawer();
 
 
     }
@@ -286,7 +291,7 @@ public class HomeActivity extends KasperActivity implements
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.inflateMenu(R.menu.nav_menu);
         navigationView.setNavigationItemSelectedListener(this);
-        View header = navigationView.getHeaderView(0);
+        header = navigationView.getHeaderView(0);
         header.setOnClickListener(this);
 
     }
@@ -321,7 +326,7 @@ public class HomeActivity extends KasperActivity implements
             fragmentNavigator.put(id, fragment);
         }
         getSupportActionBar().setTitle(fragment.getFragmentName());
-        DriveWrapper.getInstance(id).resetListFileTask();
+        CloudDriveWrapper.getInstance(id).resetListFileTask();
         topFragment = fragment;
 
         changeFragment(fragment);
@@ -353,7 +358,7 @@ public class HomeActivity extends KasperActivity implements
                 toggle.setDrawerIndicatorEnabled(false);
                 SDriveFolder sdfo = (SDriveFolder) data;
 
-                DriveWrapper.getInstance(topFragment.getDriveType()).addNewListFileTask(sdfo.getId());
+                CloudDriveWrapper.getInstance(topFragment.getDriveType()).addNewListFileTask(sdfo.getId());
                 //Create new fragment
                 topFragment = new FileListFragment.Builder()
                                 .setDriveType(topFragment
@@ -372,8 +377,8 @@ public class HomeActivity extends KasperActivity implements
     }
 
     private void updateNavHeader() {
-        TextView tvname = (TextView) navigationView.findViewById(R.id.tvUserName);
-        CircleImageView civAvatar = (CircleImageView) navigationView.findViewById(R.id.imvAvatarUser);
+        TextView tvname = (TextView) header.findViewById(R.id.tvUserName);
+        CircleImageView civAvatar = (CircleImageView) header.findViewById(R.id.imvAvatarUser);
         tvname.setText(DriveUser.getInstance().getName());
         Picasso.with(this).load(DriveUser.getInstance().getAvatar()).into(civAvatar);
     }
@@ -400,6 +405,7 @@ public class HomeActivity extends KasperActivity implements
                     String type = getContentResolver().getType(uri);
                     SDriveFile sdf = new SDriveFile(new File(path),type);
                     sdf.setCloud_type(DriveType.LOCAL);
+                    sdf.setFolder(topFragment.getFolder());
 
 
                     if (path == null || path.length() == 0)
@@ -436,6 +442,6 @@ public class HomeActivity extends KasperActivity implements
         this.callback(HomeActivity.FINISH,1,null);
         topFragment = getTopFragment();
         getSupportActionBar().setTitle(topFragment.getFragmentName());
-        DriveWrapper.getInstance(topFragment.getDriveType()).popListFileTask();
+        CloudDriveWrapper.getInstance(topFragment.getDriveType()).popListFileTask();
     }
 }

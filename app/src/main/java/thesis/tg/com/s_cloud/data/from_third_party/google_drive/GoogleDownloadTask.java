@@ -27,22 +27,19 @@ import thesis.tg.com.s_cloud.utils.SConnectOutputstream;
 public class GoogleDownloadTask extends DownloadTask {
     Drive driveService;
 
-    public GoogleDownloadTask(Drive driveService) {
+    public GoogleDownloadTask(Drive driveService, int toDriveType) {
         super();
         this.driveService = driveService;
         this.from = DriveType.GOOGLE;
-        this.to = DriveType.LOCAL;
+        this.to = toDriveType;
     }
 
     @Override
     protected void transfer() {
         super.transfer();
-        File root = android.os.Environment.getExternalStorageDirectory();
-        File ckld = new File(root,this.file.getName());
-
         SConnectOutputstream outputStream = null;
         try {
-            FileOutputStream fos = new FileOutputStream(ckld);
+            OutputStream fos = file.getOutputStream(this.to,file.getName());
             outputStream = new SConnectOutputstream(DataUtils.getDataHeader(), fos);
             driveService.files().get(file.getId())
                     .executeMediaAndDownloadTo(outputStream);
