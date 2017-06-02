@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="thesis.tg.com.s_cloud.MainActivity">
+    android:layout_height="match_parent">
 
 
     <include layout="@layout/activity_stateful" />
@@ -17,6 +16,9 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
+        app:itemTextColor="@drawable/text_color_states"
+        app:itemIconTint="@drawable/text_color_states"
+        app:itemBackground="@color/transparent"
         app:headerLayout="@layout/nav_header_navigation_drawer"
         />
 

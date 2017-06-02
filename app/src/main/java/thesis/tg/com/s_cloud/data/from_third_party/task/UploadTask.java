@@ -2,6 +2,9 @@ package thesis.tg.com.s_cloud.data.from_third_party.task;
 
 import android.os.AsyncTask;
 
+import com.dropbox.core.DbxException;
+
+import java.io.IOException;
 import java.io.InputStream;
 
 import thesis.tg.com.s_cloud.entities.SDriveFile;
@@ -19,7 +22,7 @@ public class UploadTask extends TransferTask {
     }
 
     @Override
-    protected void transfer() {
+    protected void transfer() throws IOException, DbxException{
         super.transfer();
     }
 

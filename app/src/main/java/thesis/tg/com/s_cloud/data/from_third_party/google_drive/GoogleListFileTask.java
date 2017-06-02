@@ -2,6 +2,8 @@ package thesis.tg.com.s_cloud.data.from_third_party.google_drive;
 
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
+import android.util.Log;
+
 import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
 import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 
@@ -40,7 +42,6 @@ public class GoogleListFileTask extends FileListingTask{
         if (nextPageToken.compareTo(END_TOKEN) == 0)
             return new ArrayList<>();
         Drive.Files.List tmpList = driveService.files().list()
-                .setPageSize(10)
                 .setFields("nextPageToken, files(id, name, originalFilename, mimeType, size, createdTime, fullFileExtension, capabilities(canListChildren))");
         if (nextPageToken != null && !nextPageToken.isEmpty())
             tmpList = tmpList.setPageToken(nextPageToken);
@@ -74,6 +75,8 @@ public class GoogleListFileTask extends FileListingTask{
             sDriveFile.setFileSize(file.getSize() == null ? -1 : file.getSize());
             sDriveFile.setMimeType(file.getMimeType());
             sDriveFile.setExtension(file.getFullFileExtension());
+
+            Log.d("EXTENSION and MIME:", sDriveFile.getExtension() +"//" + sDriveFile.getMimeType());
             sDriveFile.setFolder(folderId);
             sDriveFile.setCloud_type(DriveType.GOOGLE);
             sDriveFiles.add(sDriveFile);

@@ -15,6 +15,9 @@ buildscript {
 
 allprojects {
     repositories {
+//        maven { url "http://dl.bintray.com/digidotcom/maven" }
+//        maven { url "http://ftp1.digi.com/support/m-repo" }
+//        mavenCentral()
         jcenter()
     }
 }

@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.support.v4.content.ContentResolverCompat;
 import android.webkit.MimeTypeMap;
 
+import com.dropbox.core.DbxException;
 import com.google.api.client.http.AbstractInputStreamContent;
 import com.google.api.client.http.FileContent;
 import com.google.api.services.drive.Drive;
@@ -46,7 +47,7 @@ public class GoogleUploadTask extends UploadTask {
 
 
     @Override
-    protected void transfer() {
+    protected void transfer() throws IOException, DbxException{
         super.transfer();
         DriveContentInputStream dvic = new DriveContentInputStream(
                 file.getMimeType(),
@@ -55,10 +56,10 @@ public class GoogleUploadTask extends UploadTask {
         com.google.api.services.drive.model.File fileCnt = new com.google.api.services.drive.model.File();
 
         //Getname
-        boolean isRoot = file.getFolder() == "";
+        boolean isRoot = file.getFolder().length() == 0;
 
         if (!isRoot){
-            ArrayList<String> a = new ArrayList();
+            ArrayList<String> a = new ArrayList<String>();
             a.add(file.getFolder());
             fileCnt.setParents(a);
         }
@@ -66,13 +67,9 @@ public class GoogleUploadTask extends UploadTask {
         fileCnt.setMimeType(file.getMimeType());
         fileCnt.setOriginalFilename(file.getName());
 
-        try {
-            driveService.files().create(fileCnt,dvic)
-                    .setFields("id, name, originalFilename, mimeType" + (isRoot? "" : ", parents"))
-                    .execute();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        driveService.files().create(fileCnt,dvic)
+                .setFields("id, name, originalFilename, mimeType" + (isRoot? "" : ", parents"))
+                .execute();
     }
 
     @Override

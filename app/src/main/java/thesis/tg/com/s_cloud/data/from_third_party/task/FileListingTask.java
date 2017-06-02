@@ -32,6 +32,7 @@ public class FileListingTask extends SuperObject {
     protected String nextPageToken = "";
 
 
+
     public FileListingTask(String folderId) {
         this.folderId = folderId;
         this.nextPageToken = "";

@@ -1,14 +1,13 @@
 <resources>
-    <string name="colorPrimary">#6dc7e9</string>
-    <string name="colorPrimaryDark">#0277bd</string>
-    <string name="colorAccent">#fbc02d</string>
+    <string name="colorPrimary">#4fc3f7</string>
+    <string name="colorPrimaryDark">#0093c4</string>
+    <string name="colorPrimaryLight">#8bf6ff</string>
 
-    <string name="colorPrimaryLight">#64c1ff</string>
-    <string name="colorSecondary">#64dd17</string>
+    <string name="colorSecondary">#fff176</string>
 
-    <string name="colorSecondaryDark">#1faa00</string>
+    <string name="colorSecondaryDark">#cabf45</string>
 
-    <string name="colorSecondaryLight">#9cff57</string>
+    <string name="colorSecondaryLight">#ffffa8</string>
 
     <string name="colorActiveControl">#36d696</string>
     <string name="primary_text">#e1f5fe</string>
@@ -74,4 +73,10 @@
     <string name="email">Email</string>
     <string name="dbox_app_key">oel3wpyf1o67v0d</string>
     <string name="checking_login">Checking Account Validation</string>
+    <string name="add_file_to_drive">Add a file to this drive</string>
+    <string name="create_new_folder">Create new folder here</string>
+    <string name="example">Sample text</string>
+    <string name="not_connected">Not connected</string>
+    <string name="fix_it">Fix it</string>
+    <string name="connect">Connect</string>
 </resources>

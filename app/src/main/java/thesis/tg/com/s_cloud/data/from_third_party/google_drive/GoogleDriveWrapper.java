@@ -33,10 +33,12 @@ import java.util.ArrayList;
 
 import thesis.tg.com.s_cloud.data.CloudDriveWrapper;
 import thesis.tg.com.s_cloud.entities.DriveUser;
+import thesis.tg.com.s_cloud.framework_components.utils.EventBroker;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
 import thesis.tg.com.s_cloud.utils.DriveType;
 import thesis.tg.com.s_cloud.utils.EventConst;
 
+import static thesis.tg.com.s_cloud.utils.EventConst.LOGIN_FAIL;
 import static thesis.tg.com.s_cloud.utils.EventConst.RESOLVE_CONNECTION_REQUEST_CODE;
 
 /**
@@ -52,7 +54,30 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
     private ArrayList<String> scopes;
     private Context context;
     private int connection_ok = 0;
-    private ArrayList<GoogleListFileTask> glftList;
+    private MyCallBack onConnectedAction;
+    private MyCallBack initCredentialAction = new MyCallBack() {
+        @Override
+        public void callback(String message, int code, Object data) {
+            initCredential();
+            EventBroker.getInstance().publish(EventConst.LOGIN_SUCCESS,DriveType.GOOGLE,null);
+        }
+    };
+
+    private MyCallBack signoutAction = new MyCallBack() {
+        @Override
+        public void callback(String message, int code, Object data) {
+            signOut();
+            EventBroker.getInstance().publish(EventConst.DISCONNECT, DriveType.GOOGLE, null);
+        }
+    };
+
+    public void setOnConnectedAction(MyCallBack callBack){
+        this.onConnectedAction = callBack;
+    }
+
+    public MyCallBack getSignoutAction(){
+        return signoutAction;
+    }
 
 
     private GoogleDriveWrapper(){
@@ -104,17 +129,20 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
             protected String doInBackground(Void... params) {
                 if (result.isSuccess()) {
                     mGoogleApiClient.connect();
+//                    if (1 == 1)
+//                        return LOGIN_FAIL;
                     // Signed in successfully, show authenticated UI.
                     GoogleSignInAccount acct = result.getSignInAccount();
 
                     //TODO: Create User
                     DriveUser user = DriveUser.getInstance();
-                    user.setGoogle_id(acct.getId());
                     if (user.isSignedIn())
                     {
+                        user.setGoogle_id(acct.getId());
                         //TODO: send authtoken to get add drive on server
-                        return EventConst.ADD_DRIVE;
+                        return EventConst.LOGIN_SUCCESS;
                     }
+                    user.setGoogle_id(acct.getId());
 
                     //TODO: send accesstoken to get userid from server
                     user.setName(acct.getDisplayName());
@@ -131,15 +159,7 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
                         }
                     }
                     if (connection_ok == -1) return EventConst.LOGIN_FAIL;
-                    mGoogleCredential = GoogleAccountCredential.usingOAuth2(context, scopes);
-                    mGoogleCredential.setSelectedAccountName(DriveUser.getInstance().getEmail());
-                    HttpTransport transport = AndroidHttp.newCompatibleTransport();
-                    JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
-                    driveService = new com.google.api.services.drive.Drive.Builder(
-                            transport, jsonFactory, mGoogleCredential)
-                            .setApplicationName("S-Cloud")
-                            .build();
-                    addNewListFileTask("root");
+                    initCredential();
                     return EventConst.LOGIN_SUCCESS;
                 }
                 return EventConst.LOGIN_FAIL;
@@ -150,19 +170,41 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
                 super.onPostExecute(aVoid);
                 afterLoginCallback.callback(aVoid, DriveType.GOOGLE,DriveUser.getInstance());
             }
+
+            @Override
+            protected void onCancelled() {
+                super.onCancelled();
+                if (mGoogleCredential == null){
+                    onConnectedAction = initCredentialAction;
+                }
+            }
         }.execute();
 
     }
 
+    private void initCredential(){
+        mGoogleCredential = GoogleAccountCredential.usingOAuth2(context, scopes);
+        mGoogleCredential.setSelectedAccountName(DriveUser.getInstance().getEmail());
+        HttpTransport transport = AndroidHttp.newCompatibleTransport();
+        JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
+        driveService = new com.google.api.services.drive.Drive.Builder(
+                transport, jsonFactory, mGoogleCredential)
+                .setApplicationName("S-Cloud")
+                .build();
+        addNewListFileTask("root");
+    }
+
     public void signOut() {
-        Auth.GoogleSignInApi.signOut(mGoogleApiClient).setResultCallback(
+        Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient).setResultCallback(
                 new ResultCallback<Status>() {
                     @Override
                     public void onResult(Status status) {
                         // ...
-                        mGoogleApiClient.disconnect();
+                        if (status.isSuccess())
+                            return;
                     }
                 });
+        DriveUser.getInstance().setGoogle_id(null);
     }
 
     private void setClient(GoogleApiClient client) {
@@ -184,23 +226,18 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
     @Override
     public void resetListFileTask() {
         super.resetListFileTask();
-        this.glftList = new ArrayList<>();
         addNewListFileTask("root");
     }
 
 
     public void addNewListFileTask(String folderId){
-        if (this.glftList == null)
-            glftList = new ArrayList<>();
+        super.addNewListFileTask(folderId);
         GoogleListFileTask glft = new GoogleListFileTask(driveService,folderId);
         glftList.add(glft);
     }
 
 
 
-    public void popListFileTask(){
-        this.glftList.remove(this.glftList.size()-1);
-    }
 
     @Override
     public void getFilesInTopFolder(boolean isMore, MyCallBack caller) {
@@ -239,6 +276,10 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
 //        Toast.makeText(context, "CONNECTED",Toast.LENGTH_LONG).show();
 
         connection_ok = 1;
+        if (onConnectedAction != null) {
+            onConnectedAction.callback("", 0, null);
+            onConnectedAction = null;
+        }
     }
 
     @Override

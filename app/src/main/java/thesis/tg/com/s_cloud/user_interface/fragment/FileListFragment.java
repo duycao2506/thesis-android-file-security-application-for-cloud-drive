@@ -31,6 +31,7 @@ public class FileListFragment extends RecycleViewFragment {
 
 
     private String folder;
+    private List<SDriveFile> dataList;
 
 
     public enum ViewMode {
@@ -68,13 +69,19 @@ public class FileListFragment extends RecycleViewFragment {
     @Override
     protected void onKasperViewCreate(View parent) {
         super.onKasperViewCreate(parent);
+        if (dataList == null){
+            dataList = new ArrayList<>();
+        }
+        listViewAdapter.setEntities(dataList);
         llm = (LinearLayoutManager) this.listView.getLayoutManager();
         glm = new GridLayoutManager(this.getContext(), 2);
 
         if (vm == ViewMode.GRID) {
             this.listView.setLayoutManager(glm);
+            this.fcva.setViewholder_res(R.layout.view_holder_grid_file);
         } else {
             this.listView.setLayoutManager(llm);
+            this.fcva.setViewholder_res(R.layout.view_holder_list_file);
         }
 
     }
@@ -86,7 +93,10 @@ public class FileListFragment extends RecycleViewFragment {
     }
 
     @Override
-    protected void scrollEvent(RecyclerView recyclerView, int dx, int dy) {
+    protected void scrollDownEvent(RecyclerView recyclerView) {
+
+        ((MyCallBack) getContext()).callback(EventConst.SCROLL_DOWN, 1, null);
+
         if (listViewAdapter.isLoadingmore() || swipeLayout.isRefreshing()) return;
         int totalItemCount, lastVisibleItem, visibleThreshold = 1;
         LinearLayoutManager layoutManager;
@@ -97,6 +107,11 @@ public class FileListFragment extends RecycleViewFragment {
             toListViewLoadingMode();
             loadMore(FileListFragment.this);
         }
+    }
+
+    @Override
+    protected void scrollUpEvent(RecyclerView recyclerView) {
+        ((MyCallBack) getContext()).callback(EventConst.SCROLL_UP, 1, null);
     }
 
     public void changeViewMode(ViewMode vm) {
@@ -148,8 +163,10 @@ public class FileListFragment extends RecycleViewFragment {
             public void callback(String message, int code, Object data) {
                 if (data != null) {
                     List<SDriveFile> tempFileList = (List<SDriveFile>) data;
+                    dataList = tempFileList;
+                    if (listViewAdapter == null) return;
                     listViewAdapter.setEntities(new ArrayList<>());
-                    listViewAdapter.addEntities(tempFileList);
+                    listViewAdapter.addEntities(dataList);
                 } else {
                     if (caller != null)
                         caller.callback(message, code, data);

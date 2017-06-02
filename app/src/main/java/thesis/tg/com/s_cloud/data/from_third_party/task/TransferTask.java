@@ -2,6 +2,10 @@ package thesis.tg.com.s_cloud.data.from_third_party.task;
 
 import android.os.AsyncTask;
 
+import com.dropbox.core.DbxException;
+
+import java.io.IOException;
+
 import thesis.tg.com.s_cloud.entities.SDriveFile;
 import thesis.tg.com.s_cloud.framework_components.entity.SuperObject;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
@@ -26,7 +30,13 @@ public class TransferTask extends SuperObject{
     protected AsyncTask<Void,Void,Void> at = new AsyncTask<Void, Void, Void>(){
         @Override
         protected Void doInBackground(Void...params) {
-            transfer();
+            try {
+                transfer();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (DbxException e) {
+                e.printStackTrace();
+            }
             return null;
         }
 
@@ -41,7 +51,7 @@ public class TransferTask extends SuperObject{
         manager.remove(this);
     }
 
-    protected void transfer() {
+    protected void transfer() throws IOException, DbxException {
 
     }
 

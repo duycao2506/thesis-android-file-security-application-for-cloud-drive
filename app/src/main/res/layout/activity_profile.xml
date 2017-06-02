@@ -23,7 +23,7 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                android:background="?attr/colorPrimary"
+                android:background="@color/transparent"
                 app:popupTheme="@style/AppTheme.PopupOverlay" />
 
             <FrameLayout
@@ -88,8 +88,7 @@
 
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:paddingStart="@dimen/padding_8">
+            android:layout_height="match_parent">
 
             <LinearLayout
                 android:orientation="vertical"
@@ -148,82 +147,41 @@
                     <android.support.v7.widget.AppCompatTextView
                         android:layout_width="wrap_content"
                         android:textStyle="bold"
-                        android:text="Title"
+                        android:text="Drive Services"
                         android:textSize="@dimen/textSize_14"
                         android:layout_height="wrap_content" />
 
-                    <android.support.v7.widget.AppCompatTextView
-                        android:layout_marginTop="@dimen/padding_4"
-                        android:layout_width="wrap_content"
-                        android:text="Content"
-                        android:textSize="@dimen/textSize_18"
-                        android:layout_height="wrap_content" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:dividerPadding="@dimen/padding_3"
+                        >
+
+                        <Button
+                            android:id="@+id/btnConnectGoogle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:drawableLeft="@drawable/ic_gdrive"
+                            android:text="@string/connect"
+                            android:theme="@style/KasperButton" />
+
+                        <Button
+                            android:theme="@style/KasperButton"
+                            android:drawableLeft="@drawable/ic_dbox"
+                            android:layout_weight="1"
+                            android:id="@+id/btnConnectDropbox"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/connect"
+
+                            />
+                    </LinearLayout>
 
                 </LinearLayout>
 
 
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/padding_16">
-                    <android.support.v7.widget.AppCompatTextView
-                        android:layout_width="wrap_content"
-                        android:textStyle="bold"
-                        android:text="Title"
-                        android:textSize="@dimen/textSize_14"
-                        android:layout_height="wrap_content" />
-
-                    <android.support.v7.widget.AppCompatTextView
-                        android:layout_marginTop="@dimen/padding_4"
-                        android:layout_width="wrap_content"
-                        android:text="Content"
-                        android:textSize="@dimen/textSize_18"
-                        android:layout_height="wrap_content" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/padding_16">
-                    <android.support.v7.widget.AppCompatTextView
-                        android:layout_width="wrap_content"
-                        android:textStyle="bold"
-                        android:text="Title"
-                        android:textSize="@dimen/textSize_14"
-                        android:layout_height="wrap_content" />
-
-                    <android.support.v7.widget.AppCompatTextView
-                        android:layout_marginTop="@dimen/padding_4"
-                        android:layout_width="wrap_content"
-                        android:text="Content"
-                        android:textSize="@dimen/textSize_18"
-                        android:layout_height="wrap_content" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/padding_16">
-                    <android.support.v7.widget.AppCompatTextView
-                        android:layout_width="wrap_content"
-                        android:textStyle="bold"
-                        android:text="Title"
-                        android:textSize="@dimen/textSize_14"
-                        android:layout_height="wrap_content" />
-
-                    <android.support.v7.widget.AppCompatTextView
-                        android:layout_marginTop="@dimen/padding_4"
-                        android:layout_width="wrap_content"
-                        android:text="Content"
-                        android:textSize="@dimen/textSize_18"
-                        android:layout_height="wrap_content" />
-
-                </LinearLayout>
 
 
             </LinearLayout>

@@ -16,6 +16,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/fragmentHolder"/>
+
+        <include layout="@layout/floating_button"/>
         <include layout="@layout/loading_layout" android:visibility="gone"/>
         <include layout="@layout/notice_layout" android:visibility="gone"/>
     </FrameLayout>

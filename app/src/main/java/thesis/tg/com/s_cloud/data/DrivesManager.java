@@ -2,6 +2,7 @@ package thesis.tg.com.s_cloud.data;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.util.SparseArray;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
@@ -10,6 +11,7 @@ import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 
 import java.io.File;
+import java.lang.reflect.Array;
 
 import thesis.tg.com.s_cloud.R;
 import thesis.tg.com.s_cloud.data.from_third_party.dropbox.DbxDownloadTask;
@@ -18,21 +20,32 @@ import thesis.tg.com.s_cloud.data.from_third_party.dropbox.DbxUploadTask;
 import thesis.tg.com.s_cloud.data.from_third_party.google_drive.GoogleDownloadTask;
 import thesis.tg.com.s_cloud.data.from_third_party.google_drive.GoogleDriveWrapper;
 import thesis.tg.com.s_cloud.data.from_third_party.google_drive.GoogleUploadTask;
+import thesis.tg.com.s_cloud.entities.DriveUser;
 import thesis.tg.com.s_cloud.entities.SDriveFile;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
 import thesis.tg.com.s_cloud.utils.DriveType;
+import thesis.tg.com.s_cloud.utils.ResourcesUtils;
 
 /**
  * Created by CKLD on 5/12/17.
  */
 
 public class DrivesManager {
-    private int numOfDrives = 3;
-    private DrivesManager(){
 
-    }
 
     private static DrivesManager instance;
+
+    private int numOfDrives = 3;
+    private int[] loggedInDrives ;
+
+
+
+    private DrivesManager(){
+        loggedInDrives = new int[numOfDrives-1];
+        for (int i = 0; i < numOfDrives-1;i++)
+            loggedInDrives[i] = 0;
+    }
+
 
     public static DrivesManager getInstance(){
         if (instance == null)
@@ -45,38 +58,52 @@ public class DrivesManager {
         switch (driveType){
             case DriveType.LOCAL:
                 if (data.getCloud_type() == DriveType.DROPBOX)
-                    new DbxDownloadTask();
-            case DriveType.DROPBOX:
+                    new DbxDownloadTask(DbxDriveWrapper.getInstance().getClient()).start(data);
                 if (data.getCloud_type() == DriveType.GOOGLE)
-                    new GoogleDownloadTask(GoogleDriveWrapper.getInstance().getDriveService(),driveType).start(data);
-                if (data.getCloud_type() == DriveType.LOCAL)
-                    new DbxUploadTask(DbxDriveWrapper.getInstance().getClient());
+                    new GoogleDownloadTask(GoogleDriveWrapper
+                            .getInstance()
+                            .getDriveService(),driveType)
+                            .start(data);
+                break;
+            case DriveType.DROPBOX:
+//                if (data.getCloud_type() == DriveType.GOOGLE)
+//                    new GoogleDownloadTask(GoogleDriveWrapper
+//                            .getInstance()
+//                            .getDriveService(),driveType)
+//                            .start(data);
+//                if (data.getCloud_type() == DriveType.LOCAL)
+                    new DbxUploadTask(DbxDriveWrapper.getInstance().getClient()).start(data);
                 break;
             case DriveType.GOOGLE:
-                new GoogleUploadTask(GoogleDriveWrapper.getInstance().getDriveService()).start(data);
+                new GoogleUploadTask(GoogleDriveWrapper
+                        .getInstance()
+                        .getDriveService())
+                        .start(data);
                 break;
         }
     }
 
     public void autoSignIn(Context context, final MyCallBack caller){
         //Dropbox
-        DbxDriveWrapper.getInstance().signIn(context, caller);
-
-
+        if (!DriveUser.getInstance().isSignedIn(DriveType.DROPBOX))
+            DbxDriveWrapper.getInstance().signIn(context, caller);
 
         //Sign int automatically first
-        final GoogleApiClient gac = GoogleDriveWrapper
-                .getInstance()
-                .googleSignInServiceInit(context);
+        if (!DriveUser.getInstance().isSignedIn(DriveType.GOOGLE)) {
+            GoogleApiClient gac = null;
+            gac =  GoogleDriveWrapper.getInstance().getClient();
+            if (gac == null)
+                 gac = GoogleDriveWrapper.getInstance().googleSignInServiceInit(context);
 
-        OptionalPendingResult<GoogleSignInResult> op = Auth.GoogleSignInApi.silentSignIn(gac);
-        op.setResultCallback(new ResultCallback<GoogleSignInResult>() {
-            @Override
-            public void onResult(@NonNull GoogleSignInResult googleSignInResult) {
-                GoogleDriveWrapper.getInstance()
-                        .handleSignInResult(googleSignInResult, caller);
-            }
-        });
+            OptionalPendingResult<GoogleSignInResult> op = Auth.GoogleSignInApi.silentSignIn(gac);
+            op.setResultCallback(new ResultCallback<GoogleSignInResult>() {
+                @Override
+                public void onResult(@NonNull GoogleSignInResult googleSignInResult) {
+                    GoogleDriveWrapper.getInstance()
+                            .handleSignInResult(googleSignInResult, caller);
+                }
+            });
+        }
     }
 
     public String getDriveName(Context context, int id){
@@ -103,5 +130,28 @@ public class DrivesManager {
         if (!appFolder.exists())
             appFolder.mkdir();
         return appFolder.getPath();
+    }
+
+    public void setSuccessLogin(int driveType){
+        loggedInDrives[ResourcesUtils.getInstance().getIndexByType(driveType)] = 1;
+    }
+
+    public void setFailLogin(int driveType){
+        loggedInDrives[ResourcesUtils.getInstance().getIndexByType(driveType)] = -1;
+    }
+
+    public boolean isTriedLoginAll(){
+        for (int i : loggedInDrives){
+            if (i == 0)
+                return false;
+        }
+        return true;
+    }
+
+
+    public void refreshLoginAttemps() {
+        for (int i = 0 ; i < loggedInDrives.length; i ++){
+            loggedInDrives[i] = 0;
+        }
     }
 }

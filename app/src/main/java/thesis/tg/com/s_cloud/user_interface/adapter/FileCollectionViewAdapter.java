@@ -46,7 +46,7 @@ public class FileCollectionViewAdapter extends KasperRecycleAdapter{
         });
 
         FileViewHolder viewHolder = (FileViewHolder) holder;
-        viewHolder.bindData((SuperObject) this.entities.get(position));
+        viewHolder.bindData( this.entities.get(position));
     }
 
     @Override

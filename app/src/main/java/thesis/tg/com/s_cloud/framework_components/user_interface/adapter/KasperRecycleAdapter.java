@@ -61,7 +61,8 @@ public class KasperRecycleAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-
+        EntityShower es = (EntityShower) holder;
+        es.bindData(entities.get(position));
     }
 
     private int getListSize(){

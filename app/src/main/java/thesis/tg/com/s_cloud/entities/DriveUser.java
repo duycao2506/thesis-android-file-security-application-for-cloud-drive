@@ -56,8 +56,21 @@ public class DriveUser extends SuperObject {
         this.email = email;
     }
 
+    public boolean isSignedIn(int type){
+        switch (type){
+            case DriveType.GOOGLE:
+                return google_id != null && google_id.length() > 0;
+            case DriveType.DROPBOX:
+                return dropbox_id != null && dropbox_id.length() > 0;
+            default:
+                return true;
+        }
+    }
+
     public boolean isSignedIn(){
-        return !(getId() == null);
+        return (getId() != null && getId().length() > 0) ||
+                (google_id != null && google_id.length() > 0) ||
+                (dropbox_id != null && dropbox_id.length() > 0);
     }
 
     public String getAvatar() {
@@ -78,9 +91,9 @@ public class DriveUser extends SuperObject {
     }
 
 
-    public int getAvailableDrive() {
-        if (this.google_id != null ) return DriveType.GOOGLE;
-        if (this.dropbox_id != null) return DriveType.DROPBOX;
+    public int getAvailableDrive(){
+        if (this.google_id != null && this.google_id.length() > 0  ) return DriveType.GOOGLE;
+        if (this.dropbox_id != null && this.dropbox_id.length() > 0) return DriveType.DROPBOX;
         return -1;
     }
 }

@@ -7,5 +7,5 @@ import thesis.tg.com.s_cloud.framework_components.entity.SuperObject;
  */
 
 public interface EntityShower {
-    public void bindData(SuperObject so);
+    public void bindData(Object so);
 }

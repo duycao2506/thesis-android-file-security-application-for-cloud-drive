@@ -20,4 +20,12 @@ public interface EventConst {
     String FINISH_UPLOADING = "finish_upload";
     String FINISH_DOWNLOADING = "finish_download";
     String ADD_DRIVE = "ADD_DRIVE";
+    String BACK_FOLDER = "BACK_FOLDER";
+    String SCROLL_DOWN = "SCROLL_DOWN";
+    String SCROLL_UP = "SCROLL_UP";
+    int PROFILE_OPEN = 30;
+    String RELOGIN_FAIL = "RELOGIN_FAIL";
+    String RELOGIN_SUCCESS = "RELOGIN_SUCCESS";
+    String DISCONNECT = "DISCONNECT";
+    String CONNECT_DRIVE = "CONNECT_DRIVE";
 }

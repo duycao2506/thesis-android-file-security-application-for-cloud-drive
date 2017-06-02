@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="1sp"
-    android:background="@color/gray"
+    android:background="@color/gray_light"
     >
     <LinearLayout
         android:orientation="horizontal"
@@ -11,16 +11,15 @@
         android:layout_height="wrap_content"
         android:background="@color/white"
         >
+
         <ImageView
+            android:id="@+id/ivMain"
             android:layout_width="100sp"
             android:layout_height="100sp"
-            android:src="@drawable/scloud_logo"
-            android:background="@color/gray"
+            android:background="@color/gray_light"
             android:padding="@dimen/margin_20"
             android:scaleType="fitEnd"
-            android:tint="@color/white"
-            android:id="@+id/ivMain"
-            />
+            android:src="@drawable/scloud_logo" />
         <LinearLayout
             android:layout_width="@dimen/drive_signal_thickness"
             android:orientation="vertical"
@@ -56,47 +55,50 @@
             android:padding="@dimen/margin_10"
             android:gravity="center"
             android:layout_weight="1">
+
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:textSize="@dimen/textSize_18"
-                android:lines="2"
-                android:ellipsize="end"
                 android:id="@+id/tvFileTitle"
-                />
-            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:textSize="@dimen/textSize_16"
-                android:text="Title"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:text="@string/example"
+                android:textSize="@dimen/textSize_18" />
+
+            <TextView
                 android:id="@+id/tvInfoFile"
-                />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:text="@string/example"
+                android:textSize="@dimen/textSize_14" />
         </LinearLayout>
 
 
 
-        <ImageView
-            android:layout_width="@dimen/medium_icon_size"
-            android:layout_height="@dimen/medium_icon_size"
-            android:src="@drawable/ic_verified_user_black_24dp"
-            android:layout_gravity="right|center_vertical"
-            android:id="@+id/ivSecured"
-            android:padding="@dimen/padding_5"
-            android:tint="@color/colorPrimaryLight"
-            />
+        <!--<ImageView-->
+            <!--android:layout_width="@dimen/medium_icon_size"-->
+            <!--android:layout_height="@dimen/medium_icon_size"-->
+            <!--android:src="@drawable/ic_verified_user_black_24dp"-->
+            <!--android:layout_gravity="right|center_vertical"-->
+            <!--android:id="@+id/ivSecured"-->
+            <!--android:padding="@dimen/padding_5"-->
+            <!--android:tint="@color/colorPrimaryLight"-->
+            <!--/>-->
 
         <ImageButton
-            android:tint="@color/gray_dark_transparent"
-            android:layout_width="@dimen/medium_icon_size"
-            android:layout_height="@dimen/medium_icon_size"
-            android:layout_gravity="right|center_vertical"
-            android:padding="@dimen/padding_5"
-            android:background="@null"
             android:id="@+id/btnFileMenu"
+            android:layout_width="@dimen/small_icon_size"
+            android:layout_height="@dimen/big_icon_size"
+            android:scaleType="centerCrop"
+            android:layout_gravity="right|center_vertical"
+            android:background="@null"
             android:src="@drawable/ic_more_vert_black_24dp"
-            />
+            android:tint="@color/gray"
+            android:layout_margin="@dimen/padding_8"/>
 
 
     </LinearLayout>
