@@ -92,7 +92,7 @@ public class DrivesManager {
         if (!DriveUser.getInstance().isSignedIn(DriveType.GOOGLE)) {
             GoogleApiClient gac = null;
             gac =  GoogleDriveWrapper.getInstance().getClient();
-            if (gac == null)
+            if (gac == null || gac.getContext() != context)
                  gac = GoogleDriveWrapper.getInstance().googleSignInServiceInit(context);
 
             OptionalPendingResult<GoogleSignInResult> op = Auth.GoogleSignInApi.silentSignIn(gac);

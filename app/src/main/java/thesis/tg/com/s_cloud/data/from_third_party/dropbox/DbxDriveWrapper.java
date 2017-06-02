@@ -57,14 +57,15 @@ public class DbxDriveWrapper extends CloudDriveWrapper {
                         DriveUser user = DriveUser.getInstance();
                         if (user.isSignedIn()){
                             user.setDropbox_id(fa.getAccountId());
+                            user.setDropboxEmail(fa.getEmail());
                             caller.callback(EventConst.ADD_DRIVE,DriveType.DROPBOX, null);
                             //TODO: send accesstoken to add drive on server
                             resetListFileTask();
                             return EventConst.LOGIN_SUCCESS;
                         }
-                        user.setDropbox_id(fa.getAccountId());
+
                         //TODO: send accesstoken to get info from server
-                        user.setEmail(fa.getEmail());
+                        user.setDropbox_id(fa.getAccountId());
                         user.setName(fa.getName().getDisplayName());
                         user.setAvatarLink(fa.getProfilePhotoUrl());
                         user.setCountry(fa.getCountry());

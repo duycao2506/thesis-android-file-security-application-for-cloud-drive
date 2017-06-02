@@ -18,6 +18,8 @@ public class DriveUser extends SuperObject {
     private String country;
     private String phone;
     private String address;
+    private String google_email;
+    private String dbx_email;
 
 
     public String getDropbox_id() {
@@ -52,8 +54,36 @@ public class DriveUser extends SuperObject {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public String getAvatarLink() {
+        return avatarLink;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public String getDbx_email() {
+        return dbx_email;
+    }
+
+    public String getGoogle_email() {
+        return google_email;
+    }
+
+    public void setGoogleEmail(String email) {
+        this.google_email = email;
+    }
+
+    public void setDropboxEmail(String email){
+        this.dbx_email = email;
     }
 
     public boolean isSignedIn(int type){

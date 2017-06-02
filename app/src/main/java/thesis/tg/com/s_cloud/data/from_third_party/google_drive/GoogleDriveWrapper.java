@@ -139,15 +139,17 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
                     if (user.isSignedIn())
                     {
                         user.setGoogle_id(acct.getId());
+                        user.setGoogleEmail(acct.getEmail());
+                        initCredential();
                         //TODO: send authtoken to get add drive on server
                         return EventConst.LOGIN_SUCCESS;
                     }
                     user.setGoogle_id(acct.getId());
+                    user.setGoogleEmail(acct.getEmail());
 
                     //TODO: send accesstoken to get userid from server
                     user.setName(acct.getDisplayName());
                     user.setId(acct.getId());
-                    user.setEmail(acct.getEmail());
                     user.setAvatar(acct.getPhotoUrl());
 
                     //wait until connection is established
@@ -184,7 +186,7 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
 
     private void initCredential(){
         mGoogleCredential = GoogleAccountCredential.usingOAuth2(context, scopes);
-        mGoogleCredential.setSelectedAccountName(DriveUser.getInstance().getEmail());
+        mGoogleCredential.setSelectedAccountName(DriveUser.getInstance().getGoogle_email());
         HttpTransport transport = AndroidHttp.newCompatibleTransport();
         JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
         driveService = new com.google.api.services.drive.Drive.Builder(
@@ -201,7 +203,9 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
                     public void onResult(Status status) {
                         // ...
                         if (status.isSuccess())
-                            return;
+                            Log.d("LOG_OT","Success");
+                        else
+                            Log.d("LOG_OT","FAIL");
                     }
                 });
         DriveUser.getInstance().setGoogle_id(null);
