@@ -21,7 +21,9 @@ import thesis.tg.com.s_cloud.entities.SDriveFile;
 import thesis.tg.com.s_cloud.entities.SDriveFolder;
 import thesis.tg.com.s_cloud.framework_components.entity.SuperObject;
 import thesis.tg.com.s_cloud.framework_components.user_interface.adapter.EntityShower;
+import thesis.tg.com.s_cloud.utils.DataUtils;
 import thesis.tg.com.s_cloud.utils.DriveType;
+import thesis.tg.com.s_cloud.utils.ResourcesUtils;
 import thesis.tg.com.s_cloud.utils.UiUtils;
 
 /**
@@ -45,38 +47,30 @@ public class FileViewHolder extends RecyclerView.ViewHolder implements EntitySho
         date = (TextView) itemView.findViewById(R.id.tvInfoFile);
         btnMenu = (ImageButton) itemView.findViewById(R.id.btnFileMenu);
         thumbnail = (ImageView) itemView.findViewById(R.id.ivThumbnail);
+        imgDrive1 = (ImageView) itemView.findViewById(R.id.ivLocalDrive);
+        imgDrive2 = (ImageView) itemView.findViewById(R.id.ivGoogleDrive);
+        imgDrive3 = (ImageView) itemView.findViewById(R.id.ivDrive3);
 
     }
 
     @Override
-    public void bindData(final SuperObject so) {
+    public void bindData(final Object so) {
 
         boolean isFolder = so instanceof SDriveFolder;
-        imgMain.setImageResource(isFolder ? R.drawable.ic_folder_white_24dp : R.drawable.ic_insert_drive_file_white_24dp);
-        imgMain.setBackgroundColor(
-                Color.parseColor(
-                        context
-                                .getString(
-                                        isFolder ?
-                                                R.string.divider
-                                                : R.string.gray_light)));
+        int imgBackColor = ResourcesUtils.getInstance().parseFileTypeColor(context,isFolder);
+        imgMain.setImageResource(ResourcesUtils.getInstance().getFileIconRes((SDriveFile) so));
+        imgMain.setBackgroundColor(imgBackColor);
         final SDriveFile sdf = (SDriveFile) so;
 
         name.setText(sdf.getName());
-        if (res == R.layout.view_holder_list_file) {
-            date.setText(sdf.getCreatedDate());
-        }
 
-        if (res == R.layout.view_holder_grid_file) {
-            thumbnail.setBackgroundColor(
-                    Color.parseColor(
+        //Folder or File Distringuish
+        int visibility = isFolder ? View.GONE: View.VISIBLE;
+        btnMenu.setVisibility(visibility);
+        imgDrive1.setVisibility(visibility);
+        imgDrive2.setVisibility(visibility);
+        imgDrive3.setVisibility(visibility);
 
-                            context
-                                    .getString(
-                                            isFolder ?
-                                                    R.string.divider
-                                                    : R.string.gray_light)));
-        }
 
         btnMenu.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,6 +78,16 @@ public class FileViewHolder extends RecyclerView.ViewHolder implements EntitySho
                 UiUtils.buildFileMenu(sdf, context);
             }
         });
+
+        //Resource Distinguish
+        if (res == R.layout.view_holder_list_file ) {
+            date.setText(isFolder? "" : DataUtils.fileSizeToString(sdf.getFileSize()));
+        }
+
+        if (res == R.layout.view_holder_grid_file) {
+            thumbnail.setBackgroundColor(imgBackColor);
+            imgMain.setBackgroundColor(Color.parseColor(context.getString(R.string.transparent)));
+        }
 
     }
 

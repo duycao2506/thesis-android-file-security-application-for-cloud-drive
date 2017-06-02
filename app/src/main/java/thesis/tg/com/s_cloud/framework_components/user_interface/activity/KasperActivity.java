@@ -54,12 +54,14 @@ public class KasperActivity extends AppCompatActivity implements MyCallBack {
      * Replace by brand new fragment
      * @param newFragment
      */
-    protected void changeFragment(Fragment newFragment) {
+    protected void changeFragment(int placeholderId, Fragment newFragment,String stackState) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragmentHolder, newFragment,"ROOT");
-        for (int i = 0; i < getSupportFragmentManager().getBackStackEntryCount(); i++)
-            getSupportFragmentManager().popBackStackImmediate();
-        transaction.addToBackStack("ROOT");
+        transaction.replace(placeholderId, newFragment,stackState);
+        if (stackState != null) {
+            for (int i = 0; i < getSupportFragmentManager().getBackStackEntryCount(); i++)
+                getSupportFragmentManager().popBackStackImmediate();
+            transaction.addToBackStack(stackState);
+        }
         transaction.commit();
     }
 
@@ -68,10 +70,10 @@ public class KasperActivity extends AppCompatActivity implements MyCallBack {
      * @param newFragment
      * @param name
      */
-    protected void addFragmentToStack(Fragment newFragment, String name){
+    protected void addFragmentToStack(int placeholderId, Fragment newFragment, String name){
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         String tag = name + getSupportFragmentManager().getBackStackEntryCount();
-        transaction.replace(R.id.fragmentHolder, newFragment, tag);
+        transaction.replace(placeholderId, newFragment, tag);
         transaction.addToBackStack(tag);
         transaction.commit();
     }

@@ -12,6 +12,8 @@ import java.io.OutputStream;
 
 import thesis.tg.com.s_cloud.data.DrivesManager;
 import thesis.tg.com.s_cloud.data.from_third_party.dropbox.DbxDriveWrapper;
+import thesis.tg.com.s_cloud.data.from_third_party.google_drive.GoogleDownloadTask;
+import thesis.tg.com.s_cloud.data.from_third_party.google_drive.GoogleDriveWrapper;
 import thesis.tg.com.s_cloud.framework_components.entity.SuperObject;
 import thesis.tg.com.s_cloud.utils.DriveType;
 
@@ -120,26 +122,35 @@ public class SDriveFile extends SuperObject {
     }
 
     public InputStream getInputstream(){
+        InputStream is = null;
         switch (cloud_type){
             case DriveType.DROPBOX:
-                InputStream is = null;
                 try {
-                    is =  DbxDriveWrapper.getInstance().getClient().files().download(getId()).getInputStream();
+                    is =  DbxDriveWrapper.getInstance().getClient().files().download(getId())
+                            .getInputStream();
                 } catch (DbxException e) {
                     e.printStackTrace();
                 }
-                return is;
+                break;
             case DriveType.LOCAL:
-                FileInputStream fis = null;
                 try {
-                    fis = new FileInputStream(getLink());
+                    is = new FileInputStream(getLink());
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
-                return fis;
+                break;
+            case DriveType.GOOGLE:
+                try{
+                    is = GoogleDriveWrapper.getInstance().getDriveService().files().get(this.getId())
+                            .executeMediaAsInputStream();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
             default:
-                return null;
+                break;
         }
+        return is;
     }
 
     public OutputStream getOutputStream(int driveType, String toPath){

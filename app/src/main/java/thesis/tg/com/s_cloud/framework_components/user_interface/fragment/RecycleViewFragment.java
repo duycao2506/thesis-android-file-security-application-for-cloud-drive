@@ -55,19 +55,36 @@ public class RecycleViewFragment extends KasperFragment implements OnRefreshList
         listView.setLayoutManager(layoutManager);
         listView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
+            int dy;
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                Log.d("DY", String.valueOf(dy));
-                if (dy <= 4) return;
-                scrollEvent(recyclerView, dx, dy);
+                this.dy = dy;
+            }
+
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState == RecyclerView.SCROLL_STATE_IDLE){
+                    if (dy < 0)
+                        scrollUpEvent(recyclerView);
+                    else if (dy > 0)
+                        scrollDownEvent(recyclerView);
+                }
+
             }
         });
     }
 
-    protected void scrollEvent(RecyclerView recyclerView, int dx, int dy) {
+    protected void scrollUpEvent(RecyclerView recyclerView) {
 
     }
+
+    protected void scrollDownEvent(RecyclerView recyclerView) {
+
+    }
+
+
 
 
     protected void toListViewLoadingMode() {

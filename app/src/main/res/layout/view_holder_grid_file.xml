@@ -24,22 +24,21 @@
                 android:layout_width="@dimen/news_avatar"
                 android:layout_height="@dimen/news_avatar"
                 android:layout_gravity="center"
-                android:background="@color/gray"
+                android:background="@color/transparent"
                 android:scaleType="fitEnd"
-                android:tint="@color/white"
                 android:id="@+id/ivMain"
                 />
 
 
-            <ImageView
-                android:layout_width="@dimen/small_icon_size"
-                android:layout_height="@dimen/small_icon_size"
-                android:src="@drawable/ic_verified_user_black_24dp"
-                android:layout_gravity="right|top"
-                android:id="@+id/ivSecured"
-                android:layout_margin="@dimen/margin_10"
-                android:tint="@color/colorPrimaryLight"
-                />
+            <!--<ImageView-->
+                <!--android:layout_width="@dimen/small_icon_size"-->
+                <!--android:layout_height="@dimen/small_icon_size"-->
+                <!--android:src="@drawable/ic_verified_user_black_24dp"-->
+                <!--android:layout_gravity="right|top"-->
+                <!--android:id="@+id/ivSecured"-->
+                <!--android:layout_margin="@dimen/margin_10"-->
+                <!--android:tint="@color/colorPrimaryLight"-->
+                <!--/>-->
         </FrameLayout>
 
         <LinearLayout
@@ -73,7 +72,7 @@
             android:layout_width="match_parent"
             android:orientation="horizontal"
             android:layout_height="@dimen/file_gridview_title_height"
-            android:padding="@dimen/margin_10">
+            android:paddingLeft="@dimen/margin_10">
             <TextView
                 android:layout_weight="1"
                 android:layout_width="match_parent"
@@ -81,17 +80,18 @@
                 android:maxLines="1"
                 android:ellipsize="end"
                 android:layout_gravity="center_vertical"
-                android:text="Title"
+                android:text="@string/example"
                 android:id="@+id/tvFileTitle"
                 />
 
             <ImageButton
-                android:tint="@color/gray_dark_transparent"
-                android:layout_width="@dimen/medium_icon_size"
-                android:layout_height="@dimen/medium_icon_size"
+                android:tint="@color/gray"
+                android:layout_width="@dimen/small_icon_size"
+                android:layout_height="@dimen/margin_40"
+                android:scaleType="centerCrop"
                 android:layout_gravity="right|center_vertical"
-                android:scaleType="fitXY"
                 android:padding="@dimen/padding_5"
+                android:layout_marginRight="@dimen/padding_5"
                 android:background="@null"
                 android:id="@+id/btnFileMenu"
                 android:src="@drawable/ic_more_vert_black_24dp"

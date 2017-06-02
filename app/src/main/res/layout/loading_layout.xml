@@ -13,6 +13,7 @@
             android:id="@+id/imageView"
             android:layout_width="wrap_content"
             android:layout_height="@dimen/item_height"
+            android:tint="@color/gray_light"
             android:layout_gravity="center"
             android:layout_marginTop="@dimen/margin_40"
             android:src="@drawable/scloud_logo"
@@ -22,8 +23,8 @@
             android:layout_width="wrap_content"
             android:layout_marginTop="@dimen/margin_20"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            style="@style/Base.Widget.AppCompat.ProgressBar"/>
+            android:theme="@style/gray_accent_progressbar"
+            android:layout_gravity="center"/>
     </LinearLayout>
 
 </FrameLayout>

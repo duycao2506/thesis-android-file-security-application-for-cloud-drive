@@ -2,6 +2,7 @@ package thesis.tg.com.s_cloud.data.from_third_party.google_drive;
 
 import android.os.AsyncTask;
 
+import com.dropbox.core.DbxException;
 import com.google.api.services.drive.Drive;
 
 import java.io.ByteArrayOutputStream;
@@ -9,6 +10,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import thesis.tg.com.s_cloud.data.from_third_party.task.DownloadTask;
@@ -35,17 +37,22 @@ public class GoogleDownloadTask extends DownloadTask {
     }
 
     @Override
-    protected void transfer() {
+    protected void transfer() throws IOException, DbxException {
         super.transfer();
         SConnectOutputstream outputStream = null;
-        try {
-            OutputStream fos = file.getOutputStream(this.to,file.getName());
-            outputStream = new SConnectOutputstream(DataUtils.getDataHeader(), fos);
-            driveService.files().get(file.getId())
-                    .executeMediaAndDownloadTo(outputStream);
-        } catch (IOException e) {
-            e.printStackTrace();
+
+        OutputStream fos = file.getOutputStream(this.to,file.getName());
+        outputStream = new SConnectOutputstream(DataUtils.getDataHeader(), fos);
+        InputStream is = driveService.files().get(file.getId())
+                .executeMediaAsInputStream();
+        byte[] buffer = new byte[2048];
+        int numRead = 0;
+        while ((numRead = is.read(buffer,0,2048)) >= 0) {
+            outputStream.write(buffer, 0, numRead);
         }
+        is.close();
+        outputStream.close();
+
     }
 
     @Override

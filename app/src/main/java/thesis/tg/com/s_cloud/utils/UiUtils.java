@@ -1,16 +1,22 @@
 package thesis.tg.com.s_cloud.utils;
 
+import android.animation.Animator;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.github.rubensousa.bottomsheetbuilder.BottomSheetBuilder;
 import com.github.rubensousa.bottomsheetbuilder.BottomSheetMenuDialog;
 import com.github.rubensousa.bottomsheetbuilder.adapter.BottomSheetItemClickListener;
@@ -29,8 +35,38 @@ import static thesis.tg.com.s_cloud.utils.EventConst.LOGIN_CANCEL_RESULT_CODE;
 
 public class UiUtils {
 
+    public static int TIME_ANIMATE_STANDARD = 800;
+
+
+    public static ProgressDialog getDefaultProgressDialog(Context context, boolean cancellable, String string){
+        ProgressDialog pd = new ProgressDialog(context,R.style.gray_accent_progressdialog);
+        pd.setIndeterminate(true);
+        pd.setMessage(string);
+        pd.setCancelable(cancellable);
+        return pd;
+    }
+
+    public static void OpeningAnimate(final View view, Techniques techniques, int time){
+        YoYo.with(techniques).duration(time)
+                .onStart(new YoYo.AnimatorCallback() {
+                    @Override
+                    public void call(Animator animator) {
+                        view.setVisibility(View.VISIBLE);
+                    }
+                }).playOn(view);
+    }
+    public static void ClosingAnimate(final View view, Techniques techniques, int time){
+        YoYo.with(techniques).duration(time)
+                .onEnd(new YoYo.AnimatorCallback() {
+                    @Override
+                    public void call(Animator animator) {
+                        view.setVisibility(View.GONE);
+                    }
+                }).playOn(view);
+    }
+
     public static void showExitAlertDialog(final Activity context, final int resultcode){
-        AlertDialog.Builder ab = new AlertDialog.Builder(context);
+        AlertDialog.Builder ab = new AlertDialog.Builder(context, R.style.KasperAlertDialog);
         ab.setTitle(R.string.exit_app_tit);
         ab.setMessage(R.string.ext_app_mess);
         ab.setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
@@ -81,35 +117,27 @@ public class UiUtils {
     }
 
     public static void buildDriveMenu(final SDriveFile data, final Context context, final boolean isSync) {
-        BottomSheetMenuDialog dialog = new BottomSheetBuilder(context, R.style.AppTheme_BottomSheetDialog)
+        final ResourcesUtils resrcMnger = ResourcesUtils.getInstance();
+        BottomSheetBuilder bsb = new BottomSheetBuilder(context, R.style.AppTheme_BottomSheetDialog)
                 .setMode(BottomSheetBuilder.MODE_LIST)
                 .addTitleItem(isSync ? R.string.sync_with : R.string.upload)
                 .setTitleTextColorResource(R.color.gray_dark_transparent)
-                .addItem(R.id.gdrive,R.string.g_drive,R.drawable.ic_gdrive)
-                .addItem(R.id.dbox,R.string.dbox,R.drawable.ic_dbox)
-                .addItem(R.id.local,R.string.local_storage,R.drawable.ic_localstorage)
                 .setItemClickListener(new BottomSheetItemClickListener() {
                     @Override
                     public void onBottomSheetItemClick(MenuItem item) {
-                        switch (item.getItemId()){
-                            case R.id.gdrive:
-                                Toast.makeText(context,R.string.g_drive,Toast.LENGTH_SHORT).show();
-                                DrivesManager.getInstance().transferDataTo(DriveType.GOOGLE,data,isSync);
-                                break;
-                            case R.id.dbox:
-                                Toast.makeText(context,R.string.dbox,Toast.LENGTH_SHORT).show();
-                                DrivesManager.getInstance().transferDataTo(DriveType.DROPBOX,data,isSync);
-                                break;
-                            case R.id.local:
-                                DrivesManager.getInstance().transferDataTo(DriveType.LOCAL,data,isSync);
-                                Toast.makeText(context,R.string.local_storage,Toast.LENGTH_SHORT).show();
-                                break;
-                            default:
-                                break;
-                        }
+                        Toast.makeText(context,resrcMnger.getStringId(item.getItemId()),Toast.LENGTH_SHORT).show();
+                        DrivesManager.getInstance().transferDataTo(item.getItemId(),data,isSync);
                     }
-                })
-                .createDialog();
+                });
+
+        for (int i = 0; i < DrivesManager.getInstance().getNumDrive(); i++){
+            if (data.getCloud_type()==resrcMnger.getTypeByIndex(i)) continue;
+            int type = resrcMnger.getTypeByIndex(i);
+            bsb = bsb.addItem(type,resrcMnger.getStringId(type), resrcMnger.getDriveIconId(type));
+        }
+
+
+        BottomSheetMenuDialog dialog = bsb.createDialog();
         dialog.setTitle(context.getString(R.string.which_drive));
         dialog.show();
     }

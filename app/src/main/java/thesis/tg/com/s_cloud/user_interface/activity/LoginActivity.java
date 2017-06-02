@@ -1,28 +1,36 @@
 package thesis.tg.com.s_cloud.user_interface.activity;
 
+import android.animation.Animator;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 
 import thesis.tg.com.s_cloud.R;
+import thesis.tg.com.s_cloud.data.from_third_party.dropbox.DbxDriveWrapper;
 import thesis.tg.com.s_cloud.data.from_third_party.google_drive.GoogleDriveWrapper;
 import thesis.tg.com.s_cloud.utils.DriveType;
 import thesis.tg.com.s_cloud.utils.EventConst;
 import thesis.tg.com.s_cloud.utils.DataUtils;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
 import thesis.tg.com.s_cloud.utils.UiUtils;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import static thesis.tg.com.s_cloud.utils.EventConst.LOGIN_CANCEL_RESULT_CODE;
 import static thesis.tg.com.s_cloud.utils.EventConst.LOGIN_SUCCESS;
@@ -31,6 +39,7 @@ import static thesis.tg.com.s_cloud.utils.EventConst.RESOLVE_CONNECTION_REQUEST_
 public class LoginActivity extends AppCompatActivity implements  View.OnClickListener, MyCallBack{
 
     Button btnLogin, btnDropbox, btnGoogle;
+    EditText edtusername, edtpassword;
     private GoogleApiClient mGoogleApiClient;
 //
     GoogleDriveWrapper gdwrapper;
@@ -84,16 +93,10 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
         super.onResume();
         String token = com.dropbox.core.android.Auth.getOAuth2Token();
         if (token != null){
+            DbxDriveWrapper.getInstance().saveAccToken(this, token);
             this.callback(LOGIN_SUCCESS,DriveType.DROPBOX,null);
         }
     }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-//        mGoogleApiClient.connect();
-    }
-
 
 
     private void animate() {
@@ -126,6 +129,35 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
         ivCloud6.startAnimation(anim4);
         ivCloud5.startAnimation(anim5);
         ivCloud6.startAnimation(anim6);
+
+        new AsyncTask<Void,Void,Void>(){
+            @Override
+            protected Void doInBackground(Void... params) {
+                //DataUtils.waitFor(200,LoginActivity.this,null);
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                UiUtils.OpeningAnimate(edtusername,Techniques.FadeInLeft, UiUtils.TIME_ANIMATE_STANDARD);
+                UiUtils.OpeningAnimate(edtpassword,Techniques.FadeInRight, UiUtils.TIME_ANIMATE_STANDARD);
+                UiUtils.OpeningAnimate(btnLogin,Techniques.FadeIn, UiUtils.TIME_ANIMATE_STANDARD);
+                UiUtils.OpeningAnimate(btnDropbox,Techniques.FadeIn, UiUtils.TIME_ANIMATE_STANDARD);
+                UiUtils.OpeningAnimate(btnGoogle,Techniques.FadeIn, UiUtils.TIME_ANIMATE_STANDARD);
+
+
+            }
+        }.execute();
+
+
+
+
     }
 
     private void controlInit() {
@@ -135,6 +167,8 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
         btnGoogle.setOnClickListener(this);
         this.btnDropbox = (Button) findViewById(R.id.btnfacebook);
         btnDropbox.setOnClickListener(this);
+        this.edtusername = (EditText) findViewById(R.id.edtUsr);
+        this.edtpassword = (EditText) findViewById(R.id.edtPassword);
     }
 
 
@@ -213,5 +247,10 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
     @Override
     public void onBackPressed() {
         UiUtils.showExitAlertDialog(this,LOGIN_CANCEL_RESULT_CODE);
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 }

@@ -13,6 +13,7 @@ import android.provider.MediaStore;
 
 import java.net.URISyntaxException;
 
+import thesis.tg.com.s_cloud.R;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
 
 /**
@@ -29,6 +30,9 @@ public class DataUtils {
         bytes[3] = 0;
         return  (bytes);
     }
+
+
+
 
     public static void waitFor(final long mls, final Context context, final MyCallBack handler){
         new AsyncTask<Void, Void, Void>(){
@@ -183,6 +187,18 @@ public class DataUtils {
      */
     public static boolean isGooglePhotosUri(Uri uri) {
         return "com.google.android.apps.photos.content".equals(uri.getAuthority());
+    }
+
+    public static String fileSizeToString(long fileSize) {
+        long oneotwofour = 1024;
+        String[] units = {"Bytes","KB","MB","GB"};
+        long s = fileSize;
+        int i = 0;
+        for (; i < 4 && s > 1024;i++){
+            s = s/oneotwofour;
+        }
+        return String.valueOf(s) + " " + units[i];
+
     }
 }
 

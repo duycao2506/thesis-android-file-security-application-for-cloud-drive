@@ -1,7 +1,11 @@
 package thesis.tg.com.s_cloud.data.from_third_party.dropbox;
 
+import android.util.Log;
+
 import com.dropbox.core.DbxWebAuth;
 import com.dropbox.core.v2.DbxClientV2;
+import com.dropbox.core.v2.files.FileMetadata;
+import com.dropbox.core.v2.files.FolderMetadata;
 import com.dropbox.core.v2.files.ListFolderResult;
 import com.dropbox.core.v2.files.Metadata;
 
@@ -11,7 +15,9 @@ import java.util.List;
 
 import thesis.tg.com.s_cloud.data.from_third_party.task.FileListingTask;
 import thesis.tg.com.s_cloud.entities.SDriveFile;
+import thesis.tg.com.s_cloud.entities.SDriveFolder;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
+import thesis.tg.com.s_cloud.utils.DriveType;
 
 /**
  * Created by admin on 5/21/17.
@@ -37,7 +43,44 @@ public class DbxFilelistTask extends FileListingTask{
 
     @Override
     public ArrayList<SDriveFile> toSDriveFile(List driveFiles) {
-        return super.toSDriveFile(driveFiles);
+        ArrayList<SDriveFile> sDriveFiles = new ArrayList<>();
+        for (Object obj : driveFiles){
+            Metadata md = (Metadata) obj;
+            FileMetadata fmd = null;
+            FolderMetadata fomd =  null;
+            SDriveFile sdf = null;
+            if (md instanceof FileMetadata) {
+                fmd = (FileMetadata) md;
+                sdf = new SDriveFile();
+                sdf.setId(fmd.getPathDisplay());
+                sdf.setName(fmd.getName());
+                sdf.setCreatedDate(fmd.getClientModified().toString());
+                sdf.setFileSize(fmd.getSize());
+                String[] tokens = fmd.getName().split("[/\\.]");
+                String ext = tokens[tokens.length-1];
+                sdf.setExtension(ext);
+            }
+            else if (md instanceof FolderMetadata) {
+                fomd = (FolderMetadata) md;
+                sdf = new SDriveFolder();
+                sdf.setName(fomd.getName());
+                sdf.setMimeType("folder");
+                sdf.setId(fomd.getPathDisplay());
+                sdf.setExtension("");
+            }
+
+            sdf.setFolder(folderId);
+            sdf.setCloud_type(DriveType.DROPBOX);
+            sDriveFiles.add(sdf);
+
+            //Logger
+            Log.d("ID", md.getPathDisplay()+" & "+md.getPathLower() + md.getName());
+            if (fmd == null)
+                Log.d("FOLDER", fomd.getId());
+            else
+                Log.d("FILE ME",fmd.getId());
+        }
+        return sDriveFiles;
     }
 
     @Override
