@@ -82,8 +82,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 if (edited) {
                     setResult(EventConst.LOGIN_SUCCESS_RESULT_CODE);
                     DrivesManager.getInstance().refreshLoginAttemps();
-                    DriveUser.getInstance().setGoogle_id("");
-                    DriveUser.getInstance().setDropbox_id("");
                 }
                 if (!btnGoogle.isActivated()) {
                     gdw.setOnConnectedAction(gdw.getSignoutAction());
@@ -99,11 +97,10 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 if (edited) {
                     setResult(EventConst.LOGIN_SUCCESS_RESULT_CODE);
                     DrivesManager.getInstance().refreshLoginAttemps();
-                    DriveUser.getInstance().setGoogle_id("");
-                    DriveUser.getInstance().setDropbox_id("");
                 }
                 if (!btnDropbox.isActivated()) {
                     ddw.signOut();
+                    ddw.saveAccToken(this, "");
                     btnDropbox.setActivated(true);
                 }
                 else {

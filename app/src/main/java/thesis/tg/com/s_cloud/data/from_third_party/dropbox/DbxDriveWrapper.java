@@ -39,7 +39,7 @@ public class DbxDriveWrapper extends CloudDriveWrapper {
 
     public void signIn(final Context context, final MyCallBack caller) {
         final String accessToken = getAccessToken(context); //generate Access Token
-        if (accessToken != null) {
+        if (accessToken != null && accessToken.length() > 0) {
             new AsyncTask<Void, Void, String>(){
                 @Override
                 protected String doInBackground(Void... params) {
