@@ -1,19 +1,17 @@
 package thesis.tg.com.s_cloud.data.from_third_party.dropbox;
 
 import com.dropbox.core.DbxException;
-import com.dropbox.core.DbxWebAuth;
 import com.dropbox.core.v2.DbxClientV2;
-import com.dropbox.core.v2.files.UploadSessionCursor;
 import com.dropbox.core.v2.files.UploadUploader;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.SequenceInputStream;
 
 import thesis.tg.com.s_cloud.data.from_third_party.task.UploadTask;
 import thesis.tg.com.s_cloud.entities.SDriveFile;
+import thesis.tg.com.s_cloud.framework_components.BaseApplication;
 import thesis.tg.com.s_cloud.utils.DataUtils;
 import thesis.tg.com.s_cloud.utils.DriveType;
 import thesis.tg.com.s_cloud.utils.SConnectInputStream;
@@ -25,20 +23,21 @@ import thesis.tg.com.s_cloud.utils.SConnectInputStream;
 public class DbxUploadTask extends UploadTask {
     DbxClientV2 dbxClientV2;
 
-    public DbxUploadTask(DbxClientV2 client) {
-        super();
+    public DbxUploadTask(DbxClientV2 client, BaseApplication ba) {
+        super(ba);
         this.dbxClientV2 = client;
     }
 
     @Override
     protected void transfer() throws IOException, DbxException {
         super.transfer();
-        UploadUploader uu = dbxClientV2.files().upload(file.getFolder()+"/"+file.getName());
+        //TODO: MORE is choosing folder
+        UploadUploader uu = dbxClientV2.files().upload(file.getCloud_type() == DriveType.LOCAL_STORAGE? file.getFolder() : "" +"/"+file.getName());
         OutputStream os = uu.getOutputStream();
         SequenceInputStream inputStream =
                 new SequenceInputStream(new ByteArrayInputStream(
                         DataUtils.getDataHeader()),
-                        new SConnectInputStream(file.getInputstream()));
+                        new SConnectInputStream(file.getInputstream(ba)));
         byte[] buffer = new byte[2048];
         int numRead = 0;
         while ((numRead = inputStream.read(buffer)) >= 0) {
@@ -51,8 +50,8 @@ public class DbxUploadTask extends UploadTask {
     }
 
     @Override
-    protected void afterTransfer() {
-        super.afterTransfer();
+    protected void afterTransfer(Boolean aVoid) {
+        super.afterTransfer(aVoid);
     }
 
     @Override

@@ -1,9 +1,11 @@
 package thesis.tg.com.s_cloud.entities;
 
 import android.net.Uri;
+import android.util.SparseArray;
 
 import thesis.tg.com.s_cloud.framework_components.entity.SuperObject;
 import thesis.tg.com.s_cloud.utils.DriveType;
+import thesis.tg.com.s_cloud.utils.EventConst;
 
 /**
  * Created by admin on 5/6/17.
@@ -11,8 +13,7 @@ import thesis.tg.com.s_cloud.utils.DriveType;
 
 public class DriveUser extends SuperObject {
     private String email;
-    private String dropbox_id;
-    private String google_id;
+    private SparseArray<String> drive_ids;
     private Uri avatar;
     private String avatarLink;
     private String country;
@@ -22,23 +23,17 @@ public class DriveUser extends SuperObject {
     private String dbx_email;
 
 
-    public String getDropbox_id() {
-        return dropbox_id;
+    public String getId(int type) {
+        return this.drive_ids.get(type);
     }
 
-    public void setDropbox_id(String dropbox_id) {
-        this.dropbox_id = dropbox_id;
-    }
-
-    public String getGoogle_id() {
-        return google_id;
-    }
-
-    public void setGoogle_id(String google_id) {
-        this.google_id = google_id;
+    public void setId(int type, String id) {
+        this.drive_ids.put(type,id);
     }
 
     protected DriveUser(){
+        this.drive_ids = new SparseArray<>();
+        this.drive_ids.put(DriveType.LOCAL, "local");
     }
 
     private static DriveUser instance;
@@ -87,20 +82,14 @@ public class DriveUser extends SuperObject {
     }
 
     public boolean isSignedIn(int type){
-        switch (type){
-            case DriveType.GOOGLE:
-                return google_id != null && google_id.length() > 0;
-            case DriveType.DROPBOX:
-                return dropbox_id != null && dropbox_id.length() > 0;
-            default:
-                return true;
-        }
+        boolean res = (this.drive_ids.get(type) != null);
+        return res;
     }
 
     public boolean isSignedIn(){
         return (getId() != null && getId().length() > 0) ||
-                (google_id != null && google_id.length() > 0) ||
-                (dropbox_id != null && dropbox_id.length() > 0);
+                (this.drive_ids.get(DriveType.GOOGLE) != null ) ||
+                (this.drive_ids.get(DriveType.DROPBOX) != null);
     }
 
     public String getAvatar() {
@@ -122,8 +111,8 @@ public class DriveUser extends SuperObject {
 
 
     public int getAvailableDrive(){
-        if (this.google_id != null && this.google_id.length() > 0  ) return DriveType.GOOGLE;
-        if (this.dropbox_id != null && this.dropbox_id.length() > 0) return DriveType.DROPBOX;
+        if (this.drive_ids.get(DriveType.GOOGLE) != null  ) return DriveType.GOOGLE;
+        if (this.drive_ids.get(DriveType.DROPBOX) != null) return DriveType.DROPBOX;
         return -1;
     }
 }

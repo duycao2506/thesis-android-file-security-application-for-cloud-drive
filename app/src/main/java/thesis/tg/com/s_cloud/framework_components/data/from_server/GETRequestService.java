@@ -1,5 +1,7 @@
 package thesis.tg.com.s_cloud.framework_components.data.from_server;
 
+import android.content.Context;
+
 import com.android.volley.toolbox.StringRequest;
 
 import java.util.ArrayList;
@@ -13,8 +15,8 @@ import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
  */
 
 public class GETRequestService extends RequestService {
-    public GETRequestService(String api, MyCallBack caller, GeneralResponse response) {
-        super(api, caller, response);
+    public GETRequestService(Context context, String api, MyCallBack caller, GeneralResponse response) {
+        super(context, api, caller, response);
     }
 
     @Override

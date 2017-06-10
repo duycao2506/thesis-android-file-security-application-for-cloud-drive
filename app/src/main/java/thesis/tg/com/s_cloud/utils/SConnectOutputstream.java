@@ -18,6 +18,8 @@ public class SConnectOutputstream extends OutputStream {
 
     byte[] header;
     OutputStream outputStream;
+    boolean isEncrypted = true;
+    boolean checkEncrypt = false;
 
     public SConnectOutputstream(byte[] header, OutputStream outputStream) {
         this.header = header;
@@ -37,19 +39,25 @@ public class SConnectOutputstream extends OutputStream {
     @Override
     public void write(@NonNull byte[] b, int off, int len) throws IOException {
 
+
         int index = off;
-        for (; index < header.length && index < len; index++ ){
-            if (header[index] != b[index]){
-                index = off;
-                break;
+        if (!checkEncrypt) {
+            for (; index < header.length && index < len; index++) {
+                if (header[index] != b[index]) {
+                    index = off;
+                    isEncrypted = false;
+                    break;
+                }
             }
+            checkEncrypt = true;
         }
 
 
         byte[] tmp = new byte[len - (index - off)];
 
+
         for (int i = index; i < len; i ++){
-            tmp[i-index] = (byte) (b[i] ^ 2);
+            tmp[i-index] = isEncrypted? (byte) (b[i] ^ 2) : b[i];
         }
 
         Log.d("OFFSET", String.valueOf(off));

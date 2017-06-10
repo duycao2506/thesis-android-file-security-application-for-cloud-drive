@@ -1,5 +1,6 @@
 package thesis.tg.com.s_cloud.framework_components.data.from_server;
 
+import android.content.Context;
 import android.os.AsyncTask;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -25,6 +26,7 @@ import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
  */
 
 public class RequestService {
+    Context context;
     protected Map<String, Object> params;
     protected Map<String, Object> headers;
     protected GeneralResponse response;
@@ -51,7 +53,8 @@ public class RequestService {
         this.headers = headers;
     }
 
-    public RequestService(String api, MyCallBack caller, GeneralResponse response) {
+    public RequestService(Context context, String api, MyCallBack caller, GeneralResponse response) {
+        this.context = context;
         this.api = api;
         this.caller = caller;
         this.response = response;
@@ -95,7 +98,8 @@ public class RequestService {
 
         stringRequest.setRetryPolicy(new DefaultRetryPolicy(20 * 1000, 0,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        BaseApplication.getVolleyInstance().addToRequestQueue(stringRequest);
+        BaseApplication ba = (BaseApplication) context.getApplicationContext();
+        ba.getVolleyInstance().addToRequestQueue(stringRequest);
         while (!response.isGotResponse()) ;
         if (!response.isResponseError()) {
             return;

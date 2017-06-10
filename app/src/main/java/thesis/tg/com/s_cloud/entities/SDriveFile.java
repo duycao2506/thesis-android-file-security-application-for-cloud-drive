@@ -1,5 +1,9 @@
 package thesis.tg.com.s_cloud.entities;
 
+import android.app.Application;
+import android.content.Context;
+import android.os.Environment;
+
 import com.dropbox.core.DbxException;
 
 import java.io.File;
@@ -12,8 +16,8 @@ import java.io.OutputStream;
 
 import thesis.tg.com.s_cloud.data.DrivesManager;
 import thesis.tg.com.s_cloud.data.from_third_party.dropbox.DbxDriveWrapper;
-import thesis.tg.com.s_cloud.data.from_third_party.google_drive.GoogleDownloadTask;
 import thesis.tg.com.s_cloud.data.from_third_party.google_drive.GoogleDriveWrapper;
+import thesis.tg.com.s_cloud.framework_components.BaseApplication;
 import thesis.tg.com.s_cloud.framework_components.entity.SuperObject;
 import thesis.tg.com.s_cloud.utils.DriveType;
 
@@ -46,7 +50,7 @@ public class SDriveFile extends SuperObject {
         this.setName(file.getName());
         this.setMimeType(mimeType);
         this.setFileSize(file.length());
-        this.setLink(file.getPath());
+        this.setId(file.getPath());
     }
 
     public long getFileSize() {
@@ -121,12 +125,13 @@ public class SDriveFile extends SuperObject {
         this.extension = extension;
     }
 
-    public InputStream getInputstream(){
+    public InputStream getInputstream(BaseApplication ba){
         InputStream is = null;
         switch (cloud_type){
             case DriveType.DROPBOX:
                 try {
-                    is =  DbxDriveWrapper.getInstance().getClient().files().download(getId())
+
+                    is =  ((DbxDriveWrapper)ba.getDriveWrapper(DriveType.DROPBOX)).getClient().files().download(getId())
                             .getInputStream();
                 } catch (DbxException e) {
                     e.printStackTrace();
@@ -134,14 +139,14 @@ public class SDriveFile extends SuperObject {
                 break;
             case DriveType.LOCAL:
                 try {
-                    is = new FileInputStream(getLink());
+                    is = new FileInputStream(getId());
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
                 break;
             case DriveType.GOOGLE:
                 try{
-                    is = GoogleDriveWrapper.getInstance().getDriveService().files().get(this.getId())
+                    is = ((GoogleDriveWrapper)ba.getDriveWrapper(DriveType.GOOGLE)).getDriveService().files().get(this.getId())
                             .executeMediaAsInputStream();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -153,19 +158,19 @@ public class SDriveFile extends SuperObject {
         return is;
     }
 
-    public OutputStream getOutputStream(int driveType, String toPath){
+    public OutputStream getOutputStream(int driveType, String toPath, BaseApplication ba){
         switch (driveType){
             case DriveType.DROPBOX:
                 OutputStream os = null;
                 try {
-                    os = DbxDriveWrapper.getInstance().getClient().files().upload(toPath).getOutputStream();
+                    os = ((DbxDriveWrapper)ba.getDriveWrapper(DriveType.DROPBOX)).getClient().files().upload(toPath).getOutputStream();
                 } catch (DbxException e) {
                     e.printStackTrace();
                 }
                 return os;
             case DriveType.LOCAL:
                 FileOutputStream fos = null;
-                String localfolder = DrivesManager.getInstance().getLocalPath();
+                String localfolder = ba.getDriveMannager().getLocalPath();
                 File desFile = new File(localfolder, toPath);
                 try {
                     boolean a = desFile.createNewFile();

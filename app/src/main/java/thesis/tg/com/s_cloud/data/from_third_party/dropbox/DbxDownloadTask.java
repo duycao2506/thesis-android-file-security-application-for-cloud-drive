@@ -8,6 +8,7 @@ import java.io.OutputStream;
 
 import thesis.tg.com.s_cloud.data.from_third_party.task.DownloadTask;
 import thesis.tg.com.s_cloud.entities.SDriveFile;
+import thesis.tg.com.s_cloud.framework_components.BaseApplication;
 import thesis.tg.com.s_cloud.utils.DataUtils;
 import thesis.tg.com.s_cloud.utils.DriveType;
 import thesis.tg.com.s_cloud.utils.SConnectOutputstream;
@@ -19,9 +20,10 @@ import thesis.tg.com.s_cloud.utils.SConnectOutputstream;
 public class DbxDownloadTask extends DownloadTask {
     DbxClientV2 dbxClientV2;
 
-    public DbxDownloadTask(DbxClientV2 client) {
-        super();
+    public DbxDownloadTask(DbxClientV2 client, BaseApplication ba) {
+        super(ba);
         this.dbxClientV2 = client;
+        this.to = DriveType.LOCAL;
     }
 
     @Override
@@ -29,7 +31,7 @@ public class DbxDownloadTask extends DownloadTask {
         super.transfer();
         SConnectOutputstream outputStream = null;
 
-        OutputStream fos = file.getOutputStream(DriveType.LOCAL,file.getName());
+        OutputStream fos = file.getOutputStream(this.to,file.getName(),ba);
         outputStream = new SConnectOutputstream(DataUtils.getDataHeader(), fos);
         dbxClientV2.files().download(file.getId())
                 .download(outputStream);

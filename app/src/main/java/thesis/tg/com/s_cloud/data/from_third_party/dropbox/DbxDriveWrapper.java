@@ -7,13 +7,17 @@ import android.util.Log;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
-import com.dropbox.core.android.Auth;
+import com.dropbox.core.android.AuthActivity;
 import com.dropbox.core.v2.DbxClientV2;
+import com.dropbox.core.v2.auth.DbxUserAuthRequests;
+import com.dropbox.core.v2.users.DbxUserUsersRequests;
 import com.dropbox.core.v2.users.FullAccount;
 
+import java.io.IOException;
+
 import thesis.tg.com.s_cloud.data.CloudDriveWrapper;
-import thesis.tg.com.s_cloud.data.from_third_party.google_drive.GoogleListFileTask;
 import thesis.tg.com.s_cloud.entities.DriveUser;
+import thesis.tg.com.s_cloud.framework_components.BaseApplication;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
 import thesis.tg.com.s_cloud.utils.DriveType;
 import thesis.tg.com.s_cloud.utils.EventConst;
@@ -31,10 +35,10 @@ public class DbxDriveWrapper extends CloudDriveWrapper {
 
 
 
-    public static DbxDriveWrapper getInstance(){
-        if (dbinstance == null)
-            dbinstance = new DbxDriveWrapper();
-        return dbinstance;
+    public static DbxDriveWrapper getInstance(BaseApplication application){
+        if (!application.isDriveWrapperCreated(DriveType.DROPBOX))
+            return new DbxDriveWrapper();
+        return (DbxDriveWrapper) application.getDriveWrapper(DriveType.DROPBOX);
     }
 
     public void signIn(final Context context, final MyCallBack caller) {
@@ -56,16 +60,16 @@ public class DbxDriveWrapper extends CloudDriveWrapper {
                     if (fa != null){
                         DriveUser user = DriveUser.getInstance();
                         if (user.isSignedIn()){
-                            user.setDropbox_id(fa.getAccountId());
+                            user.setId(getType(),fa.getAccountId());
                             user.setDropboxEmail(fa.getEmail());
-                            caller.callback(EventConst.ADD_DRIVE,DriveType.DROPBOX, null);
+                            caller.callback(EventConst.ADD_DRIVE,getType(), null);
                             //TODO: send accesstoken to add drive on server
                             resetListFileTask();
                             return EventConst.LOGIN_SUCCESS;
                         }
 
                         //TODO: send accesstoken to get info from server
-                        user.setDropbox_id(fa.getAccountId());
+                        user.setId(getType(),fa.getAccountId());
                         user.setName(fa.getName().getDisplayName());
                         user.setAvatarLink(fa.getProfilePhotoUrl());
                         user.setCountry(fa.getCountry());
@@ -78,7 +82,7 @@ public class DbxDriveWrapper extends CloudDriveWrapper {
 
                 @Override
                 protected void onPostExecute(String s) {
-                    caller.callback(s, DriveType.DROPBOX, null);
+                    caller.callback(s, getType(), null);
                 }
             }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             //Store accessToken in SharedPreferences
@@ -87,7 +91,7 @@ public class DbxDriveWrapper extends CloudDriveWrapper {
             return;
         }
         Log.d("HELLO", "Login fail");
-        caller.callback(EventConst.LOGIN_FAIL, DriveType.DROPBOX, null);
+        caller.callback(EventConst.LOGIN_FAIL, getType(), null);
     }
 
     public void saveAccToken(Context context, String token){
@@ -96,7 +100,7 @@ public class DbxDriveWrapper extends CloudDriveWrapper {
     }
 
     private String getAccessToken(Context context){
-        SharedPreferences prefs = context.getSharedPreferences(context.getPackageName(), context.MODE_PRIVATE);
+        SharedPreferences prefs = context.getSharedPreferences(context.getPackageName(), Context.MODE_PRIVATE);
         String accToken = prefs.getString("access-token", null);
         return accToken;
     }
@@ -137,9 +141,28 @@ public class DbxDriveWrapper extends CloudDriveWrapper {
         super.signOut();
         try {
             dbxClientV2.auth().tokenRevoke();
-            DriveUser.getInstance().setDropbox_id(null);
         } catch (DbxException e) {
             e.printStackTrace();
         }
+        dbxClientV2 = null;
+        AuthActivity.result = null;
+
+    }
+
+    @Override
+    public int getType() {
+        return DriveType.DROPBOX;
+    }
+
+    @Override
+    protected boolean createNewFolder(String name, String parent) throws DbxException {
+        dbxClientV2.files().createFolder(parent+"/"+name);
+        return true;
+    }
+
+    @Override
+    protected boolean delete(String file) throws DbxException, IOException {
+        dbxClientV2.files().delete(file);
+        return true;
     }
 }

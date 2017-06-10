@@ -1,6 +1,5 @@
 package thesis.tg.com.s_cloud.user_interface.activity;
 
-import android.animation.Animator;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -16,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
-import com.daimajia.androidanimations.library.YoYo;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -25,6 +23,7 @@ import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccoun
 import thesis.tg.com.s_cloud.R;
 import thesis.tg.com.s_cloud.data.from_third_party.dropbox.DbxDriveWrapper;
 import thesis.tg.com.s_cloud.data.from_third_party.google_drive.GoogleDriveWrapper;
+import thesis.tg.com.s_cloud.framework_components.BaseApplication;
 import thesis.tg.com.s_cloud.utils.DriveType;
 import thesis.tg.com.s_cloud.utils.EventConst;
 import thesis.tg.com.s_cloud.utils.DataUtils;
@@ -43,6 +42,7 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
     private GoogleApiClient mGoogleApiClient;
 //
     GoogleDriveWrapper gdwrapper;
+    BaseApplication ba;
 
 
     GoogleAccountCredential mCredential;
@@ -63,7 +63,7 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
+        ba = (BaseApplication) getApplication();
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setIndeterminate(true);
@@ -72,7 +72,7 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
         mProgress.setMessage("Calling Drive API ...");
         // Initialize credentials and service object.
 
-        gdwrapper = GoogleDriveWrapper.getInstance();
+        gdwrapper = (GoogleDriveWrapper) ba.getDriveWrapper(DriveType.GOOGLE);
         this.mGoogleApiClient = gdwrapper.getClient();
 
 
@@ -93,7 +93,7 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
         super.onResume();
         String token = com.dropbox.core.android.Auth.getOAuth2Token();
         if (token != null){
-            DbxDriveWrapper.getInstance().saveAccToken(this, token);
+            ((DbxDriveWrapper)ba.getDriveWrapper(DriveType.DROPBOX)).saveAccToken(this, token);
             this.callback(LOGIN_SUCCESS,DriveType.DROPBOX,null);
         }
     }

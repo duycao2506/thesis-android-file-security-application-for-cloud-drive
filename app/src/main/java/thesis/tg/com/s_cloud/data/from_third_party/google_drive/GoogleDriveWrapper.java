@@ -1,5 +1,7 @@
 package thesis.tg.com.s_cloud.data.from_third_party.google_drive;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.Context;
 import android.content.IntentSender;
@@ -11,6 +13,7 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.dropbox.core.DbxException;
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -28,17 +31,19 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.DriveScopes;
+import com.google.api.services.drive.model.File;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import thesis.tg.com.s_cloud.data.CloudDriveWrapper;
 import thesis.tg.com.s_cloud.entities.DriveUser;
+import thesis.tg.com.s_cloud.framework_components.BaseApplication;
 import thesis.tg.com.s_cloud.framework_components.utils.EventBroker;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
 import thesis.tg.com.s_cloud.utils.DriveType;
 import thesis.tg.com.s_cloud.utils.EventConst;
 
-import static thesis.tg.com.s_cloud.utils.EventConst.LOGIN_FAIL;
 import static thesis.tg.com.s_cloud.utils.EventConst.RESOLVE_CONNECTION_REQUEST_CODE;
 
 /**
@@ -59,7 +64,7 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
         @Override
         public void callback(String message, int code, Object data) {
             initCredential();
-            EventBroker.getInstance().publish(EventConst.LOGIN_SUCCESS,DriveType.GOOGLE,null);
+            EventBroker.getInstance().publish(EventConst.LOGIN_SUCCESS,getType(),null);
         }
     };
 
@@ -67,7 +72,7 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
         @Override
         public void callback(String message, int code, Object data) {
             signOut();
-            EventBroker.getInstance().publish(EventConst.DISCONNECT, DriveType.GOOGLE, null);
+            EventBroker.getInstance().publish(EventConst.DISCONNECT, getType(), null);
         }
     };
 
@@ -86,10 +91,10 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
 
 
 
-    public static GoogleDriveWrapper getInstance(){
-        if (gdinstance == null)
-            gdinstance = new GoogleDriveWrapper();
-        return gdinstance;
+    public static GoogleDriveWrapper getInstance(BaseApplication application){
+        if (!application.isDriveWrapperCreated(DriveType.GOOGLE))
+            return new GoogleDriveWrapper();
+        return (GoogleDriveWrapper) application.getDriveWrapper(DriveType.GOOGLE);
     }
 
 
@@ -138,13 +143,13 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
                     DriveUser user = DriveUser.getInstance();
                     if (user.isSignedIn())
                     {
-                        user.setGoogle_id(acct.getId());
+                        user.setId(getType(),acct.getId());
                         user.setGoogleEmail(acct.getEmail());
                         initCredential();
                         //TODO: send authtoken to get add drive on server
                         return EventConst.LOGIN_SUCCESS;
                     }
-                    user.setGoogle_id(acct.getId());
+                    user.setId(getType(),acct.getId());
                     user.setGoogleEmail(acct.getEmail());
 
                     //TODO: send accesstoken to get userid from server
@@ -163,22 +168,23 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
                     if (connection_ok == -1) return EventConst.LOGIN_FAIL;
                     initCredential();
                     return EventConst.LOGIN_SUCCESS;
+                }else {
+                    return EventConst.LOGIN_FAIL;
                 }
-                return EventConst.LOGIN_FAIL;
             }
 
             @Override
             protected void onPostExecute(String aVoid) {
                 super.onPostExecute(aVoid);
-                afterLoginCallback.callback(aVoid, DriveType.GOOGLE,DriveUser.getInstance());
+                afterLoginCallback.callback(aVoid, getType(),DriveUser.getInstance());
             }
 
             @Override
             protected void onCancelled() {
                 super.onCancelled();
-                if (mGoogleCredential == null){
-                    onConnectedAction = initCredentialAction;
-                }
+//                if (mGoogleCredential == null){
+//                    onConnectedAction = initCredentialAction;
+//                }
             }
         }.execute();
 
@@ -187,6 +193,7 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
     private void initCredential(){
         mGoogleCredential = GoogleAccountCredential.usingOAuth2(context, scopes);
         mGoogleCredential.setSelectedAccountName(DriveUser.getInstance().getGoogle_email());
+        mGoogleCredential.setSelectedAccount(new Account(DriveUser.getInstance().getGoogle_email(), AccountManager.KEY_ACCOUNT_TYPE));
         HttpTransport transport = AndroidHttp.newCompatibleTransport();
         JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
         driveService = new com.google.api.services.drive.Drive.Builder(
@@ -208,7 +215,6 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
                             Log.d("LOG_OT","FAIL");
                     }
                 });
-        DriveUser.getInstance().setGoogle_id(null);
     }
 
     private void setClient(GoogleApiClient client) {
@@ -286,6 +292,8 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
         }
     }
 
+
+
     @Override
     public void onConnectionSuspended(int i) {
 
@@ -294,5 +302,30 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
 
     public Drive getDriveService() {
         return driveService;
+    }
+
+    @Override
+    public int getType() {
+        return DriveType.GOOGLE;
+    }
+
+    @Override
+    protected boolean createNewFolder(String name, String parent) throws DbxException, IOException {
+        File fileMetadata = new File();
+        fileMetadata.setName(name);
+        ArrayList<String> parents = new ArrayList<>();
+        parents.add(parent);
+        fileMetadata.setParents(parents);
+        fileMetadata.setMimeType("application/vnd.google-apps.folder");
+        driveService.files().create(fileMetadata)
+                .setFields("id, parents")
+                .execute();
+        return true;
+    }
+
+    @Override
+    protected boolean delete(String file) throws DbxException, IOException {
+        driveService.files().delete(file).execute();
+        return true;
     }
 }

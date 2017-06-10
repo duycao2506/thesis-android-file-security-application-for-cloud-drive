@@ -25,7 +25,10 @@ import java.io.BufferedInputStream;
 
 import thesis.tg.com.s_cloud.R;
 import thesis.tg.com.s_cloud.data.DrivesManager;
+import thesis.tg.com.s_cloud.entities.DriveUser;
 import thesis.tg.com.s_cloud.entities.SDriveFile;
+import thesis.tg.com.s_cloud.framework_components.BaseApplication;
+import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
 
 import static thesis.tg.com.s_cloud.utils.EventConst.LOGIN_CANCEL_RESULT_CODE;
 
@@ -88,23 +91,34 @@ public class UiUtils {
 
     public static void buildFileMenu(final SDriveFile data, final Context context) {
 
-        BottomSheetMenuDialog dialog = new BottomSheetBuilder(context, R.style.AppTheme_BottomSheetDialog)
+        BottomSheetBuilder bsb = new BottomSheetBuilder(context, R.style.AppTheme_BottomSheetDialog)
                 .setMode(BottomSheetBuilder.MODE_LIST)
                 .setTitleTextColorResource(R.color.gray_dark_transparent)
                 .addTitleItem(R.string.wtdn)
                 .setIconTintColorResource(R.color.gray_dark_transparent)
                 .addItem(R.id.upload,R.string.upload, ContextCompat.getDrawable(context,R.drawable.ic_cloud_upload_black_24dp))
-                .addItem(R.id.sync,R.string.sync_with,ContextCompat.getDrawable(context,R.drawable.ic_sync_black_24dp))
+                .addItem(R.id.delete, R.string.delete,ContextCompat.getDrawable(context,R.drawable.ic_delete_black_24dp))
+                .addItem(R.id.info, R.string.get_info, ContextCompat.getDrawable(context,R.drawable.ic_info_black_24dp));
 
-                .setItemClickListener(new BottomSheetItemClickListener() {
+        if (data.getCloud_type() == DriveType.LOCAL){
+            bsb.addItem(R.id.open, R.string.open_with, ContextCompat.getDrawable(context,R.drawable.ic_open_with_black_24dp));
+        }
+
+
+        BottomSheetMenuDialog dialog = bsb.setItemClickListener(new BottomSheetItemClickListener() {
                     @Override
                     public void onBottomSheetItemClick(MenuItem item) {
                         switch (item.getItemId()){
                             case R.id.upload:
                                 buildDriveMenu(data,context,false);
                                 break;
-                            case R.id.sync:
-                                buildDriveMenu(data,context,true);
+                            case R.id.open:
+                                break;
+                            case R.id.info:
+                                break;
+                            case R.id.delete:
+                                BaseApplication ba = (BaseApplication) context.getApplicationContext();
+                                ba.getDriveWrapper(data.getCloud_type()).requestDelete(data.getId(), (MyCallBack) context);
                                 break;
                             default:
                                 break;
@@ -117,7 +131,8 @@ public class UiUtils {
     }
 
     public static void buildDriveMenu(final SDriveFile data, final Context context, final boolean isSync) {
-        final ResourcesUtils resrcMnger = ResourcesUtils.getInstance();
+        final BaseApplication ba = (BaseApplication) context.getApplicationContext();
+        final ResourcesUtils resrcMnger = ba.getResourcesUtils();
         BottomSheetBuilder bsb = new BottomSheetBuilder(context, R.style.AppTheme_BottomSheetDialog)
                 .setMode(BottomSheetBuilder.MODE_LIST)
                 .addTitleItem(isSync ? R.string.sync_with : R.string.upload)
@@ -125,12 +140,19 @@ public class UiUtils {
                 .setItemClickListener(new BottomSheetItemClickListener() {
                     @Override
                     public void onBottomSheetItemClick(MenuItem item) {
-                        Toast.makeText(context,resrcMnger.getStringId(item.getItemId()),Toast.LENGTH_SHORT).show();
-                        DrivesManager.getInstance().transferDataTo(item.getItemId(),data,isSync);
+                        if (DriveUser.getInstance().isSignedIn(item.getItemId())){
+                            ba.getDriveMannager().transferDataTo(item.getItemId(),data,isSync);
+                        }else{
+                            Toast.makeText(context
+                                    , context.getString(R.string.not_connected_to)
+                                            + resrcMnger.getStringId(item.getItemId())
+                                    ,Toast.LENGTH_LONG).show();
+                        }
+
                     }
                 });
 
-        for (int i = 0; i < DrivesManager.getInstance().getNumDrive(); i++){
+        for (int i = 0; i < ba.getDriveMannager().getNumDrive(); i++){
             if (data.getCloud_type()==resrcMnger.getTypeByIndex(i)) continue;
             int type = resrcMnger.getTypeByIndex(i);
             bsb = bsb.addItem(type,resrcMnger.getStringId(type), resrcMnger.getDriveIconId(type));

@@ -7,6 +7,7 @@ import com.dropbox.core.DbxException;
 import java.io.IOException;
 
 import thesis.tg.com.s_cloud.entities.SDriveFile;
+import thesis.tg.com.s_cloud.framework_components.BaseApplication;
 import thesis.tg.com.s_cloud.framework_components.entity.SuperObject;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
 
@@ -16,38 +17,47 @@ import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
 
 public class TransferTask extends SuperObject{
     TransferTaskManager manager;
+    protected BaseApplication ba;
     MyCallBack caller;
     protected int from;
     protected int to;
     protected SDriveFile file;
 
-    public TransferTask() {
+    public void setFrom(int from) {
+        this.from = from;
+    }
+
+    public void setTo(int to) {
+        this.to = to;
+    }
+
+    public TransferTask(BaseApplication ba) {
         super();
+        this.ba = ba;
         this.manager = TransferTaskManager.getInstance();
         this.manager.add(this);
     }
 
-    protected AsyncTask<Void,Void,Void> at = new AsyncTask<Void, Void, Void>(){
+    protected AsyncTask<Void,Void,Boolean> at = new AsyncTask<Void, Void, Boolean>(){
         @Override
-        protected Void doInBackground(Void...params) {
+        protected Boolean doInBackground(Void...params) {
             try {
                 transfer();
-            } catch (IOException e) {
+            } catch (IOException | DbxException e) {
                 e.printStackTrace();
-            } catch (DbxException e) {
-                e.printStackTrace();
+                return false;
             }
-            return null;
+            return true;
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
+        protected void onPostExecute(Boolean aVoid) {
             super.onPostExecute(aVoid);
-            afterTransfer();
+            afterTransfer(aVoid);
         }
     };
 
-    protected void afterTransfer() {
+    protected void afterTransfer(Boolean aVoid) {
         manager.remove(this);
     }
 
@@ -61,6 +71,10 @@ public class TransferTask extends SuperObject{
 
     public void  cancel(){
         this.at.cancel(true);
+    }
+
+    public void start(SDriveFile data){
+
     }
 
 

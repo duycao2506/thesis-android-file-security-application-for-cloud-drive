@@ -4,16 +4,18 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/frameFloatingButton"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
     >
+
     <ImageView
         android:id="@+id/ivBlueScreen"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorPrimarytrans"
-        android:visibility="invisible"
-        />
+        android:background="@color/whiteTrans"
+        android:clickable="false"
+        android:visibility="invisible" />
     <com.getbase.floatingactionbutton.FloatingActionsMenu
         android:id="@+id/multiple_actions"
         android:layout_width="match_parent"
@@ -31,7 +33,7 @@
             android:id="@+id/addFile"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fab:fab_colorNormal="@color/white"
+            fab:fab_colorNormal="@color/colorPrimaryDark"
             android:tint="@color/colorSecondary"
             android:src="@drawable/ic_insert_drive_file_white_24dp"
             fab:fab_title="@string/add_file_to_drive"
@@ -43,7 +45,7 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_folder_white_24dp"
             android:tint="@color/colorSecondary"
-            fab:fab_colorNormal="@color/white"
+            fab:fab_colorNormal="@color/colorPrimaryDark"
             fab:fab_title="@string/create_new_folder"
             fab:fab_colorPressed="@color/gray"/>
 

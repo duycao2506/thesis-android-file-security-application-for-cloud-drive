@@ -1,35 +1,19 @@
 package thesis.tg.com.s_cloud.data.from_third_party.google_drive;
 
-import android.content.ContentProvider;
-import android.content.ContentResolver;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.support.v4.content.ContentResolverCompat;
-import android.webkit.MimeTypeMap;
-
 import com.dropbox.core.DbxException;
 import com.google.api.client.http.AbstractInputStreamContent;
-import com.google.api.client.http.FileContent;
 import com.google.api.services.drive.Drive;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.SequenceInputStream;
-import java.net.URI;
 import java.util.ArrayList;
 
 import thesis.tg.com.s_cloud.data.from_third_party.task.UploadTask;
-import thesis.tg.com.s_cloud.entities.SDriveFile;
-import thesis.tg.com.s_cloud.framework_components.utils.EventBroker;
-import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
+import thesis.tg.com.s_cloud.framework_components.BaseApplication;
 import thesis.tg.com.s_cloud.utils.DataUtils;
 import thesis.tg.com.s_cloud.utils.DriveType;
-import thesis.tg.com.s_cloud.utils.EventConst;
 import thesis.tg.com.s_cloud.utils.SConnectInputStream;
 
 /**
@@ -40,8 +24,8 @@ public class GoogleUploadTask extends UploadTask {
 
     Drive driveService;
 
-    public GoogleUploadTask(Drive driveService) {
-        super();
+    public GoogleUploadTask(Drive driveService, BaseApplication ba) {
+        super(ba);
         this.driveService = driveService;
     }
 
@@ -51,12 +35,16 @@ public class GoogleUploadTask extends UploadTask {
         super.transfer();
         DriveContentInputStream dvic = new DriveContentInputStream(
                 file.getMimeType(),
-                new SConnectInputStream(file.getInputstream()),
+                new SConnectInputStream(file.getInputstream(ba)),
                 file.getFileSize());
+
+        dvic.setHeader(DataUtils.getDataHeader());
+
         com.google.api.services.drive.model.File fileCnt = new com.google.api.services.drive.model.File();
 
         //Getname
-        boolean isRoot = file.getFolder().length() == 0;
+        //TODO: MORE is choosing folder
+        boolean isRoot = file.getFolder().length() == 0 || file.getCloud_type() != DriveType.LOCAL_STORAGE;
 
         if (!isRoot){
             ArrayList<String> a = new ArrayList<String>();
@@ -73,8 +61,8 @@ public class GoogleUploadTask extends UploadTask {
     }
 
     @Override
-    protected void afterTransfer() {
-        super.afterTransfer();
+    protected void afterTransfer(Boolean aVoid) {
+        super.afterTransfer(aVoid);
     }
 
     @Override
@@ -87,7 +75,13 @@ public class GoogleUploadTask extends UploadTask {
         SConnectInputStream sConnectInputStream;
         long transfersize;
         byte[] header;
-        public DriveContentInputStream(String type, SConnectInputStream sFileInputStream,long transferSize) {
+
+
+        public void setHeader(byte[] header) {
+            this.header = header;
+        }
+
+        public DriveContentInputStream(String type, SConnectInputStream sFileInputStream, long transferSize) {
             super(type);
             this.sConnectInputStream = sFileInputStream;
             this.transfersize = transferSize;
@@ -103,9 +97,9 @@ public class GoogleUploadTask extends UploadTask {
 
             SequenceInputStream inputStream =
                     new SequenceInputStream(new ByteArrayInputStream(
-                                                    DataUtils.getDataHeader()),
+                                                    header),
                                                     sConnectInputStream);
-            return sConnectInputStream;
+            return inputStream;
         }
 
         @Override

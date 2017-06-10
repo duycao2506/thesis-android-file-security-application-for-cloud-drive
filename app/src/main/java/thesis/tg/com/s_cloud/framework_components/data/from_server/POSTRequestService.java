@@ -1,5 +1,7 @@
 package thesis.tg.com.s_cloud.framework_components.data.from_server;
 
+import android.content.Context;
+
 import com.android.volley.toolbox.StringRequest;
 
 import org.json.JSONException;
@@ -28,8 +30,8 @@ public class POSTRequestService extends RequestService {
         this.jsonObject = jsonObject;
     }
 
-    public POSTRequestService(String api, MyCallBack caller, GeneralResponse response) {
-        super(api, caller, response);
+    public POSTRequestService(Context context, String api, MyCallBack caller, GeneralResponse response) {
+        super(context, api, caller, response);
     }
 
     @Override

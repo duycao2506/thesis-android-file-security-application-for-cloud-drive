@@ -9,6 +9,7 @@ import java.util.HashMap;
 import thesis.tg.com.s_cloud.R;
 import thesis.tg.com.s_cloud.data.DrivesManager;
 import thesis.tg.com.s_cloud.entities.SDriveFile;
+import thesis.tg.com.s_cloud.framework_components.BaseApplication;
 
 /**
  * Created by CKLD on 5/27/17.
@@ -23,19 +24,21 @@ public class ResourcesUtils {
 
     private SparseArray hashmapOrderResources;
     private HashMap<String, Integer> hashmapFileType;
+    private BaseApplication ba;
 
-    private static ResourcesUtils instance;
-
-    public static ResourcesUtils getInstance(){
-        if (instance == null)
-            instance = new ResourcesUtils();
-        return instance;
+    public static ResourcesUtils getInstance(BaseApplication application){
+        ResourcesUtils resourcesUtils = application.getResourcesUtils();
+        if (resourcesUtils == null) {
+            resourcesUtils = new ResourcesUtils(application);
+        }
+        return resourcesUtils;
     }
 
-    private ResourcesUtils(){
+    private ResourcesUtils(BaseApplication ba){
         //drive type resources
+        this.ba = ba;
         hashmapOrderResources = new SparseArray();
-        for (int i = 0; i < DrivesManager.getInstance().getNumDrive(); i ++)
+        for (int i = 0; i < ba.getDriveMannager().getNumDrive(); i ++)
             hashmapOrderResources.put(types[i],i);
 
         //file type resources

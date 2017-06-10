@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -16,11 +17,14 @@ import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.daimajia.androidanimations.library.Techniques;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.google.api.services.drive.model.FileList;
 import com.squareup.picasso.Picasso;
 import java.io.File;
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -51,7 +55,6 @@ public class HomeActivity extends KasperActivity implements
     private static final String ROOT_TAG = "ROOT_FOLDER";
 
     private SparseArray fragmentNavigator;
-    private FileListFragment[] fileListFragments = new FileListFragment[DrivesManager.getInstance().getNumDrive()];
     private NotConnectedCloudFragment notconnectedFragment;
 
     private Menu menu;
@@ -76,23 +79,22 @@ public class HomeActivity extends KasperActivity implements
         synchronized public void callback(String message, int code, Object data) {
             switch (message) {
                 case EventConst.LOGIN_FAIL:
-                    DrivesManager.getInstance().setFailLogin(code);
+                    ba.getDriveMannager().setFailLogin(code);
                 case EventConst.RELOGIN_FAIL:
-                    if (!DrivesManager.getInstance().isTriedLoginAll()) return;
                     if (topFragment == null){
                         changeToNotConnected(0);
                     }else{
                         if (topFragment.getDriveType() == code)
                             changeToNotConnected(code);
                     }
-                    if (DriveUser.getInstance().isSignedIn()) return;
-
+                    if (DriveUser.getInstance().isSignedIn()) break;
+                    if (!ba.getDriveMannager().isTriedLoginAll()) break;
                     Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
                     startActivity(intent);
                     finish();
                     break;
                 case EventConst.LOGIN_SUCCESS:
-                    DrivesManager.getInstance().setSuccessLogin(code);
+                    ba.getDriveMannager().setSuccessLogin(code);
                 case EventConst.RELOGIN_SUCCESS:
                     updateNavHeader();
                     FileListFragment flf = (FileListFragment) fragmentNavigator.get(code);
@@ -109,8 +111,13 @@ public class HomeActivity extends KasperActivity implements
                     }
                     flf.loadRefresh(callerRefresh);
                     break;
+                case EventConst.DISCONNECT:
+                    DriveUser.getInstance().setId(code,null);
+                    if (topFragment != null && topFragment.getDriveType() == code)
+                        changeToNotConnected(code);
+                    break;
             }
-            if (DrivesManager.getInstance().isTriedLoginAll()){
+            if (ba.getDriveMannager().isTriedLoginAll()){
                 if (generalProgressDialog==null)
                     return;
                 generalProgressDialog.dismiss();
@@ -128,12 +135,15 @@ public class HomeActivity extends KasperActivity implements
         //Create Fragment Navigator
         this.fragmentNavigator = new SparseArray<Fragment>();
         super.onCreate(savedInstanceState);
+
+
         getSupportActionBar().setHomeButtonEnabled(true);
+        registerCallBack();
 
 
 
         //Refresh Login Attempts
-        DrivesManager.getInstance().refreshLoginAttemps();
+        ba.getDriveMannager().refreshLoginAttemps();
 
 
         //Drawer
@@ -141,8 +151,12 @@ public class HomeActivity extends KasperActivity implements
 
 
         //Button Floating
+        ImageView fl = (ImageView) findViewById(R.id.ivBlueScreen);
+        fl.setOnClickListener(this);
         fab = (FloatingActionButton) findViewById(R.id.addFile);
         fab.setOnClickListener(this);
+        FloatingActionButton fab2 = (FloatingActionButton) findViewById(R.id.addFolder);
+        fab2.setOnClickListener(this);
 
         fabmenu = (FloatingActionsMenu) findViewById(R.id.multiple_actions);
         fabmenu.setOnFloatingActionsMenuUpdateListener(new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
@@ -163,7 +177,7 @@ public class HomeActivity extends KasperActivity implements
         if (!DriveUser.getInstance().isSignedIn()) {
             generalProgressDialog = UiUtils.getDefaultProgressDialog(this,true,getString(R.string.checking_login));
             generalProgressDialog.show();
-            DrivesManager.getInstance().autoSignIn(this, signInCallback);
+            ba.getDriveMannager().autoSignIn(this, signInCallback);
         }else{
             int availableDrive = DriveUser.getInstance().getAvailableDrive();
             if (availableDrive != -1)
@@ -176,6 +190,9 @@ public class HomeActivity extends KasperActivity implements
         }
 
 
+        ((FileListFragment)fragmentNavigator.get(DriveType.LOCAL)).loadRefresh(this);
+
+
 
 
 
@@ -183,15 +200,24 @@ public class HomeActivity extends KasperActivity implements
 
 
     private void registerCallBack(){
-        EventBroker.getInstance().register(this.signInCallback,EventConst.DISCONNECT);
         EventBroker.getInstance().register(this.signInCallback,EventConst.LOGIN_SUCCESS);
+        EventBroker.getInstance().register(this.signInCallback,EventConst.RELOGIN_SUCCESS);
+        EventBroker.getInstance().register(this.signInCallback,EventConst.DISCONNECT);
         EventBroker.getInstance().register(this.signInCallback,EventConst.LOGIN_FAIL);
+        EventBroker.getInstance().register(this.signInCallback,EventConst.RELOGIN_FAIL);
+        EventBroker.getInstance().register(this,EventConst.FINISH_DOWNLOADING);
+        EventBroker.getInstance().register(this,EventConst.FINISH_UPLOADING);
     }
 
     private void unregisterCallback(){
-        EventBroker.getInstance().unRegister(this.signInCallback,EventConst.DISCONNECT);
         EventBroker.getInstance().unRegister(this.signInCallback,EventConst.LOGIN_SUCCESS);
+        EventBroker.getInstance().unRegister(this.signInCallback,EventConst.RELOGIN_SUCCESS);
+        EventBroker.getInstance().unRegister(this.signInCallback,EventConst.DISCONNECT);
         EventBroker.getInstance().unRegister(this.signInCallback,EventConst.LOGIN_FAIL);
+        EventBroker.getInstance().unRegister(this.signInCallback,EventConst.RELOGIN_FAIL);
+        EventBroker.getInstance().unRegister(this,EventConst.FINISH_DOWNLOADING);
+        EventBroker.getInstance().unRegister(this,EventConst.FINISH_UPLOADING);
+
     }
 
     private void showFileChooser() {
@@ -219,18 +245,21 @@ public class HomeActivity extends KasperActivity implements
                 .setDriveType(DriveType.GOOGLE)
                 .setFolder("root")
                 .setViewMode(LIST)
+                .setBa(this.ba)
                 .build() );
         fragmentNavigator.put(DriveType.DROPBOX, new FileListFragment.Builder()
                 .setFragmentName(getString(R.string.dbox))
                 .setDriveType(DriveType.DROPBOX)
                 .setFolder("")
                 .setViewMode(LIST)
+                .setBa(this.ba)
                 .build());
         fragmentNavigator.put(DriveType.LOCAL, new FileListFragment.Builder()
                 .setFragmentName(getString(R.string.local_storage))
                 .setDriveType(DriveType.LOCAL)
-                .setFolder("S-Cloud")
+                .setFolder(Environment.getExternalStorageDirectory().getPath()+"/"+getString(R.string.app_name))
                 .setViewMode(LIST)
+                .setBa(this.ba)
                 .build());
         notconnectedFragment = new NotConnectedCloudFragment();
         notconnectedFragment.setDrive(0);
@@ -353,7 +382,7 @@ public class HomeActivity extends KasperActivity implements
             case R.id.gdrive:
             case R.id.dbox:
                 getSupportActionBar().setTitle
-                        (getString(ResourcesUtils.getInstance().getStringId(id)));
+                        (getString(ba.getResourcesUtils().getStringId(id)));
                 if (isConnectedDrive(id))
                     changeDrive(id);
                 else
@@ -366,6 +395,8 @@ public class HomeActivity extends KasperActivity implements
     }
 
     private void changeToNotConnected(int id) {
+        if (topFragment == null) return;
+        showHideFab(View.GONE);
         notconnectedFragment.setDrive(id);
         this.changeFragment(R.id.fragmentHolder,notconnectedFragment,ROOT_TAG);
         topFragment = null;
@@ -386,14 +417,15 @@ public class HomeActivity extends KasperActivity implements
             fragment = new FileListFragment.Builder()
                     .setViewMode(topFragment.getVm())
                     .setDriveType(id)
-                    .setFragmentName(DrivesManager.getInstance().getDriveName(this,id))
+                    .setFragmentName(ba.getDriveMannager().getDriveName(this,id))
                     .build();
             fragmentNavigator.put(id, fragment);
         }
         topFragment = fragment;
-        folderPathFragment.refreshWithFolder(getString(ResourcesUtils.getInstance().getStringId(id)));
+        folderPathFragment.refreshWithFolder(getString(ba.getResourcesUtils().getStringId(id)));
 
         changeFragment(R.id.fragmentHolder,fragment, ROOT_TAG);
+        showHideFab(View.VISIBLE);
     }
 
 
@@ -407,11 +439,13 @@ public class HomeActivity extends KasperActivity implements
                 break;
             case R.id.addFile:
                 showFileChooser();
-
                 fabmenu.collapse();
                 break;
             case R.id.addFolder:
-
+                topFragment.createNewFolder();
+                fabmenu.collapse();
+                break;
+            case R.id.ivBlueScreen:
                 fabmenu.collapse();
                 break;
             default:
@@ -421,7 +455,7 @@ public class HomeActivity extends KasperActivity implements
 
 
     @Override
-    public void callback(String message, int code, Object data) {
+    public synchronized void callback(String message, int code, Object data) {
         super.callback(message, code, data);
         switch (message){
             case EventConst.OPEN_FOLDER:
@@ -429,12 +463,14 @@ public class HomeActivity extends KasperActivity implements
                 toggle.setDrawerIndicatorEnabled(false);
                 SDriveFolder sdfo = (SDriveFolder) data;
                 folderPathFragment.addFolder(sdfo.getName());
-                CloudDriveWrapper.getInstance(topFragment.getDriveType()).addNewListFileTask(sdfo.getId());
+                ba.getDriveWrapper(topFragment.getDriveType()).addNewListFileTask(sdfo.getId());
                 //Create new fragment
                 topFragment = new FileListFragment.Builder()
                                 .setDriveType(topFragment
                                 .getDriveType())
                                 .setFragmentName(sdfo.getName())
+                                .setFolder(sdfo.getId())
+                                .setBa(this.ba)
                                 .setViewMode(topFragment.getVm())
                                 .build();
                 this.addFragmentToStack(R.id.fragmentHolder,topFragment,FragmentStackName.FILES);
@@ -453,6 +489,13 @@ public class HomeActivity extends KasperActivity implements
                 break;
             case EventConst.SCROLL_UP:
                 showHideFab(View.VISIBLE);
+                break;
+            case EventConst.DELETE_FILE:
+                topFragment.callback(message,code,data);
+                break;
+            case EventConst.FINISH_DOWNLOADING:
+            case EventConst.FINISH_UPLOADING:
+                ((FileListFragment)fragmentNavigator.get(code)).loadRefresh(null);
                 break;
             default:
                 break;
@@ -479,7 +522,9 @@ public class HomeActivity extends KasperActivity implements
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        GoogleDriveWrapper.getInstance().getClient().disconnect();
+        ((GoogleDriveWrapper)ba.getDriveWrapper(DriveType.GOOGLE))
+                .getClient().disconnect();
+        unregisterCallback();
     }
 
 
@@ -496,7 +541,7 @@ public class HomeActivity extends KasperActivity implements
                     String path = DataUtils.getPath(this,uri);
                     String type = getContentResolver().getType(uri);
                     SDriveFile sdf = new SDriveFile(new File(path),type);
-                    sdf.setCloud_type(DriveType.LOCAL);
+                    sdf.setCloud_type(DriveType.LOCAL_STORAGE);
                     sdf.setFolder(topFragment.getFolder());
 
 
@@ -506,15 +551,24 @@ public class HomeActivity extends KasperActivity implements
                         return;
                     }else{
                         //TODO: maybe sycned
-                        DrivesManager.getInstance().transferDataTo(topFragment.getDriveType(),sdf,false);
+                        ba.getDriveMannager().transferDataTo(topFragment.getDriveType(),sdf,false);
                     }
                     Log.d("TAG", "File Path: " + path);
                 }
                 break;
             case EventConst.PROFILE_OPEN:
-                if (resultCode == EventConst.LOGIN_SUCCESS_RESULT_CODE){
-                    DrivesManager.getInstance().autoSignIn(this, signInCallback);
-                }
+                boolean google = data.getBooleanExtra(EventConst.GOOGLE_CONNECT, true);
+                boolean dropbox = data.getBooleanExtra(EventConst.DBX_CONNECT, true);
+                if (google && !DriveUser.getInstance().isSignedIn(DriveType.GOOGLE))
+                    ba.getDriveMannager().autoSignInGoogle(this, this.signInCallback);
+                if (dropbox && !DriveUser.getInstance().isSignedIn(DriveType.DROPBOX))
+                    ba.getDriveMannager().autoSignInDropbox(this, this.signInCallback);
+                if (!google && DriveUser.getInstance().isSignedIn(DriveType.GOOGLE))
+                    this.signInCallback.callback(EventConst.DISCONNECT,DriveType.GOOGLE,null);
+                if (!dropbox && DriveUser.getInstance().isSignedIn(DriveType.DROPBOX))
+                    this.signInCallback.callback(EventConst.DISCONNECT,DriveType.DROPBOX,null);
+
+                break;
             default:
                 break;
         }
@@ -542,7 +596,7 @@ public class HomeActivity extends KasperActivity implements
         if (topFragment.getVm() != vm)
             topFragment.changeViewMode(vm);
         getSupportActionBar().setTitle(topFragment.getFragmentName());
-        CloudDriveWrapper.getInstance(topFragment.getDriveType()).popListFileTask();
+        ba.getDriveWrapper(topFragment.getDriveType()).popListFileTask();
     }
 
     @Override

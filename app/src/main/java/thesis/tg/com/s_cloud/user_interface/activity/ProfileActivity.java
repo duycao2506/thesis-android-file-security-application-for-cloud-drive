@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.gms.auth.api.Auth;
@@ -22,13 +21,11 @@ import thesis.tg.com.s_cloud.data.DrivesManager;
 import thesis.tg.com.s_cloud.data.from_third_party.dropbox.DbxDriveWrapper;
 import thesis.tg.com.s_cloud.data.from_third_party.google_drive.GoogleDriveWrapper;
 import thesis.tg.com.s_cloud.entities.DriveUser;
-import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
-import thesis.tg.com.s_cloud.utils.DataUtils;
+import thesis.tg.com.s_cloud.framework_components.BaseApplication;
 import thesis.tg.com.s_cloud.utils.DriveType;
 import thesis.tg.com.s_cloud.utils.EventConst;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
-import static thesis.tg.com.s_cloud.utils.EventConst.LOGIN_SUCCESS;
 import static thesis.tg.com.s_cloud.utils.EventConst.RESOLVE_CONNECTION_REQUEST_CODE;
 
 public class ProfileActivity extends AppCompatActivity implements View.OnClickListener {
@@ -40,18 +37,24 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     GoogleDriveWrapper gdw;
     DbxDriveWrapper ddw;
     private boolean edited = false;
+    Intent resultintent;
+    BaseApplication ba;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ba = (BaseApplication) getApplication();
         setContentView(R.layout.activity_profile);
         Toolbar tb = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(tb);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("");
-        gdw = (GoogleDriveWrapper) CloudDriveWrapper.getInstance(DriveType.GOOGLE);
+        gdw = (GoogleDriveWrapper) ba.getDriveWrapper(DriveType.GOOGLE);
         gac = gdw.getClient();
-        ddw = (DbxDriveWrapper) CloudDriveWrapper.getInstance(DriveType.DROPBOX);
+        ddw = (DbxDriveWrapper) ba.getDriveWrapper(DriveType.DROPBOX);
+        resultintent = new Intent();
+        setResult(EventConst.LOGIN_SUCCESS_RESULT_CODE,resultintent);
+
         setUpView();
     }
 
@@ -78,12 +81,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         int id = v.getId();
         switch (id){
             case R.id.btnConnectGoogle:
-                edited = true;
-                if (edited) {
-                    setResult(EventConst.LOGIN_SUCCESS_RESULT_CODE);
-                    DrivesManager.getInstance().refreshLoginAttemps();
-                }
+                ba.getDriveMannager().refreshLoginAttemps();
                 if (!btnGoogle.isActivated()) {
+                    resultintent.putExtra(EventConst.GOOGLE_CONNECT,false);
                     gdw.setOnConnectedAction(gdw.getSignoutAction());
                     btnGoogle.setActivated(true);
                 }
@@ -93,12 +93,9 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 }
                 break;
             case R.id.btnConnectDropbox:
-                edited = true;
-                if (edited) {
-                    setResult(EventConst.LOGIN_SUCCESS_RESULT_CODE);
-                    DrivesManager.getInstance().refreshLoginAttemps();
-                }
+                ba.getDriveMannager().refreshLoginAttemps();
                 if (!btnDropbox.isActivated()) {
+                    resultintent.putExtra(EventConst.DBX_CONNECT,false);
                     ddw.signOut();
                     ddw.saveAccToken(this, "");
                     btnDropbox.setActivated(true);
@@ -120,6 +117,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 if (resultCode == RESULT_OK) {
                     GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
                     if (result.isSuccess()) {
+                        resultintent.putExtra(EventConst.GOOGLE_CONNECT,true);
                         btnGoogle.setActivated(false);
                     }
                 }
@@ -136,6 +134,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         if (token != null){
             ddw.saveAccToken(this, token);
             btnDropbox.setActivated(false);
+            resultintent.putExtra(EventConst.DBX_CONNECT,true);
         }
     }
 

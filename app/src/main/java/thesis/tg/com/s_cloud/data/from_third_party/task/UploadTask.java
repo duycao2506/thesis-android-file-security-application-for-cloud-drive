@@ -5,11 +5,10 @@ import android.os.AsyncTask;
 import com.dropbox.core.DbxException;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import thesis.tg.com.s_cloud.entities.SDriveFile;
+import thesis.tg.com.s_cloud.framework_components.BaseApplication;
 import thesis.tg.com.s_cloud.framework_components.utils.EventBroker;
-import thesis.tg.com.s_cloud.utils.DriveType;
 import thesis.tg.com.s_cloud.utils.EventConst;
 
 /**
@@ -17,8 +16,8 @@ import thesis.tg.com.s_cloud.utils.EventConst;
  */
 
 public class UploadTask extends TransferTask {
-    public UploadTask() {
-        super();
+    public UploadTask(BaseApplication ba) {
+        super(ba);
     }
 
     @Override
@@ -27,11 +26,16 @@ public class UploadTask extends TransferTask {
     }
 
     @Override
-    protected void afterTransfer() {
-        super.afterTransfer();
-        EventBroker.getInstance().publish(EventConst.FINISH_UPLOADING, getType(),file.getLink());
+    protected void afterTransfer(Boolean aVoid) {
+        super.afterTransfer(aVoid);
+        if (aVoid)
+            EventBroker.getInstance().publish(EventConst.FINISH_UPLOADING, getType(),this.file);
+        else
+            EventBroker.getInstance().publish(EventConst.FAIL_TRANSFER,getType(),this.file);
     }
 
+
+    @Override
     public void start(SDriveFile data){
         this.file = data;
         at.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

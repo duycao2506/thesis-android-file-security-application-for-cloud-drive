@@ -76,6 +76,7 @@ public class FileListingTask extends SuperObject {
                 return getDataFromApi();
             } catch (Exception e) {
                 mLastError = e;
+                mLastError.printStackTrace();
                 cancel(true);
                 return null;
             }
