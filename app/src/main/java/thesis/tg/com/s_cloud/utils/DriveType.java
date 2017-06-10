@@ -10,4 +10,5 @@ public interface DriveType {
     int GOOGLE = R.id.gdrive;
     int DROPBOX = R.id.dbox;
     int LOCAL = R.id.local;
+    int LOCAL_STORAGE = 241421;
 }

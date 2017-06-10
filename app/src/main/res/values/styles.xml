@@ -22,7 +22,7 @@
 
     <!--Button Styles-->
     <style name="KasperButton" parent="Widget.AppCompat.Button.Colored">
-        <item name="colorAccent">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorSecondary</item>
         <item name="colorButtonNormal">@color/ep_btn_color_state</item>
         <item name="android:textColor">@color/whiteBack</item>
     </style>
@@ -58,6 +58,12 @@
         <item name="colorControlNormal">#e0e0e0</item>
         <item name="colorControlActivated">@color/whiteBack</item>
         <item name="colorControlHighlight">@color/white</item>
+    </style>
+
+    <style name="Theme.App.GrayText" parent="Theme.AppCompat.Light.DarkActionBar">
+        <item name="colorControlNormal">@color/gray</item>
+        <item name="colorControlActivated">@color/gray_light</item>
+        <item name="colorControlHighlight">@color/gray</item>
     </style>
     <style name="menu_labels_style">
         <item name="android:background">@color/black_transparent</item>

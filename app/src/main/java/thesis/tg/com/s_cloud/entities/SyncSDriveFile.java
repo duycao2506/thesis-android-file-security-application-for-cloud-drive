@@ -13,13 +13,13 @@ import thesis.tg.com.s_cloud.data.DrivesManager;
 public class SyncSDriveFile extends SDriveFile {
     String[] cloudids;
 
-    public SyncSDriveFile() {
-        cloudids = new String[DrivesManager.getInstance().getNumDrive()];
+    public SyncSDriveFile(int numDrives) {
+        cloudids = new String[numDrives];
     }
 
-    public SyncSDriveFile(File file, String mimeType) {
+    public SyncSDriveFile(File file, String mimeType, int numDrives) {
         super(file, mimeType);
-        cloudids = new String[DrivesManager.getInstance().getNumDrive()];
+        cloudids = new String[numDrives];
     }
 
     /**

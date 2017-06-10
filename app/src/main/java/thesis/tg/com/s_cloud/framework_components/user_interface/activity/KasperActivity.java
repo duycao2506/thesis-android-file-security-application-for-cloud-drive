@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import thesis.tg.com.s_cloud.R;
+import thesis.tg.com.s_cloud.framework_components.BaseApplication;
 import thesis.tg.com.s_cloud.framework_components.user_interface.fragment.RecycleViewFragment;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
 
@@ -30,7 +31,7 @@ public class KasperActivity extends AppCompatActivity implements MyCallBack {
     protected String notice;
     private View loadingView;
 
-
+    protected BaseApplication ba;
     protected int loadingViewId;
     protected Toolbar toolbar;
 
@@ -38,13 +39,14 @@ public class KasperActivity extends AppCompatActivity implements MyCallBack {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        ba = (BaseApplication) getApplication();
         setContentView(getContentLayout());
         toolbar = (Toolbar) findViewById(getToolbarRes());
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         initFragment();
-
         cl = (CoordinatorLayout) findViewById(R.id.coordinateLayout);
         loadingView = findViewById(getLoadingViewId());
         loadingView.setVisibility(View.GONE);

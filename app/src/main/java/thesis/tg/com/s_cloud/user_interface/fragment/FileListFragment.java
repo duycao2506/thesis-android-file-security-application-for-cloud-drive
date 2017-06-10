@@ -1,7 +1,9 @@
 package thesis.tg.com.s_cloud.user_interface.fragment;
 
+import android.app.Dialog;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -16,11 +18,13 @@ import java.util.List;
 import thesis.tg.com.s_cloud.R;
 import thesis.tg.com.s_cloud.data.CloudDriveWrapper;
 import thesis.tg.com.s_cloud.entities.SDriveFile;
+import thesis.tg.com.s_cloud.framework_components.BaseApplication;
 import thesis.tg.com.s_cloud.framework_components.user_interface.adapter.KasperRecycleAdapter;
 import thesis.tg.com.s_cloud.framework_components.user_interface.fragment.RecycleViewFragment;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
 import thesis.tg.com.s_cloud.user_interface.activity.HomeActivity;
 import thesis.tg.com.s_cloud.user_interface.adapter.FileCollectionViewAdapter;
+import thesis.tg.com.s_cloud.utils.DriveType;
 import thesis.tg.com.s_cloud.utils.EventConst;
 
 /**
@@ -41,7 +45,7 @@ public class FileListFragment extends RecycleViewFragment {
 
     int driveType;
     ViewMode vm;
-    String[] globalEvents = {EventConst.FINISH_DOWNLOADING,EventConst.FINISH_UPLOADING};
+    String[] globalEvents = {EventConst.FINISH_DOWNLOADING,EventConst.FINISH_UPLOADING, EventConst.FAIL_TRANSFER};
 
 
 
@@ -72,7 +76,8 @@ public class FileListFragment extends RecycleViewFragment {
         if (dataList == null){
             dataList = new ArrayList<>();
         }
-        listViewAdapter.setEntities(dataList);
+        listViewAdapter.setEntities(new ArrayList<>());
+        listViewAdapter.addEntities(dataList);
         llm = (LinearLayoutManager) this.listView.getLayoutManager();
         glm = new GridLayoutManager(this.getContext(), 2);
 
@@ -141,7 +146,7 @@ public class FileListFragment extends RecycleViewFragment {
 
     @Override
     protected void loadMore(final MyCallBack caller) {
-        CloudDriveWrapper.getInstance(driveType).getFilesInTopFolder(true, new MyCallBack() {
+        ba.getDriveWrapper(driveType).getFilesInTopFolder(true, new MyCallBack() {
             @Override
             public void callback(String message, int code, Object data) {
                 if (data != null) {
@@ -158,15 +163,16 @@ public class FileListFragment extends RecycleViewFragment {
 
     @Override
     public void loadRefresh(final MyCallBack caller) {
-        CloudDriveWrapper.getInstance(driveType).getFilesInTopFolder(false, new MyCallBack() {
+        ba.getDriveWrapper(driveType).getFilesInTopFolder(false, new MyCallBack() {
             @Override
             public void callback(String message, int code, Object data) {
                 if (data != null) {
                     List<SDriveFile> tempFileList = (List<SDriveFile>) data;
                     dataList = tempFileList;
-                    if (listViewAdapter == null) return;
-                    listViewAdapter.setEntities(new ArrayList<>());
-                    listViewAdapter.addEntities(dataList);
+                    if (listViewAdapter != null && isVisible()) {
+                        listViewAdapter.setEntities(new ArrayList<>());
+                        listViewAdapter.addEntities(dataList);
+                    }
                 } else {
                     if (caller != null)
                         caller.callback(message, code, data);
@@ -184,16 +190,20 @@ public class FileListFragment extends RecycleViewFragment {
 
     @Override
     public void callback(String message, int code, Object data) {
+        String announcement = "";
         switch (message) {
             case EventConst.FINISH_DOWNLOADING:
-                if (code != this.driveType) return;
-                Toast.makeText(this.getContext()
-                        , "Finish downloading file "+((SDriveFile)data).getName()
-                        ,Toast.LENGTH_SHORT).show();
+                if (code != this.driveType && !isVisible())
+                    break;
+                this.swipeLayout.setRefreshing(true);
+                announcement = getString(R.string.finish_downfile) + ((SDriveFile)data).getName();
+                this.onRefresh();
                 break;
             case EventConst.FINISH_UPLOADING:
-                if (code != this.driveType) return;
+                if (code != this.driveType && !isVisible())
+                    break;
                 this.swipeLayout.setRefreshing(true);
+                announcement = getString(R.string.finish_upfile) + ((SDriveFile)data).getName();
                 this.onRefresh();
                 break;
             case HomeActivity.FINISH:
@@ -202,10 +212,41 @@ public class FileListFragment extends RecycleViewFragment {
                 listViewAdapter.notifyDataSetChanged();
                 break;
             case EventConst.ERROR:
-                String rawmess = (String) data;
-                Toast.makeText(this.getActivity(), rawmess, Toast.LENGTH_SHORT).show();
+                announcement = (String) data;
                 break;
+            case EventConst.INPUT_FOLDER_NAME_FIN:
+                if (code == EventConst.SUCCESS){
+                    ba.getDriveWrapper(driveType).requestNewFolder(data.toString(),this.folder,this);
+                }
+                break;
+            case EventConst.CREATE_FOLDER:
+                announcement = getString(R.string.create_folder) + " " + data.toString() + " ";
+                if (code == EventConst.SUCCESS) {
+                    announcement += getString(R.string.successfully);
+                    this.onRefresh();
+                }else{
+                    announcement += getString(R.string.unsuccessfully);
+                }
+                break;
+            case EventConst.DELETE_FILE:
+                announcement =  getString(R.string.delete) +" " +  data.toString()  + " " ;
+                if (code == EventConst.SUCCESS) {
+                    announcement += getString(R.string.successfully);
+                    this.onRefresh();
+                } else
+                    announcement += getString(R.string.unsuccessfully);
+
+                break;
+            case EventConst.FAIL_TRANSFER:
+                announcement = getString(R.string.transfer_file)
+                        + ((SDriveFile)data).getName()
+                        + getString(R.string.unsuccessfully);
+                break;
+
+
         }
+        if (announcement.length() == 0) return;
+        Toast.makeText(this.getContext(), announcement, Toast.LENGTH_SHORT).show();
     }
 
 
@@ -230,6 +271,11 @@ public class FileListFragment extends RecycleViewFragment {
     }
 
 
+    public void createNewFolder(){
+        NameInputFragment df = new NameInputFragment();
+        df.setCaller(this);
+        df.show(this.getChildFragmentManager(),EventConst.INPUT_FOLDER_NAME_FIN);
+    }
 
     /**
      * File list fragment builder
@@ -237,7 +283,6 @@ public class FileListFragment extends RecycleViewFragment {
 
     public static class Builder {
         private FileListFragment flf;
-        private int driveType;
 
         public Builder() {
             flf = new FileListFragment();
@@ -264,6 +309,11 @@ public class FileListFragment extends RecycleViewFragment {
         }
         public FileListFragment build(){
             return flf;
+        }
+
+        public Builder setBa(BaseApplication ba) {
+            flf.ba = ba;
+            return this;
         }
     }
 }

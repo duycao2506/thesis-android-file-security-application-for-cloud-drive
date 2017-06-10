@@ -19,6 +19,7 @@ public class NotConnectedCloudFragment extends KasperFragment {
     ImageView ivDriveIcon;
     Button btnFix;
     int driveType = 0;
+
     public NotConnectedCloudFragment() {
         super();
         this.setResource(R.layout.fragment_cloud_n_connected);
@@ -34,7 +35,7 @@ public class NotConnectedCloudFragment extends KasperFragment {
             return;
         }else {
             ivDriveIcon.setImageResource
-                    (ResourcesUtils.getInstance().getDriveIconId(driveType));
+                    (ba.getResourcesUtils().getDriveIconId(driveType));
         }
         btnFix = (Button) parent.findViewById(R.id.btnFixDriveConn);
         btnFix.setOnClickListener(new View.OnClickListener() {
@@ -55,7 +56,7 @@ public class NotConnectedCloudFragment extends KasperFragment {
                 return;
             }else
                 ivDriveIcon.setImageResource
-                        (ResourcesUtils.getInstance().getDriveIconId(driveType));
+                        (ba.getResourcesUtils().getDriveIconId(driveType));
         }
     }
 }

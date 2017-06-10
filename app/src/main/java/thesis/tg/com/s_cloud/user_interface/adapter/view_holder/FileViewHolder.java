@@ -19,6 +19,7 @@ import thesis.tg.com.s_cloud.R;
 import thesis.tg.com.s_cloud.data.DrivesManager;
 import thesis.tg.com.s_cloud.entities.SDriveFile;
 import thesis.tg.com.s_cloud.entities.SDriveFolder;
+import thesis.tg.com.s_cloud.framework_components.BaseApplication;
 import thesis.tg.com.s_cloud.framework_components.entity.SuperObject;
 import thesis.tg.com.s_cloud.framework_components.user_interface.adapter.EntityShower;
 import thesis.tg.com.s_cloud.utils.DataUtils;
@@ -57,8 +58,10 @@ public class FileViewHolder extends RecyclerView.ViewHolder implements EntitySho
     public void bindData(final Object so) {
 
         boolean isFolder = so instanceof SDriveFolder;
-        int imgBackColor = ResourcesUtils.getInstance().parseFileTypeColor(context,isFolder);
-        imgMain.setImageResource(ResourcesUtils.getInstance().getFileIconRes((SDriveFile) so));
+        int imgBackColor = ((BaseApplication)context.getApplicationContext()).getResourcesUtils()
+                                .parseFileTypeColor(context,isFolder);
+        imgMain.setImageResource(((BaseApplication)context.getApplicationContext()).getResourcesUtils()
+                                    .getFileIconRes((SDriveFile) so));
         imgMain.setBackgroundColor(imgBackColor);
         final SDriveFile sdf = (SDriveFile) so;
 

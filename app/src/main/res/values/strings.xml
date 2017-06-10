@@ -79,4 +79,18 @@
     <string name="not_connected">Not connected</string>
     <string name="fix_it">Fix it</string>
     <string name="connect">Connect</string>
+    <string name="not_connected_dropbox">You have not connected to Dropbox</string>
+    <string name="not_connected_to">You have not connected to</string>
+    <string name="folder_name">Folder name</string>
+    <string name="cancel">Cancel</string>
+    <string name="new_folder">New Folder</string>
+    <string name="delete">Delete</string>
+    <string name="open_with">Open with...</string>
+    <string name="get_info">Get info</string>
+    <string name="finish_downfile">Finish downloading file</string>
+    <string name="finish_upfile">Finish uploading file</string>
+    <string name="unsuccessfully">unsuccessfully</string>
+    <string name="successfully">successfully</string>
+    <string name="create_folder">Create Folder</string>
+    <string name="transfer_file">Transfer File</string>
 </resources>

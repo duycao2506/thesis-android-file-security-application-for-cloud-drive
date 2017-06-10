@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import thesis.tg.com.s_cloud.framework_components.BaseApplication;
 import thesis.tg.com.s_cloud.framework_components.utils.EventBroker;
 import thesis.tg.com.s_cloud.framework_components.utils.GlobalEventListennerDelegate;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
@@ -22,6 +23,7 @@ public class KasperFragment extends Fragment implements GlobalEventListennerDele
     String fragmentName;
     View parent;
     private int res;
+    protected BaseApplication ba;
 
     public KasperFragment() {
 
@@ -36,6 +38,14 @@ public class KasperFragment extends Fragment implements GlobalEventListennerDele
     }
 
 
+    public BaseApplication getBa() {
+        return ba;
+    }
+
+    public void setBa(BaseApplication ba) {
+        this.ba = ba;
+    }
+
     /**
      * set custom layout for fragments
      * @param res
@@ -47,8 +57,9 @@ public class KasperFragment extends Fragment implements GlobalEventListennerDele
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        ba = (BaseApplication) getActivity().getApplication();
         View parent = inflater.inflate(res,container, false);
-        
+
         onKasperViewCreate(parent);
         
         return parent;

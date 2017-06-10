@@ -7,6 +7,7 @@ import com.dropbox.core.DbxException;
 import java.io.IOException;
 
 import thesis.tg.com.s_cloud.entities.SDriveFile;
+import thesis.tg.com.s_cloud.framework_components.BaseApplication;
 import thesis.tg.com.s_cloud.framework_components.utils.EventBroker;
 import thesis.tg.com.s_cloud.utils.EventConst;
 
@@ -17,8 +18,8 @@ import thesis.tg.com.s_cloud.utils.EventConst;
 public class DownloadTask extends TransferTask {
 
     private int type;
-    public DownloadTask() {
-        super();
+    public DownloadTask(BaseApplication ba) {
+        super(ba);
     }
 
     @Override
@@ -27,11 +28,15 @@ public class DownloadTask extends TransferTask {
     }
 
     @Override
-    protected void afterTransfer() {
-        super.afterTransfer();
-        EventBroker.getInstance().publish(EventConst.FINISH_DOWNLOADING, getType(), this.file);
+    protected void afterTransfer(Boolean aVoid) {
+        super.afterTransfer(aVoid);
+        if (aVoid)
+            EventBroker.getInstance().publish(EventConst.FINISH_DOWNLOADING, this.to, this.file);
+        else
+            EventBroker.getInstance().publish(EventConst.FAIL_TRANSFER, this.to, this.file);
     }
 
+    @Override
     public void start(SDriveFile file){
         this.file = file;
         at.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

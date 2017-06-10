@@ -15,6 +15,7 @@ import java.io.OutputStream;
 
 import thesis.tg.com.s_cloud.data.from_third_party.task.DownloadTask;
 import thesis.tg.com.s_cloud.entities.SDriveFile;
+import thesis.tg.com.s_cloud.framework_components.BaseApplication;
 import thesis.tg.com.s_cloud.framework_components.utils.EventBroker;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
 import thesis.tg.com.s_cloud.utils.DataUtils;
@@ -29,8 +30,8 @@ import thesis.tg.com.s_cloud.utils.SConnectOutputstream;
 public class GoogleDownloadTask extends DownloadTask {
     Drive driveService;
 
-    public GoogleDownloadTask(Drive driveService, int toDriveType) {
-        super();
+    public GoogleDownloadTask(Drive driveService, int toDriveType, BaseApplication ba) {
+        super(ba);
         this.driveService = driveService;
         this.from = DriveType.GOOGLE;
         this.to = toDriveType;
@@ -41,7 +42,7 @@ public class GoogleDownloadTask extends DownloadTask {
         super.transfer();
         SConnectOutputstream outputStream = null;
 
-        OutputStream fos = file.getOutputStream(this.to,file.getName());
+        OutputStream fos = file.getOutputStream(this.to,file.getName(), ba);
         outputStream = new SConnectOutputstream(DataUtils.getDataHeader(), fos);
         InputStream is = driveService.files().get(file.getId())
                 .executeMediaAsInputStream();
@@ -54,6 +55,8 @@ public class GoogleDownloadTask extends DownloadTask {
         outputStream.close();
 
     }
+
+
 
     @Override
     public int getType() {

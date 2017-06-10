@@ -28,4 +28,16 @@ public interface EventConst {
     String RELOGIN_SUCCESS = "RELOGIN_SUCCESS";
     String DISCONNECT = "DISCONNECT";
     String CONNECT_DRIVE = "CONNECT_DRIVE";
+    String CREATE_FOLDER = "CREATE_FOLDER";
+    int SUCCESS = 1;
+    int FAIL = 0;
+    String FOLDER_NAME = "FOLNAME";
+    int CREATE_FOLDER_REQUEST_CODE = 31;
+    String INPUT_FOLDER_NAME_FIN = "input_foldername";
+    String GOOGLE_CONNECT = "GGCONN";
+    String DBX_CONNECT = "DBXCONN";
+    String DELETE_FILE = "deletefile";
+    String FAIL_UPLOAD = "failupload";
+    String FAIL_DOWNLOAD = "faildownload";
+    String FAIL_TRANSFER = "failtransfer";
 }

@@ -47,4 +47,5 @@
     <color name="green_dark">#2da346</color>
     <color name="red">#e94f4f</color>
     <color name="orange">#ffd54f</color>
+    <color name="whiteTrans" >#eeffffff</color>
 </resources>
