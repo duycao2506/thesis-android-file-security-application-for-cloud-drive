@@ -93,4 +93,6 @@
     <string name="successfully">successfully</string>
     <string name="create_folder">Create Folder</string>
     <string name="transfer_file">Transfer File</string>
+    <string name="set_password">Set Password</string>
+    <string name="confirm_pass">Confirm password</string>
 </resources>

@@ -3,8 +3,11 @@ package thesis.tg.com.s_cloud.utils;
 import android.animation.Animator;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -13,6 +16,7 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
@@ -22,6 +26,7 @@ import com.github.rubensousa.bottomsheetbuilder.BottomSheetMenuDialog;
 import com.github.rubensousa.bottomsheetbuilder.adapter.BottomSheetItemClickListener;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 
 import thesis.tg.com.s_cloud.R;
 import thesis.tg.com.s_cloud.data.DrivesManager;
@@ -95,14 +100,16 @@ public class UiUtils {
                 .setMode(BottomSheetBuilder.MODE_LIST)
                 .setTitleTextColorResource(R.color.gray_dark_transparent)
                 .addTitleItem(R.string.wtdn)
-                .setIconTintColorResource(R.color.gray_dark_transparent)
-                .addItem(R.id.upload,R.string.upload, ContextCompat.getDrawable(context,R.drawable.ic_cloud_upload_black_24dp))
-                .addItem(R.id.delete, R.string.delete,ContextCompat.getDrawable(context,R.drawable.ic_delete_black_24dp))
-                .addItem(R.id.info, R.string.get_info, ContextCompat.getDrawable(context,R.drawable.ic_info_black_24dp));
-
+                .setIconTintColorResource(R.color.gray_dark_transparent);
         if (data.getCloud_type() == DriveType.LOCAL){
             bsb.addItem(R.id.open, R.string.open_with, ContextCompat.getDrawable(context,R.drawable.ic_open_with_black_24dp));
         }
+        bsb = bsb.addItem(R.id.info, R.string.get_info, ContextCompat.getDrawable(context,R.drawable.ic_info_black_24dp))
+                .addItem(R.id.upload,R.string.upload, ContextCompat.getDrawable(context,R.drawable.ic_cloud_upload_black_24dp))
+                .addItem(R.id.delete, R.string.delete,ContextCompat.getDrawable(context,R.drawable.ic_delete_black_24dp));
+
+
+
 
 
         BottomSheetMenuDialog dialog = bsb.setItemClickListener(new BottomSheetItemClickListener() {
@@ -113,6 +120,7 @@ public class UiUtils {
                                 buildDriveMenu(data,context,false);
                                 break;
                             case R.id.open:
+                                open(data,context);
                                 break;
                             case R.id.info:
                                 break;
@@ -128,6 +136,20 @@ public class UiUtils {
                 .createDialog();
         dialog.setTitle(R.string.file_menu);
         dialog.show();
+    }
+
+    public static void open(SDriveFile data, Context context){
+        File file = new File(data.getId());
+        MimeTypeMap myMime = MimeTypeMap.getSingleton();
+        Intent newIntent = new Intent(Intent.ACTION_VIEW);
+        String mimeType = myMime.getMimeTypeFromExtension(data.getExtension());
+        newIntent.setDataAndType(Uri.fromFile(file),mimeType);
+        newIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        try {
+            context.startActivity(newIntent);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(context, "No handler for this type of file.", Toast.LENGTH_LONG).show();
+        }
     }
 
     public static void buildDriveMenu(final SDriveFile data, final Context context, final boolean isSync) {

@@ -2,14 +2,12 @@ package thesis.tg.com.s_cloud.data.from_third_party.dropbox;
 
 import android.util.Log;
 
-import com.dropbox.core.DbxWebAuth;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.FolderMetadata;
 import com.dropbox.core.v2.files.ListFolderResult;
 import com.dropbox.core.v2.files.Metadata;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,11 +52,14 @@ public class DbxFilelistTask extends FileListingTask{
                 sdf = new SDriveFile();
                 sdf.setId(fmd.getPathDisplay());
                 sdf.setName(fmd.getName());
-                sdf.setCreatedDate(fmd.getClientModified().toString());
+                sdf.setLastModifiedDate(fmd.getClientModified().toString());
                 sdf.setFileSize(fmd.getSize());
                 String[] tokens = fmd.getName().split("[/\\.]");
                 String ext = tokens[tokens.length-1];
                 sdf.setExtension(ext);
+                sdf.setFolder(folderId);
+                sdf.setCloud_type(DriveType.DROPBOX);
+                sDriveFiles.add(sdf);
             }
             else if (md instanceof FolderMetadata) {
                 fomd = (FolderMetadata) md;
@@ -67,11 +68,10 @@ public class DbxFilelistTask extends FileListingTask{
                 sdf.setMimeType("folder");
                 sdf.setId(fomd.getPathDisplay());
                 sdf.setExtension("");
+                sdf.setFolder(folderId);
+                sdf.setCloud_type(DriveType.DROPBOX);
+                sDriveFiles.add(0,sdf);
             }
-
-            sdf.setFolder(folderId);
-            sdf.setCloud_type(DriveType.DROPBOX);
-            sDriveFiles.add(sdf);
 
             //Logger
             Log.d("ID", md.getPathDisplay()+" & "+md.getPathLower() + md.getName());

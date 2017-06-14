@@ -12,7 +12,10 @@ import thesis.tg.com.s_cloud.framework_components.entity.SuperObject;
 import thesis.tg.com.s_cloud.framework_components.user_interface.adapter.KasperRecycleAdapter;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
 import thesis.tg.com.s_cloud.user_interface.adapter.view_holder.FileViewHolder;
+import thesis.tg.com.s_cloud.user_interface.fragment.FileListFragment;
 import thesis.tg.com.s_cloud.utils.EventConst;
+
+import static android.R.attr.filter;
 
 /**
  * Created by admin on 4/27/17.
@@ -20,6 +23,9 @@ import thesis.tg.com.s_cloud.utils.EventConst;
 
 public class FileCollectionViewAdapter extends KasperRecycleAdapter{
 
+
+    private List<SDriveFile> filterList;
+    private FileListFragment.FileListFilter filter;
 
     public FileCollectionViewAdapter(List<SDriveFile> superObjects, int viewholder_res, Context context) {
         super(context, viewholder_res, superObjects);
@@ -60,4 +66,23 @@ public class FileCollectionViewAdapter extends KasperRecycleAdapter{
     }
 
 
+
+    public void filterList(String text){
+        filter.filter(text);
+    }
+
+    @Override
+    public <T> void setEntities(List<T> entities) {
+        super.setEntities(entities);
+        if (filter != null)
+            filter.setBaseList(this.entities);
+    }
+
+    public  void setFilterList(List filterList){
+        this.entities = filterList;
+    }
+
+    public void initFilter (FileListFragment.FileListFilter filter){
+        this.filter = filter;
+    }
 }

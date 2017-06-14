@@ -1,9 +1,5 @@
 package thesis.tg.com.s_cloud.entities;
 
-import android.app.Application;
-import android.content.Context;
-import android.os.Environment;
-
 import com.dropbox.core.DbxException;
 
 import java.io.File;
@@ -14,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import thesis.tg.com.s_cloud.data.DrivesManager;
 import thesis.tg.com.s_cloud.data.from_third_party.dropbox.DbxDriveWrapper;
 import thesis.tg.com.s_cloud.data.from_third_party.google_drive.GoogleDriveWrapper;
 import thesis.tg.com.s_cloud.framework_components.BaseApplication;
@@ -35,7 +30,7 @@ public class SDriveFile extends SuperObject {
     //bit 0 : Google Drive, bit 1: Dropbox
     int cloud_type = 0;
     String mimeType;
-    String createdDate;
+    String lastModifiedDate;
     String link;
     long fileSize;
     String thumbnail;
@@ -85,12 +80,12 @@ public class SDriveFile extends SuperObject {
         this.mimeType = mimeType;
     }
 
-    public String getCreatedDate() {
-        return createdDate;
+    public String getLastModifiedDate() {
+        return lastModifiedDate;
     }
 
-    public void setCreatedDate(String createdDate) {
-        this.createdDate = createdDate;
+    public void setLastModifiedDate(String lastModifiedDate) {
+        this.lastModifiedDate = lastModifiedDate;
     }
 
     public String getLink() {

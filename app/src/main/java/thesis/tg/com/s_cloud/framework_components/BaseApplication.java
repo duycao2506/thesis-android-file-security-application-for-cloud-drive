@@ -31,7 +31,7 @@ public class BaseApplication extends MultiDexApplication {
         super.onCreate();
         instance = VolleyHelper.getInstance(this);
         CalligraphyConfig.initDefault(new CalligraphyConfig.Builder()
-                .setDefaultFontPath("fonts/OpenSans-Regular.ttf")
+                .setDefaultFontPath("fonts/Roboto-Light.ttf")
                 .setFontAttrId(R.attr.fontPath)
                 .build()
         );

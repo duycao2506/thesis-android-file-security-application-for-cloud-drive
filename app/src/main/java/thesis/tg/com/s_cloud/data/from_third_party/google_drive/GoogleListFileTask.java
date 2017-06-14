@@ -1,11 +1,6 @@
 package thesis.tg.com.s_cloud.data.from_third_party.google_drive;
 
-import android.app.ProgressDialog;
-import android.os.AsyncTask;
 import android.util.Log;
-
-import com.google.api.client.googleapis.extensions.android.gms.auth.GooglePlayServicesAvailabilityIOException;
-import com.google.api.client.googleapis.extensions.android.gms.auth.UserRecoverableAuthIOException;
 
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
@@ -19,9 +14,7 @@ import java.util.List;
 import thesis.tg.com.s_cloud.data.from_third_party.task.FileListingTask;
 import thesis.tg.com.s_cloud.entities.SDriveFile;
 import thesis.tg.com.s_cloud.entities.SDriveFolder;
-import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
 import thesis.tg.com.s_cloud.utils.DriveType;
-import thesis.tg.com.s_cloud.utils.EventConst;
 
 /**
  * Created by admin on 5/8/17.
@@ -42,7 +35,7 @@ public class GoogleListFileTask extends FileListingTask{
         if (nextPageToken.compareTo(END_TOKEN) == 0)
             return new ArrayList<>();
         Drive.Files.List tmpList = driveService.files().list()
-                .setFields("nextPageToken, files(id, name, originalFilename, mimeType, size, createdTime, fullFileExtension, capabilities(canListChildren))");
+                .setFields("nextPageToken, files(id, name, originalFilename, mimeType, size, modifiedTime, fullFileExtension, capabilities(canListChildren))");
         if (nextPageToken != null && !nextPageToken.isEmpty())
             tmpList = tmpList.setPageToken(nextPageToken);
         if (folderId != null && !folderId.isEmpty())
@@ -68,8 +61,9 @@ public class GoogleListFileTask extends FileListingTask{
         ArrayList<SDriveFile> sDriveFiles = new ArrayList<>();
         for (Object obj : driveFiles){
             File file = (File) obj;
-            SDriveFile sDriveFile = file.getCapabilities().getCanListChildren()? new SDriveFolder() : new SDriveFile();
-            sDriveFile.setCreatedDate(file.getCreatedTime().toString());
+            boolean isFolder = file.getCapabilities().getCanListChildren();
+            SDriveFile sDriveFile = isFolder? new SDriveFolder() : new SDriveFile();
+            sDriveFile.setLastModifiedDate(file.getModifiedTime().toString());
             sDriveFile.setId(file.getId());
             sDriveFile.setName(file.getOriginalFilename() == null ? file.getName() : file.getOriginalFilename());
             sDriveFile.setFileSize(file.getSize() == null ? -1 : file.getSize());
@@ -79,7 +73,10 @@ public class GoogleListFileTask extends FileListingTask{
             Log.d("EXTENSION and MIME:", sDriveFile.getExtension() +"//" + sDriveFile.getMimeType());
             sDriveFile.setFolder(folderId);
             sDriveFile.setCloud_type(DriveType.GOOGLE);
-            sDriveFiles.add(sDriveFile);
+            if (isFolder)
+                sDriveFiles.add(0,sDriveFile);
+            else
+                sDriveFiles.add(sDriveFile);
         }
         return sDriveFiles;
     }
