@@ -1,6 +1,7 @@
 package thesis.tg.com.s_cloud.user_interface.activity;
 
 import android.app.ProgressDialog;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -12,6 +13,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.os.Bundle;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.util.SparseArray;
 import android.view.Menu;
@@ -280,6 +282,32 @@ public class HomeActivity extends KasperActivity implements
     public boolean onPrepareOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_home, menu);
         this.menu = menu;
+
+
+        SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView svFile =
+                (SearchView) menu.findItem(R.id.searchCommonView).getActionView();
+        svFile.setSearchableInfo(
+                searchManager.getSearchableInfo(getComponentName()));
+
+        svFile.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+
+                if ( topFragment == null) {
+                    return false;
+                }
+                topFragment.updateSearchText(newText);
+                return true;
+            }
+        });
+
         return super.onCreateOptionsMenu(menu);
     }
 

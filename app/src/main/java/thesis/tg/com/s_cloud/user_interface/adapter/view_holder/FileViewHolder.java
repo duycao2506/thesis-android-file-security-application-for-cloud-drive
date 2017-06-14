@@ -84,7 +84,8 @@ public class FileViewHolder extends RecyclerView.ViewHolder implements EntitySho
 
         //Resource Distinguish
         if (res == R.layout.view_holder_list_file ) {
-            date.setText(isFolder? "" : DataUtils.fileSizeToString(sdf.getFileSize()));
+            long filesize = sdf.getFileSize();
+            date.setText(isFolder || filesize < 0? "" : DataUtils.fileSizeToString(filesize));
         }
 
         if (res == R.layout.view_holder_grid_file) {

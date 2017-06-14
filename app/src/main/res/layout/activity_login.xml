@@ -103,13 +103,13 @@
         </RelativeLayout>
 
         <LinearLayout
-            android:animateLayoutChanges="true"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginLeft="@dimen/margin_10"
             android:layout_marginRight="@dimen/margin_10"
             android:layout_marginTop="@dimen/margin_20"
             android:layout_weight="4"
+            android:animateLayoutChanges="true"
             android:orientation="vertical">
 
             <EditText
@@ -141,11 +141,12 @@
                 android:visibility="invisible" />
 
             <Button
-                app:theme="@style/KasperButton"
                 android:id="@+id/btnlogin"
+                style="@style/KasperButton"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/button_height"
                 android:text="@string/sign_in"
+                android:textStyle="bold"
                 android:theme="@style/KasperButton"
                 android:typeface="serif"
                 android:visibility="invisible" />

@@ -86,7 +86,10 @@ public class LocalDriveWrapper extends CloudDriveWrapper {
 
             sDriveFile.setMimeType(mime);
             sDriveFile.setExtension(ext);
-            sDriveFileArrayList.add(sDriveFile);
+            if (f.isDirectory())
+                sDriveFileArrayList.add(0,sDriveFile);
+            else
+                sDriveFileArrayList.add(sDriveFile);
         }
         return sDriveFileArrayList;
     }

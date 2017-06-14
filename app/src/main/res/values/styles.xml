@@ -24,7 +24,7 @@
     <style name="KasperButton" parent="Widget.AppCompat.Button.Colored">
         <item name="colorAccent">@color/colorSecondary</item>
         <item name="colorButtonNormal">@color/ep_btn_color_state</item>
-        <item name="android:textColor">@color/whiteBack</item>
+        <item name="android:textColor">@color/white</item>
     </style>
 
     <style name="KasperLightButton" parent="Widget.AppCompat.Button.Colored">

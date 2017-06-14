@@ -10,6 +10,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.Filter;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -76,8 +78,8 @@ public class FileListFragment extends RecycleViewFragment {
         if (dataList == null){
             dataList = new ArrayList<>();
         }
-        listViewAdapter.setEntities(new ArrayList<>());
-        listViewAdapter.addEntities(dataList);
+        listViewAdapter.setEntities(dataList);
+        fcva.initFilter(new FileListFilter(dataList, fcva));
         llm = (LinearLayoutManager) this.listView.getLayoutManager();
         glm = new GridLayoutManager(this.getContext(), 2);
 
@@ -94,6 +96,7 @@ public class FileListFragment extends RecycleViewFragment {
     @Override
     protected KasperRecycleAdapter initListViewAdapter() {
         fcva = new FileCollectionViewAdapter(new ArrayList<SDriveFile>(), R.layout.view_holder_list_file, getContext());
+
         return fcva;
     }
 
@@ -170,8 +173,7 @@ public class FileListFragment extends RecycleViewFragment {
                     List<SDriveFile> tempFileList = (List<SDriveFile>) data;
                     dataList = tempFileList;
                     if (listViewAdapter != null && isVisible()) {
-                        listViewAdapter.setEntities(new ArrayList<>());
-                        listViewAdapter.addEntities(dataList);
+                        listViewAdapter.setEntities(dataList);
                     }
                 } else {
                     if (caller != null)
@@ -276,6 +278,62 @@ public class FileListFragment extends RecycleViewFragment {
         df.setCaller(this);
         df.show(this.getChildFragmentManager(),EventConst.INPUT_FOLDER_NAME_FIN);
     }
+
+
+    /**
+     * File List Filter
+     *
+     */
+
+    public class FileListFilter extends Filter {
+
+        private List<SDriveFile> sDriveFileList;
+        private List<SDriveFile> filterSfileList;
+        private FileCollectionViewAdapter adapter;
+
+        public FileListFilter(List<SDriveFile> contactList, FileCollectionViewAdapter adapter) {
+            this.adapter = adapter;
+            this.sDriveFileList = contactList;
+            this.filterSfileList = new ArrayList<>();
+        }
+
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            filterSfileList.clear();
+            final FilterResults results = new FilterResults();
+
+            //here you need to add proper items do filterChatUserList
+            for (final SDriveFile item : sDriveFileList) {
+                if (item.getName().toLowerCase().trim().contains(constraint.toString().toLowerCase())) {
+                    filterSfileList.add(item);
+                }
+            }
+
+            results.values = filterSfileList;
+            results.count = filterSfileList.size();
+            return results;
+        }
+
+        public void resetFilterList(List<SDriveFile> list){
+            this.sDriveFileList = list;
+            this.filterSfileList = new ArrayList<>();
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            adapter.setFilterList(filterSfileList);
+            adapter.notifyDataSetChanged();
+        }
+
+        public void setBaseList(List baseList) {
+            this.sDriveFileList = baseList;
+        }
+    }
+
+    public void updateSearchText(String content){
+        fcva.filterList(content);
+    }
+
 
     /**
      * File list fragment builder
