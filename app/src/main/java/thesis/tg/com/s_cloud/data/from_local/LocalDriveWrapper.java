@@ -1,6 +1,7 @@
 package thesis.tg.com.s_cloud.data.from_local;
 
 import android.os.Environment;
+import android.util.Log;
 import android.webkit.MimeTypeMap;
 
 import com.dropbox.core.DbxException;
@@ -29,6 +30,8 @@ public class LocalDriveWrapper extends CloudDriveWrapper {
         root = new File(Environment.getExternalStorageDirectory().getPath()+ "/" + "S-Cloud");
         if (!root.exists()) {
             boolean a = root.mkdir();
+            if (a)
+                Log.d("DSAD","DSADSAD");
         }
         resetListFileTask();
 
@@ -70,6 +73,7 @@ public class LocalDriveWrapper extends CloudDriveWrapper {
 
     private ArrayList<SDriveFile> filesToSDriveFiles(File[] files){
         ArrayList<SDriveFile> sDriveFileArrayList = new ArrayList<>();
+        if (files == null) return new ArrayList<SDriveFile>();
         for (File f : files){
             SDriveFile sDriveFile = f.isDirectory() ? new SDriveFolder() : new SDriveFile();
             sDriveFile.setFolder(f.getParentFile().getPath());
