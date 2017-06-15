@@ -16,6 +16,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 import thesis.tg.com.s_cloud.R;
 import thesis.tg.com.s_cloud.framework_components.user_interface.fragment.KasperFragment;
@@ -28,7 +29,7 @@ import thesis.tg.com.s_cloud.utils.EventConst;
 
 public class NameInputFragment extends BottomSheetDialogFragment implements View.OnClickListener{
     View parent;
-    Button btnOk, btnCancel;
+    ImageView btnOk, btnCancel;
     EditText edtFoldername;
     MyCallBack caller;
 
@@ -52,10 +53,10 @@ public class NameInputFragment extends BottomSheetDialogFragment implements View
         edtFoldername.setFocusableInTouchMode(true);
         edtFoldername.requestFocus();
 
-        btnCancel = (Button) parent.findViewById(R.id.btnCancelFolder);
+        btnCancel = (ImageView) parent.findViewById(R.id.btnCancelFolder);
         btnCancel.setOnClickListener(this);
         btnCancel.setActivated(true);
-        btnOk = (Button) parent.findViewById(R.id.btnOkayFolder);
+        btnOk = (ImageView) parent.findViewById(R.id.btnOkayFolder);
         btnOk.setOnClickListener(this);
         btnOk.setActivated(true);
         this.getDialog().getContext().setTheme(android.R.style.Theme_Material_Light_Dialog_NoActionBar);
