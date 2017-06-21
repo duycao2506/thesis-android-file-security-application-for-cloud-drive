@@ -95,4 +95,19 @@
     <string name="transfer_file">Transfer File</string>
     <string name="set_password">Set Password</string>
     <string name="confirm_pass">Confirm password</string>
+    <string name="cannot_accesS_file">Cannot access this file</string>
+    <string name="select_file_toup">Select a File to Upload</string>
+    <string name="please_setup_file_manager">Please install a File Manager.</string>
+    <string name="transfering_tasks">Transfering Tasks</string>
+    <string name="authenticator">Authenticator</string>
+    <string name="your_google_drive">Your Google Drive</string>
+    <string name="your_local_storage">Your Local Storage</string>
+    <string name="your_dropbox">Your Dropbox</string>
+    <string name="sign_out">Sign out</string>
+    <string name="rating">Rating</string>
+    <string name="feedback">Feedback</string>
+    <string name="about_us">About us</string>
+    <string name="nothing_toshow">There is nothing to show</string>
+    <string name="please_access_to_this_address_on_a_web_browser">Access this address via a web browser</string>
+    <string name="import_from_pc">Import from PC</string>
 </resources>

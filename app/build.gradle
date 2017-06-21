@@ -40,6 +40,8 @@ dependencies {
     }
 
 //    compile group: 'com.digi.xbee', name: 'xbee-java-library', version: '1.2.0'
+
+
     compile 'com.google.android.gms:play-services-auth:10.2.4'
     compile 'de.hdodenhof:circleimageview:2.1.0'
     compile 'com.google.android.gms:play-services-drive:10.2.4'
@@ -53,15 +55,13 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.github.rubensousa:bottomsheetbuilder:1.6.0'
     compile 'com.dropbox.core:dropbox-core-sdk:2.1.1'
-
-
     compile 'com.getbase:floatingactionbutton:1.10.1'
     compile 'uk.co.chrisjenx:calligraphy:2.3.0'
     compile 'com.android.support:support-compat:25.3.1'
     compile 'com.daimajia.easing:library:2.0@aar'
     compile 'com.daimajia.androidanimations:library:2.2@aar'
     compile 'com.android.support:multidex:1.0.1'
-
+    compile 'com.nanohttpd:nanohttpd-webserver:2.1.1'
     testCompile 'junit:junit:4.12'
 }
 apply plugin: 'com.google.gms.google-services'

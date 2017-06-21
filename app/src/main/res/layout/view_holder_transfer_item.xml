@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/margin_10">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_margin="@dimen/margin_10"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_width="@dimen/news_avatar"
+            android:layout_height="@dimen/news_avatar"
+            android:id="@+id/ivTransferType"
+            android:src="@drawable/cloudtocloud"
+            app:civ_fill_color="@color/super_light_gray"
+            app:civ_border_width="@dimen/margin_10"
+            app:civ_border_color="@color/super_light_gray"
+            />
+
+        <LinearLayout
+            android:layout_marginLeft="@dimen/margin_10"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:gravity="center_vertical"
+            android:layout_height="match_parent">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/padding_3"
+                android:maxLines="1"
+                android:text="File Transfer Name"
+                android:textSize="@dimen/textSize_18"
+                android:ellipsize="end"
+                android:id="@+id/tvFileNameTransfer"
+                />
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_marginBottom="@dimen/padding_8"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/tvFromDrive"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/gray_dark_transparent"
+                    android:maxLines="1"
+                    android:text="from Drive"
+                    />
+                <ImageView
+                    android:layout_width="@dimen/textSize_18"
+                    android:layout_height="@dimen/textSize_18"
+                    android:tint="@color/gray_dark_transparent"
+                    android:src="@drawable/ic_keyboard_arrow_right_black_24dp"
+                    />
+                <TextView
+                    android:id="@+id/tvToDrive"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:maxLines="1"
+                    android:textColor="@color/gray_dark_transparent"
+                    android:text="to Drive"
+                    />
+
+            </LinearLayout>
+            <ProgressBar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/pbFileTask"
+                style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
+                android:max="100"
+                android:progress="40"
+                />
+        </LinearLayout>
+    </LinearLayout>
+
+</android.support.v7.widget.CardView>

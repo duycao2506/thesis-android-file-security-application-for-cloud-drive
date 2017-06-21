@@ -10,6 +10,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
+
 /**
  * Created by admin on 5/12/17.
  */
@@ -20,15 +22,16 @@ public class SConnectOutputstream extends OutputStream {
     OutputStream outputStream;
     boolean isEncrypted = true;
     boolean checkEncrypt = false;
+    MyCallBack prgresslistenner;
+    long progress = 0;
 
     public SConnectOutputstream(byte[] header, OutputStream outputStream) {
         this.header = header;
         this.outputStream = outputStream;
     }
 
-
-    public void setHeader(byte[] header) {
-        this.header = header;
+    public void setPrgresslistenner(MyCallBack prgresslistenner) {
+        this.prgresslistenner = prgresslistenner;
     }
 
     @Override
@@ -60,11 +63,19 @@ public class SConnectOutputstream extends OutputStream {
             tmp[i-index] = isEncrypted? (byte) (b[i] ^ 2) : b[i];
         }
 
-        Log.d("OFFSET", String.valueOf(off));
 
         this.outputStream.write(tmp, 0, len - index);
 
-//        super.write(b,off,len);
+        progress+= len;
 
+        if (prgresslistenner != null)
+            this.prgresslistenner.callback(EventConst.PROGRESS_UPDATE, 1,progress);
+
+    }
+
+    @Override
+    public void close() throws IOException {
+        super.close();
+        this.outputStream.close();
     }
 }

@@ -117,8 +117,6 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
                 .build();
 
         mGoogleApiClient = new GoogleApiClient.Builder(context)
-                .enableAutoManage((FragmentActivity) context /* FragmentActivity */,
-                        this /* OnConnectionFailedListener */)
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .addOnConnectionFailedListener(this)
                 .addConnectionCallbacks(this)

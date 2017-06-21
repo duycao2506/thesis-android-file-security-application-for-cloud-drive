@@ -1,5 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/notice_view"
     android:layout_width="match_parent" android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_30"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_gravity="center"
+        >
+        <ImageView
+            android:layout_width="@dimen/news_avatar"
+            android:layout_height="@dimen/news_avatar"
+            android:src="@drawable/ic_close_black_24dp"
+            android:id="@+id/ivNotice"
+            android:tint="@color/gray_light"
+            />
+        <TextView
+            android:layout_marginTop="@dimen/margin_20"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tvNotice"
+            android:text="@string/example"
+            android:textSize="@dimen/textSize_20"
+            />
+
+    </LinearLayout>
 
 </FrameLayout>

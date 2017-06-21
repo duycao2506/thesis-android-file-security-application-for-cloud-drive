@@ -5,51 +5,55 @@
         <item
             android:id="@+id/local"
             android:icon="@drawable/ic_localstorage"
-            android:title="Your Local Storage" />
+            android:title="@string/your_local_storage" />
         <item
             android:id="@+id/gdrive"
             android:icon="@drawable/ic_gdrive"
-            android:title="Your Google Drive" />
+            android:title="@string/your_google_drive" />
         <item
             android:id="@+id/dbox"
             android:icon="@drawable/ic_dbox"
-            android:title="Your Dropbox" />
+            android:title="@string/your_dropbox" />
     </group>
-
-
-
-    <group android:id="@+id/groupFunc">
-        <item
-            android:id="@+id/nav_auther"
-            android:icon="@drawable/ic_lock_white_24dp"
-            android:title="Authenticator" />
-        <item
-            android:id="@+id/nav_tasks"
-            android:icon="@drawable/ic_lock_white_24dp"
-            android:title="Syncing Tasks" />
-
-        <item
-            android:id="@+id/nav_sigout"
-            android:icon="@drawable/ic_lock_white_24dp"
-            android:title="Sign out" />
-
-    </group>
-
 
     <group android:id="@+id/groupProduct">
         <item
             android:id="@+id/nav_rate"
-            android:icon="@drawable/ic_lock_white_24dp"
-            android:title="Rating" />
+            android:icon="@drawable/ic_star_border_black_24dp"
+            android:title="@string/rating" />
         <item
             android:id="@+id/nav_feedback"
-            android:icon="@drawable/ic_lock_white_24dp"
-            android:title="Feedback" />
+            android:icon="@drawable/ic_feedback_black_24dp"
+            android:title="@string/feedback" />
         <item
             android:id="@+id/nav_about"
-            android:icon="@drawable/ic_lock_white_24dp"
-            android:title="About us" />
+            android:icon="@drawable/ic_info_outline_black_24dp"
+            android:title="@string/about_us" />
     </group>
+
+    <group android:id="@+id/groupFunc">
+        <item
+            android:id="@+id/nav_auther"
+            android:icon="@drawable/ic_devices_black_24dp"
+            android:title="@string/authenticator" />
+        <item
+            android:id="@+id/nav_tasks"
+            android:icon="@drawable/ic_import_export_black_24dp"
+            android:title="@string/transfering_tasks" />
+
+        <item
+            android:id="@+id/nav_sigout"
+            android:icon="@drawable/ic_exit_to_app_black_24dp"
+            android:title="@string/sign_out" />
+        <item
+            android:id="@+id/nav_import"
+            android:icon="@drawable/ic_dvr_black_24dp"
+            android:title="@string/import_from_pc" />
+
+    </group>
+
+
+
 
 
 

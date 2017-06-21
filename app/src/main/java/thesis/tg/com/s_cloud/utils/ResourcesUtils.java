@@ -17,9 +17,9 @@ import thesis.tg.com.s_cloud.framework_components.BaseApplication;
 
 public class ResourcesUtils {
 
-    private int[] strings = {R.string.g_drive, R.string.dbox, R.string.local_storage};
-    private int[] icons = {R.drawable.ic_gdrive, R.drawable.ic_dbox, R.drawable.ic_localstorage };
-    private int[] types = {DriveType.GOOGLE, DriveType.DROPBOX, DriveType.LOCAL};
+    private int[] strings = {R.string.g_drive, R.string.dbox, R.string.local_storage, R.string.local_storage};
+    private int[] icons = {R.drawable.ic_gdrive, R.drawable.ic_dbox, R.drawable.ic_localstorage, R.drawable.ic_localstorage };
+    private int[] types = {DriveType.GOOGLE, DriveType.DROPBOX, DriveType.LOCAL, DriveType.LOCAL_STORAGE};
 
 
     private SparseArray hashmapOrderResources;

@@ -21,6 +21,7 @@ import thesis.tg.com.s_cloud.R;
 import thesis.tg.com.s_cloud.data.CloudDriveWrapper;
 import thesis.tg.com.s_cloud.entities.SDriveFile;
 import thesis.tg.com.s_cloud.framework_components.BaseApplication;
+import thesis.tg.com.s_cloud.framework_components.user_interface.activity.KasperActivity;
 import thesis.tg.com.s_cloud.framework_components.user_interface.adapter.KasperRecycleAdapter;
 import thesis.tg.com.s_cloud.framework_components.user_interface.fragment.RecycleViewFragment;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
@@ -198,14 +199,14 @@ public class FileListFragment extends RecycleViewFragment {
                 if (code != this.driveType && !isVisible())
                     break;
                 this.swipeLayout.setRefreshing(true);
-                announcement = getString(R.string.finish_downfile) + ((SDriveFile)data).getName();
+                announcement = getString(R.string.finish_downfile) + " " + ((SDriveFile)data).getName();
                 this.onRefresh();
                 break;
             case EventConst.FINISH_UPLOADING:
                 if (code != this.driveType && !isVisible())
                     break;
                 this.swipeLayout.setRefreshing(true);
-                announcement = getString(R.string.finish_upfile) + ((SDriveFile)data).getName();
+                announcement = getString(R.string.finish_upfile)+ " "  + ((SDriveFile)data).getName();
                 this.onRefresh();
                 break;
             case HomeActivity.FINISH:
@@ -224,31 +225,32 @@ public class FileListFragment extends RecycleViewFragment {
             case EventConst.CREATE_FOLDER:
                 announcement = getString(R.string.create_folder) + " " + data.toString() + " ";
                 if (code == EventConst.SUCCESS) {
-                    announcement += getString(R.string.successfully);
+                    announcement += " " +getString(R.string.successfully);
                     this.onRefresh();
                 }else{
-                    announcement += getString(R.string.unsuccessfully);
+                    announcement += " " +getString(R.string.unsuccessfully);
                 }
                 break;
             case EventConst.DELETE_FILE:
                 announcement =  getString(R.string.delete) +" " +  data.toString()  + " " ;
                 if (code == EventConst.SUCCESS) {
-                    announcement += getString(R.string.successfully);
+                    announcement += " " + getString(R.string.successfully);
                     this.onRefresh();
                 } else
-                    announcement += getString(R.string.unsuccessfully);
+                    announcement += " "+ getString(R.string.unsuccessfully);
 
                 break;
             case EventConst.FAIL_TRANSFER:
                 announcement = getString(R.string.transfer_file)
                         + ((SDriveFile)data).getName()
+                        + " "
                         + getString(R.string.unsuccessfully);
                 break;
 
 
         }
         if (announcement.length() == 0) return;
-        Toast.makeText(this.getContext(), announcement, Toast.LENGTH_SHORT).show();
+        ((KasperActivity)getContext()).callback(EventConst.MESSAGE,1,announcement);
     }
 
 

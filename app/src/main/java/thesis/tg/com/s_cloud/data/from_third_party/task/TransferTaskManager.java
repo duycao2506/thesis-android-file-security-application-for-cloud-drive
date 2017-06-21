@@ -1,7 +1,13 @@
 package thesis.tg.com.s_cloud.data.from_third_party.task;
 
+import com.dropbox.core.util.Collector;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+
+import thesis.tg.com.s_cloud.framework_components.BaseApplication;
 
 /**
  * Created by admin on 5/20/17.
@@ -15,10 +21,10 @@ public class TransferTaskManager {
 
     private static TransferTaskManager instance;
 
-    public static TransferTaskManager getInstance(){
-        if (instance == null)
-            instance = new TransferTaskManager();
-        return instance;
+    public static TransferTaskManager getInstance(BaseApplication baseApplication){
+        if (baseApplication.getTransferTaskManager() == null)
+            return  new TransferTaskManager();
+        return baseApplication.getTransferTaskManager();
     }
 
     public void remove(TransferTask transferTask) {
