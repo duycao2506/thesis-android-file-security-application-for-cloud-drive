@@ -10,16 +10,24 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Array;
 
+import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
+
 /**
  * Created by admin on 5/12/17.
  */
 
 public class SConnectInputStream extends InputStream {
     InputStream is;
+    MyCallBack prgressUpdater;
+    long finishSize= 0;
 
 
     public SConnectInputStream(InputStream is) {
         this.is = is;
+    }
+
+    public void setPrgressUpdater(MyCallBack prgressUpdater) {
+        this.prgressUpdater = prgressUpdater;
     }
 
     @Override
@@ -40,6 +48,10 @@ public class SConnectInputStream extends InputStream {
         for (int i = off; i < off+len; i ++){
             b[i] = (byte) (b[i] ^ 2);
         }
+        finishSize +=len;
+        if (prgressUpdater != null)
+            prgressUpdater.callback(EventConst.PROGRESS_UPDATE,1, finishSize);
+
         return n;
     }
 }

@@ -5,9 +5,12 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Environment;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -19,10 +22,8 @@ import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import com.daimajia.androidanimations.library.Techniques;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
@@ -31,8 +32,6 @@ import com.squareup.picasso.Picasso;
 import java.io.File;
 import de.hdodenhof.circleimageview.CircleImageView;
 import thesis.tg.com.s_cloud.R;
-import thesis.tg.com.s_cloud.data.CloudDriveWrapper;
-import thesis.tg.com.s_cloud.data.DrivesManager;
 import thesis.tg.com.s_cloud.data.from_third_party.google_drive.GoogleDriveWrapper;
 import thesis.tg.com.s_cloud.entities.DriveUser;
 import thesis.tg.com.s_cloud.entities.SDriveFile;
@@ -43,10 +42,10 @@ import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
 import thesis.tg.com.s_cloud.user_interface.fragment.FileListFragment;
 import thesis.tg.com.s_cloud.user_interface.fragment.FolderPathFragment;
 import thesis.tg.com.s_cloud.user_interface.fragment.NotConnectedCloudFragment;
+import thesis.tg.com.s_cloud.user_interface.fragment.TransferingTaskFragment;
 import thesis.tg.com.s_cloud.utils.DataUtils;
 import thesis.tg.com.s_cloud.utils.DriveType;
 import thesis.tg.com.s_cloud.utils.EventConst;
-import thesis.tg.com.s_cloud.utils.ResourcesUtils;
 import thesis.tg.com.s_cloud.utils.UiUtils;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 import static thesis.tg.com.s_cloud.user_interface.fragment.FileListFragment.ViewMode.GRID;
@@ -105,8 +104,10 @@ public class HomeActivity extends KasperActivity implements
                         HomeActivity.this.callback(HomeActivity.START, 1, null);
                         topFragment = flf;
                         callerRefresh = HomeActivity.this;
-                        if (!folderPathFragment.isAdded())
-                            changeFragment(R.id.app_bar_extension,folderPathFragment,null);
+                        if (!folderPathFragment.isAdded()) {
+                            HomeActivity.this.hideFolderBar(View.VISIBLE);
+                            changeFragment(R.id.app_bar_extension, folderPathFragment, null);
+                        }
                         folderPathFragment.refreshWithFolder(topFragment.getFragmentName());
                         changeFragment(R.id.fragmentHolder,flf,ROOT_TAG);
                         navigationView.setCheckedItem(code);
@@ -194,10 +195,6 @@ public class HomeActivity extends KasperActivity implements
 
         ((FileListFragment)fragmentNavigator.get(DriveType.LOCAL)).loadRefresh(this);
 
-
-
-
-
     }
 
 
@@ -230,12 +227,11 @@ public class HomeActivity extends KasperActivity implements
 
         try {
             startActivityForResult(
-                    Intent.createChooser(intent, "Select a File to Upload"),
+                    Intent.createChooser(intent, getString(R.string.select_file_toup)),
                     EventConst.FILE_SELECT_REQUEST_CODE);
         } catch (android.content.ActivityNotFoundException ex) {
             // Potentially direct the user to the Market with a Dialog
-            Toast.makeText(this, "Please install a File Manager.",
-                    Toast.LENGTH_SHORT).show();
+           this.callback(EventConst.MESSAGE,1,getString(R.string.please_setup_file_manager));
         }
     }
 
@@ -404,22 +400,47 @@ public class HomeActivity extends KasperActivity implements
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        int id = item.getItemId();
-        switch (id){
-            case R.id.local:
-            case R.id.gdrive:
-            case R.id.dbox:
-                getSupportActionBar().setTitle
-                        (getString(ba.getResourcesUtils().getStringId(id)));
-                if (isConnectedDrive(id))
-                    changeDrive(id);
-                else
-                    changeToNotConnected(id);
-                break;
-        }
-
+        final int id = item.getItemId();
         drawer.closeDrawer(GravityCompat.START);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                switch (id){
+                    case R.id.local:
+                    case R.id.gdrive:
+                    case R.id.dbox:
+                        HomeActivity.this.hideFolderBar(View.VISIBLE);
+                        getSupportActionBar().setTitle
+                                (getString(ba.getResourcesUtils().getStringId(id)));
+                        if (isConnectedDrive(id))
+                            changeDrive(id);
+                        else
+                            changeToNotConnected(id);
+                        break;
+                    case R.id.nav_tasks:
+//                        HomeActivity.this.showHideFab(View.GONE);
+//                        HomeActivity.this.hideFolderBar(View.GONE);
+//                        TransferingTaskFragment ttf = new TransferingTaskFragment();
+//                        HomeActivity.this.changeFragment(R.id.fragmentHolder,ttf,null);
+                        Intent inte = new Intent(HomeActivity.this,TransferingActivity.class);
+                        startActivity(inte);
+                        break;
+                    case R.id.nav_import:
+                        Intent inte2 = new Intent(HomeActivity.this, ImportActivity.class);
+                        startActivity(inte2);
+                        break;
+                    default:
+                        break;
+
+                }
+            }
+        },150);
         return true;
+    }
+
+    private void hideFolderBar(int visibility) {
+        if(visibility == this.findViewById(R.id.app_bar_extension).getVisibility()) return;
+        this.findViewById(R.id.app_bar_extension).setVisibility(visibility);
     }
 
     private void changeToNotConnected(int id) {
@@ -525,9 +546,20 @@ public class HomeActivity extends KasperActivity implements
             case EventConst.FINISH_UPLOADING:
                 ((FileListFragment)fragmentNavigator.get(code)).loadRefresh(null);
                 break;
+            case EventConst.MESSAGE:
+                this.makeMessage(data.toString());
+                break;
             default:
                 break;
         }
+    }
+
+    private void makeMessage(final String s) {
+        if (snackbarNoti == null){
+            this.snackbarNoti = Snackbar.make(cl,s,Snackbar.LENGTH_SHORT);
+        }else
+            snackbarNoti.setText(s);
+        snackbarNoti.show();
     }
 
     private void showHideFab(int visibility){
@@ -575,7 +607,7 @@ public class HomeActivity extends KasperActivity implements
 
                     if (path == null || path.length() == 0)
                     {
-                        Toast.makeText(this, "Cannot access this file", Toast.LENGTH_SHORT).show();
+                        this.callback(EventConst.MESSAGE,1,getString(R.string.cannot_accesS_file));
                         return;
                     }else{
                         //TODO: maybe sycned
@@ -627,8 +659,5 @@ public class HomeActivity extends KasperActivity implements
         ba.getDriveWrapper(topFragment.getDriveType()).popListFileTask();
     }
 
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
-    }
+
 }

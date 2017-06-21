@@ -1,5 +1,6 @@
 package thesis.tg.com.s_cloud.framework_components.user_interface.activity;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -9,11 +10,17 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import thesis.tg.com.s_cloud.R;
 import thesis.tg.com.s_cloud.framework_components.BaseApplication;
 import thesis.tg.com.s_cloud.framework_components.user_interface.fragment.RecycleViewFragment;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
+import thesis.tg.com.s_cloud.utils.EventConst;
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
+import static thesis.tg.com.s_cloud.utils.EventConst.EMPTY;
 
 
 public class KasperActivity extends AppCompatActivity implements MyCallBack {
@@ -30,6 +37,7 @@ public class KasperActivity extends AppCompatActivity implements MyCallBack {
     protected CoordinatorLayout cl;
     protected String notice;
     private View loadingView;
+    protected View nothingView;
 
     protected BaseApplication ba;
     protected int loadingViewId;
@@ -46,10 +54,17 @@ public class KasperActivity extends AppCompatActivity implements MyCallBack {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+
+
         initFragment();
         cl = (CoordinatorLayout) findViewById(R.id.coordinateLayout);
+
+
+
         loadingView = findViewById(getLoadingViewId());
         loadingView.setVisibility(View.GONE);
+        nothingView = findViewById(R.id.notice_view);
+
     }
 
     /**
@@ -109,7 +124,12 @@ public class KasperActivity extends AppCompatActivity implements MyCallBack {
                 if (snackbarNoti != null)
                     snackbarNoti.show();
                 break;
-
+            case EventConst.NOTICE:
+                showNoticeScreen(code,data.toString());
+                break;
+            case EventConst.HIDE_NOTICE:
+                hideNoticeScreen();
+                break;
         }
     }
 
@@ -143,6 +163,22 @@ public class KasperActivity extends AppCompatActivity implements MyCallBack {
      *
      * Fragment Backstack change
      */
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
+    public void showNoticeScreen(int iconRes, String mess){
+        TextView tv = (TextView) nothingView.findViewById(R.id.tvNotice);
+        ImageView iv = (ImageView) nothingView.findViewById(R.id.ivNotice);
+        tv.setText(mess);
+        iv.setImageResource(iconRes);
+        nothingView.setVisibility(View.VISIBLE);
+    }
+
+    public void hideNoticeScreen(){
+        this.nothingView.setVisibility(View.GONE);
+    }
 
 
 }

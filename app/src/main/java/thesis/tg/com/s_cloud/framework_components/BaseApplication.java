@@ -8,6 +8,7 @@ import android.util.SparseArray;
 import thesis.tg.com.s_cloud.R;
 import thesis.tg.com.s_cloud.data.CloudDriveWrapper;
 import thesis.tg.com.s_cloud.data.DrivesManager;
+import thesis.tg.com.s_cloud.data.from_third_party.task.TransferTaskManager;
 import thesis.tg.com.s_cloud.framework_components.data.from_server.VolleyHelper;
 import thesis.tg.com.s_cloud.utils.DriveType;
 import thesis.tg.com.s_cloud.utils.ResourcesUtils;
@@ -23,6 +24,7 @@ public class BaseApplication extends MultiDexApplication {
     private SparseArray<CloudDriveWrapper> cdw;
     private DrivesManager driveMannager;
     private ResourcesUtils resourcesUtils;
+    private TransferTaskManager transferTaskManager;
 
 
 
@@ -38,6 +40,7 @@ public class BaseApplication extends MultiDexApplication {
         createDriveWrappers();
         this.driveMannager = DrivesManager.create(this);
         this.resourcesUtils = ResourcesUtils.getInstance(this);
+        this.transferTaskManager = TransferTaskManager.getInstance(this);
     }
 
     private void createDriveWrappers() {
@@ -72,5 +75,9 @@ public class BaseApplication extends MultiDexApplication {
 
     public ResourcesUtils getResourcesUtils() {
         return resourcesUtils;
+    }
+
+    public TransferTaskManager getTransferTaskManager() {
+        return transferTaskManager;
     }
 }

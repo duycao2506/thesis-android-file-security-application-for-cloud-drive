@@ -35,9 +35,5 @@ public class UploadTask extends TransferTask {
     }
 
 
-    @Override
-    public void start(SDriveFile data){
-        this.file = data;
-        at.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
+
 }

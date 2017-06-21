@@ -12,6 +12,7 @@ import com.google.android.gms.common.api.ResultCallback;
 import java.io.File;
 
 import thesis.tg.com.s_cloud.R;
+import thesis.tg.com.s_cloud.data.from_local.LocalImportTask;
 import thesis.tg.com.s_cloud.data.from_third_party.dropbox.DbxDownloadTask;
 import thesis.tg.com.s_cloud.data.from_third_party.dropbox.DbxDriveWrapper;
 import thesis.tg.com.s_cloud.data.from_third_party.dropbox.DbxUploadTask;
@@ -64,10 +65,14 @@ public class DrivesManager {
                     tt = new DbxDownloadTask(
                             ((DbxDriveWrapper)ba.getDriveWrapper(DriveType.DROPBOX))
                                     .getClient(),ba);
-                if (data.getCloud_type() == DriveType.GOOGLE)
+                else if (data.getCloud_type() == DriveType.GOOGLE)
                     tt = new GoogleDownloadTask(
                             ((GoogleDriveWrapper) ba.getDriveWrapper(DriveType.GOOGLE))
-                                    .getDriveService(),driveType,ba);
+                                    .getDriveService(),ba);
+                else {
+                    tt = new LocalImportTask(ba);
+                }
+                if (tt== null) return;
                 break;
             case DriveType.DROPBOX:
                 tt = new DbxUploadTask(
@@ -82,6 +87,8 @@ public class DrivesManager {
             default:
                 return;
         }
+        tt.setFrom(data.getCloud_type());
+        tt.setTo(driveType);
         tt.start(data);
     }
 
@@ -103,7 +110,7 @@ public class DrivesManager {
         if (!DriveUser.getInstance().isSignedIn(DriveType.GOOGLE)) {
             GoogleApiClient gac = null;
             gac =  googleDriveWrapper.getClient();
-            if (gac == null || gac.getContext() != context)
+            if (gac == null)
                 gac = googleDriveWrapper.googleSignInServiceInit(context);
 
             OptionalPendingResult<GoogleSignInResult> op = Auth.GoogleSignInApi.silentSignIn(gac);

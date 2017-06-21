@@ -33,9 +33,11 @@ public class GoogleUploadTask extends UploadTask {
     @Override
     protected void transfer() throws IOException, DbxException{
         super.transfer();
+        SConnectInputStream scis = new SConnectInputStream(file.getInputstream(ba));
+        scis.setPrgressUpdater(this);
         DriveContentInputStream dvic = new DriveContentInputStream(
                 file.getMimeType(),
-                new SConnectInputStream(file.getInputstream(ba)),
+                scis,
                 file.getFileSize());
 
         dvic.setHeader(DataUtils.getDataHeader());
@@ -44,7 +46,7 @@ public class GoogleUploadTask extends UploadTask {
 
         //Getname
         //TODO: MORE is choosing folder
-        boolean isRoot = file.getFolder().length() == 0 || file.getCloud_type() != DriveType.LOCAL_STORAGE;
+        boolean isRoot = file.getFolder().length() == 0 || from != DriveType.LOCAL_STORAGE;
 
         if (!isRoot){
             ArrayList<String> a = new ArrayList<String>();

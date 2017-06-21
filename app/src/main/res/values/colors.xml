@@ -22,7 +22,7 @@
     <color name="colorSecondaryLight">#ffff81</color>
     <color name="black_transparent">#AE000000</color>
 
-
+    <color name="super_light_gray">#eeeeee</color>
     <color name="colorActiveControl">#36d696</color>
     <color name="primary_text">#e1f5fe</color>
     <color name="secondary_text">#f5f0d4</color>

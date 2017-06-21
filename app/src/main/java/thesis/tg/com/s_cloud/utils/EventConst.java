@@ -40,4 +40,9 @@ public interface EventConst {
     String FAIL_UPLOAD = "failupload";
     String FAIL_DOWNLOAD = "faildownload";
     String FAIL_TRANSFER = "failtransfer";
+    String MESSAGE = "MESSAGE";
+    String PROGRESS_UPDATE = "PROGRESS_UPDATE";
+    String EMPTY = "Empty";
+    String NOTICE = "Notice";
+    String HIDE_NOTICE = "HIDE NOTICE";
 }

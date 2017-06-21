@@ -1,0 +1,69 @@
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>S-Cloud File Transfering Portal</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Place favicon.ico in the root directory -->
+
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/Common.css">
+    <link rel="stylesheet" href="css/Kasper.css">
+    <script src="js/vendor/jquery.min.js"></script>
+
+
+</head>
+<body>
+<div>
+    <div id="user_header">
+        <div id="brand">
+            <img id="app_ico_small" src="img/app_ico.png" alt="cloud"/>
+            <div id="title">
+                <h1 id="title_page">S-Cloud</h1>
+            </div>
+        </div>
+    </div>
+    <form name="FormUpload" id="FormUpload" method="post" action="/transfer">
+        <div id="profileForm1" class="card">
+            <div class="text-center">
+                <p class="explain" >This is the uploader which is used for transfering your files into your device</p>
+                <label class="kasperbtn" style="padding-left: 3rem; padding-right: 3rem; padding-top: 1rem; padding-bottom: 1rem; ">
+                    <input type="file" id="uploadbuttonTransfer" name="uploadbuttonTransfer" />
+                    <span>Transfer file...</span>
+                </label>
+            </div>
+            <ul class="transferingList">
+
+            </ul>
+
+
+        </div>
+    </form>
+
+    <form name="FormDecode" id="FormDecode" method="post" action="/decode">
+        <div id="profileForm2" class="card">
+            <div class="text-center">
+                <p class="explain" >On the other hand, this file uploader will help you decode your encoded files</p>
+                <label class="kasperbtn" style="margin: 1rem;padding-left: 3rem; padding-right: 3rem; padding-top: 1rem; padding-bottom: 1rem; ">
+                    <input type="file" id="uploadbuttonDecode" name="uploadbuttonDecode" />
+                    <span>Decode File...</span>
+                </label>
+            </div>
+            <ul class="transferingList">
+
+            </ul>
+        </div>
+    </form>
+
+</div>
+
+<script src="js/vendor/jquery.knob.js"></script>
+<script src="js/vendor/jquery.ui.widget.js"></script>
+<script src="js/vendor/jquery.iframe-transport.js"></script>
+<script src="js/vendor/jquery.fileupload.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

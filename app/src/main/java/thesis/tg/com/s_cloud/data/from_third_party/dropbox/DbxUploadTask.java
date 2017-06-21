@@ -32,12 +32,16 @@ public class DbxUploadTask extends UploadTask {
     protected void transfer() throws IOException, DbxException {
         super.transfer();
         //TODO: MORE is choosing folder
-        UploadUploader uu = dbxClientV2.files().upload(file.getCloud_type() == DriveType.LOCAL_STORAGE? file.getFolder() : "" +"/"+file.getName());
+        UploadUploader uu = dbxClientV2.files().upload((from == DriveType.LOCAL_STORAGE? file.getFolder() : "") +"/"+file.getName());
         OutputStream os = uu.getOutputStream();
+
+        SConnectInputStream scis = new SConnectInputStream(file.getInputstream(ba));
+        scis.setPrgressUpdater(this);
         SequenceInputStream inputStream =
                 new SequenceInputStream(new ByteArrayInputStream(
                         DataUtils.getDataHeader()),
-                        new SConnectInputStream(file.getInputstream(ba)));
+                        scis);
+
         byte[] buffer = new byte[2048];
         int numRead = 0;
         while ((numRead = inputStream.read(buffer)) >= 0) {

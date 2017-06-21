@@ -36,9 +36,4 @@ public class DownloadTask extends TransferTask {
             EventBroker.getInstance().publish(EventConst.FAIL_TRANSFER, this.to, this.file);
     }
 
-    @Override
-    public void start(SDriveFile file){
-        this.file = file;
-        at.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-    }
 }

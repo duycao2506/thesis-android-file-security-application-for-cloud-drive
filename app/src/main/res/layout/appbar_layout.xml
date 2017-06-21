@@ -4,6 +4,7 @@
     android:id="@+id/appbla"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:animateLayoutChanges="true"
     android:theme="@style/AppTheme.AppBarOverlay">
 
     <android.support.v7.widget.Toolbar
@@ -14,9 +15,10 @@
         app:popupTheme="@style/AppTheme.PopupOverlay" />
 
     <FrameLayout
-        android:animateLayoutChanges="true"
+        android:visibility="gone"
         android:id="@+id/app_bar_extension"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        />
 
 </android.support.design.widget.AppBarLayout>

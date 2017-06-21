@@ -4,6 +4,7 @@ import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.DbxClientV2;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 
 import thesis.tg.com.s_cloud.data.from_third_party.task.DownloadTask;
@@ -23,7 +24,6 @@ public class DbxDownloadTask extends DownloadTask {
     public DbxDownloadTask(DbxClientV2 client, BaseApplication ba) {
         super(ba);
         this.dbxClientV2 = client;
-        this.to = DriveType.LOCAL;
     }
 
     @Override
@@ -33,8 +33,16 @@ public class DbxDownloadTask extends DownloadTask {
 
         OutputStream fos = file.getOutputStream(this.to,file.getName(),ba);
         outputStream = new SConnectOutputstream(DataUtils.getDataHeader(), fos);
-        dbxClientV2.files().download(file.getId())
-                .download(outputStream);
+        outputStream.setPrgresslistenner(this);
+        InputStream is = dbxClientV2.files().download(file.getId()).getInputStream();
+        byte[] buffer = new byte[2048];
+        int numRead = 0;
+        while ((numRead = is.read(buffer,0,2048)) >= 0) {
+            outputStream.write(buffer, 0, numRead);
+        }
+        is.close();
+        outputStream.close();
+
     }
 
     @Override

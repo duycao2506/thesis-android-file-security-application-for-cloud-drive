@@ -73,14 +73,4 @@ public class FolderPathFragment extends KasperFragment {
             this.fpa.notifyDataSetChanged();
         }
     }
-
-    public void hideBarExtension() {
-        if (par.getVisibility() == View.GONE) return;
-        UiUtils.ClosingAnimate(this.par, Techniques.SlideOutUp, 300);
-    }
-
-    public void showBarExtension(){
-        if (par.getVisibility() == View.VISIBLE) return;
-        UiUtils.OpeningAnimate(this.par, Techniques.SlideInDown, 300);
-    }
 }

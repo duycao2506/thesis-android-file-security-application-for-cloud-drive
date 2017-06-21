@@ -133,6 +133,7 @@ public class SDriveFile extends SuperObject {
                 }
                 break;
             case DriveType.LOCAL:
+            case DriveType.LOCAL_STORAGE:
                 try {
                     is = new FileInputStream(getId());
                 } catch (FileNotFoundException e) {

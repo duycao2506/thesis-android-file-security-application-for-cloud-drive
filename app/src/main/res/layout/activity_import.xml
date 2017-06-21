@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
+    tools:context="thesis.tg.com.s_cloud.user_interface.activity.ImportActivity">
+    <include layout="@layout/appbar_layout"/>
+    <FrameLayout
+        android:padding="@dimen/margin_30"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:gravity="center"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_width="@dimen/news_avatar"
+                android:layout_height="@dimen/news_avatar"
+                android:src="@drawable/ic_devices_black_24dp"
+                android:tint="@color/gray_light"
+                />
+            <TextView
+                android:layout_marginTop="@dimen/margin_20"
+                android:layout_width="wrap_content"
+                android:textSize="@dimen/textSize_18"
+                android:layout_height="wrap_content"
+                android:textColor="@color/gray_light"
+                android:text="@string/please_access_to_this_address_on_a_web_browser"
+                />
+            <TextView
+                android:id="@+id/tvIpAddress"
+                android:text="@string/example"
+                android:textSize="@dimen/textSize_25"
+                android:textStyle="bold"
+                android:textColor="@color/colorSecondary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+</LinearLayout>
