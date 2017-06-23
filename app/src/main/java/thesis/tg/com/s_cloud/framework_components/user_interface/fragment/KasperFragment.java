@@ -77,7 +77,7 @@ public class KasperFragment extends Fragment implements GlobalEventListennerDele
     @Override
     public void register(String[] events, MyCallBack caller) {
         for (String i : events){
-            EventBroker.getInstance().register(caller, i);
+            EventBroker.getInstance(ba).register(caller, i);
         }
 
     }
@@ -85,7 +85,7 @@ public class KasperFragment extends Fragment implements GlobalEventListennerDele
     @Override
     public void unRegister(String[] events, MyCallBack caller) {
         for (String i : events){
-            EventBroker.getInstance().unRegister(caller, i);
+            EventBroker.getInstance(ba).unRegister(caller, i);
         }
     }
 }

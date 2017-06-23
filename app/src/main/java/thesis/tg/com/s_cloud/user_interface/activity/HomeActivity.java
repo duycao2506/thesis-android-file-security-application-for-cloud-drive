@@ -13,6 +13,7 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.os.Bundle;
@@ -30,8 +31,16 @@ import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.api.services.drive.model.FileList;
 import com.squareup.picasso.Picasso;
 import java.io.File;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 import thesis.tg.com.s_cloud.R;
+import thesis.tg.com.s_cloud.data.DrivesManager;
 import thesis.tg.com.s_cloud.data.from_third_party.google_drive.GoogleDriveWrapper;
 import thesis.tg.com.s_cloud.entities.DriveUser;
 import thesis.tg.com.s_cloud.entities.SDriveFile;
@@ -62,6 +71,7 @@ public class HomeActivity extends KasperActivity implements
     private FileListFragment topFragment;
     private FolderPathFragment folderPathFragment;
     private NavigationView navigationView;
+    private Snackbar staticSnack;
 
 
     public interface FragmentStackName{
@@ -126,6 +136,48 @@ public class HomeActivity extends KasperActivity implements
                 generalProgressDialog.dismiss();
                 generalProgressDialog = null;
             }
+        }
+    };
+
+    private SearchView.OnQueryTextListener onQueryTextListener = new SearchView.OnQueryTextListener() {
+        @Override
+        public boolean onQueryTextSubmit(String query) {
+            return false;
+        }
+
+        @Override
+        public boolean onQueryTextChange(String newText) {
+
+            if ( topFragment == null) {
+                return false;
+            }
+            ba.getDriveWrapper(topFragment.getDriveType()).updateSearchContext(newText);
+            callback(START,1,null);
+            topFragment.loadRefresh(HomeActivity.this);
+            return true;
+        }
+    };
+
+
+
+
+    private MenuItemCompat.OnActionExpandListener onSearchStartCancelListenner = new MenuItemCompat.OnActionExpandListener() {
+        @Override
+        public boolean onMenuItemActionExpand(MenuItem item) {
+            backFolder(getSupportFragmentManager().getBackStackEntryCount()-1);
+            SDriveFolder sdf = new SDriveFolder();
+            sdf.setName("Search");
+            sdf.setId(EventConst.SEARCH);
+            callback(EventConst.OPEN_FOLDER,1,sdf);
+            showHideFab(View.GONE);
+            return true;
+        }
+
+        @Override
+        public boolean onMenuItemActionCollapse(MenuItem item) {
+            backFolder(getSupportFragmentManager().getBackStackEntryCount()-1);
+            showHideFab(View.VISIBLE);
+            return true;
         }
     };
 
@@ -195,27 +247,33 @@ public class HomeActivity extends KasperActivity implements
 
         ((FileListFragment)fragmentNavigator.get(DriveType.LOCAL)).loadRefresh(this);
 
+        if (!ba.getResourcesUtils().isExternalStorageAvailable()){
+            makeMessage(getString(R.string.sdcardnotmount));
+        }
+
+
+        startInternetCheckingCirculation();
     }
 
 
     private void registerCallBack(){
-        EventBroker.getInstance().register(this.signInCallback,EventConst.LOGIN_SUCCESS);
-        EventBroker.getInstance().register(this.signInCallback,EventConst.RELOGIN_SUCCESS);
-        EventBroker.getInstance().register(this.signInCallback,EventConst.DISCONNECT);
-        EventBroker.getInstance().register(this.signInCallback,EventConst.LOGIN_FAIL);
-        EventBroker.getInstance().register(this.signInCallback,EventConst.RELOGIN_FAIL);
-        EventBroker.getInstance().register(this,EventConst.FINISH_DOWNLOADING);
-        EventBroker.getInstance().register(this,EventConst.FINISH_UPLOADING);
+        EventBroker.getInstance(ba).register(this.signInCallback,EventConst.LOGIN_SUCCESS);
+        EventBroker.getInstance(ba).register(this.signInCallback,EventConst.RELOGIN_SUCCESS);
+        EventBroker.getInstance(ba).register(this.signInCallback,EventConst.DISCONNECT);
+        EventBroker.getInstance(ba).register(this.signInCallback,EventConst.LOGIN_FAIL);
+        EventBroker.getInstance(ba).register(this.signInCallback,EventConst.RELOGIN_FAIL);
+        EventBroker.getInstance(ba).register(this,EventConst.FINISH_DOWNLOADING);
+        EventBroker.getInstance(ba).register(this,EventConst.FINISH_UPLOADING);
     }
 
     private void unregisterCallback(){
-        EventBroker.getInstance().unRegister(this.signInCallback,EventConst.LOGIN_SUCCESS);
-        EventBroker.getInstance().unRegister(this.signInCallback,EventConst.RELOGIN_SUCCESS);
-        EventBroker.getInstance().unRegister(this.signInCallback,EventConst.DISCONNECT);
-        EventBroker.getInstance().unRegister(this.signInCallback,EventConst.LOGIN_FAIL);
-        EventBroker.getInstance().unRegister(this.signInCallback,EventConst.RELOGIN_FAIL);
-        EventBroker.getInstance().unRegister(this,EventConst.FINISH_DOWNLOADING);
-        EventBroker.getInstance().unRegister(this,EventConst.FINISH_UPLOADING);
+        EventBroker.getInstance(ba).unRegister(this.signInCallback,EventConst.LOGIN_SUCCESS);
+        EventBroker.getInstance(ba).unRegister(this.signInCallback,EventConst.RELOGIN_SUCCESS);
+        EventBroker.getInstance(ba).unRegister(this.signInCallback,EventConst.DISCONNECT);
+        EventBroker.getInstance(ba).unRegister(this.signInCallback,EventConst.LOGIN_FAIL);
+        EventBroker.getInstance(ba).unRegister(this.signInCallback,EventConst.RELOGIN_FAIL);
+        EventBroker.getInstance(ba).unRegister(this,EventConst.FINISH_DOWNLOADING);
+        EventBroker.getInstance(ba).unRegister(this,EventConst.FINISH_UPLOADING);
 
     }
 
@@ -287,22 +345,10 @@ public class HomeActivity extends KasperActivity implements
         svFile.setSearchableInfo(
                 searchManager.getSearchableInfo(getComponentName()));
 
-        svFile.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
-            }
+        svFile.setOnQueryTextListener(this.onQueryTextListener);
+        MenuItemCompat.setOnActionExpandListener(menu.findItem(R.id.searchCommonView),this.onSearchStartCancelListenner);
 
-            @Override
-            public boolean onQueryTextChange(String newText) {
 
-                if ( topFragment == null) {
-                    return false;
-                }
-                topFragment.updateSearchText(newText);
-                return true;
-            }
-        });
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -407,6 +453,10 @@ public class HomeActivity extends KasperActivity implements
             public void run() {
                 switch (id){
                     case R.id.local:
+                        if (!ba.getResourcesUtils().isExternalStorageAvailable()){
+                            makeMessage(getString(R.string.sdcardnotmount));
+                            break;
+                        }
                     case R.id.gdrive:
                     case R.id.dbox:
                         HomeActivity.this.hideFolderBar(View.VISIBLE);
@@ -528,15 +578,21 @@ public class HomeActivity extends KasperActivity implements
                 getSupportActionBar().setTitle(topFragment.getFragmentName());
                 break;
             case EventConst.BACK_FOLDER:
-                int numback = code;
-                for (int i = 0 ; i < numback; i ++){
-                    onBackPressed();
+                if (code == getSupportFragmentManager().getBackStackEntryCount()-1){
+                    MenuItem menuItem = menu.findItem(R.id.searchCommonView);
+                    if (menuItem.isActionViewExpanded()){
+                        menuItem.collapseActionView();
+                        break;
+                    }
                 }
+                backFolder(code);
+                if (topFragment.getFolder() == EventConst.SEARCH) showHideFab(View.GONE);
                 break;
             case EventConst.SCROLL_DOWN:
                 showHideFab(View.GONE);
                 break;
             case EventConst.SCROLL_UP:
+                if (topFragment.getFolder() == EventConst.SEARCH) break;
                 showHideFab(View.VISIBLE);
                 break;
             case EventConst.DELETE_FILE:
@@ -556,11 +612,23 @@ public class HomeActivity extends KasperActivity implements
 
     private void makeMessage(final String s) {
         if (snackbarNoti == null){
-            this.snackbarNoti = Snackbar.make(cl,s,Snackbar.LENGTH_SHORT);
+            this.snackbarNoti = Snackbar.make(cl,s,Snackbar.LENGTH_LONG);
         }else
             snackbarNoti.setText(s);
         snackbarNoti.show();
     }
+
+    private void showHideStaticMessage(String mess, boolean show){
+        if (staticSnack == null){
+            this.staticSnack = Snackbar.make(cl,mess,Snackbar.LENGTH_INDEFINITE);
+        }else
+            staticSnack.setText(mess);
+        if (!show)
+            staticSnack.dismiss();
+        else
+            staticSnack.show();
+    }
+
 
     private void showHideFab(int visibility){
         if (fabmenu.getVisibility() != visibility) {
@@ -657,6 +725,38 @@ public class HomeActivity extends KasperActivity implements
             topFragment.changeViewMode(vm);
         getSupportActionBar().setTitle(topFragment.getFragmentName());
         ba.getDriveWrapper(topFragment.getDriveType()).popListFileTask();
+    }
+
+    private void startInternetCheckingCirculation(){
+        ScheduledExecutorService scheduler =
+                Executors.newSingleThreadScheduledExecutor();
+
+        scheduler.scheduleAtFixedRate
+                (new Runnable() {
+                    public void run() {
+                        boolean isConnected = false;
+                        try {
+                            HttpURLConnection urlc = (HttpURLConnection) (new URL("http://www.google.com").openConnection());
+                            urlc.setRequestProperty("User-Agent", "Test");
+                            urlc.setRequestProperty("Connection", "close");
+                            urlc.setConnectTimeout(1500);
+                            urlc.connect();
+                            isConnected = urlc.getResponseCode() == 200;
+                        } catch (IOException e) {
+                            Log.e("CHECK INTERNET", getString(R.string.check_internet), e);
+                        }
+                        if (!isConnected && (staticSnack == null || !staticSnack.isShown()))
+                            showHideStaticMessage(getString(R.string.check_internet),true);
+                        if (isConnected && staticSnack != null && staticSnack.isShown())
+                            staticSnack.dismiss();
+                    }
+                }, 0, 1, TimeUnit.MINUTES);
+    }
+
+    private void backFolder(int numBack){
+        for (int i = 0 ; i < numBack; i ++){
+            onBackPressed();
+        }
     }
 
 

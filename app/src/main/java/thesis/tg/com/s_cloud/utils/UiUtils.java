@@ -177,6 +177,9 @@ public class UiUtils {
         for (int i = 0; i < ba.getDriveMannager().getNumDrive(); i++){
             if (data.getCloud_type()==resrcMnger.getTypeByIndex(i)) continue;
             int type = resrcMnger.getTypeByIndex(i);
+            if (type == DriveType.LOCAL)
+                if (!ba.getResourcesUtils().isExternalStorageAvailable())
+                    continue;
             bsb = bsb.addItem(type,resrcMnger.getStringId(type), resrcMnger.getDriveIconId(type));
         }
 

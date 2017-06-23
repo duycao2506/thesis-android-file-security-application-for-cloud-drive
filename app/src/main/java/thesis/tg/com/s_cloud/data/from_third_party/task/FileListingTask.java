@@ -30,6 +30,7 @@ public class FileListingTask extends SuperObject {
     protected String folderId = "";
     protected ListFileTask listFileTask;
     protected String nextPageToken = "";
+    protected String searchToken = null;
 
 
 
@@ -40,6 +41,9 @@ public class FileListingTask extends SuperObject {
 
     public void getMoreList(MyCallBack caller)
     {
+        if (listFileTask != null)
+            if (!listFileTask.isCancelled())
+                listFileTask.cancel(true);
         listFileTask = new ListFileTask(caller);
         listFileTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
@@ -58,6 +62,13 @@ public class FileListingTask extends SuperObject {
         return null;
     }
 
+    public String getSearchToken() {
+        return searchToken;
+    }
+
+    public void setSearchToken(String searchToken) {
+        this.searchToken = searchToken;
+    }
 
     protected class ListFileTask extends AsyncTask<Void, Void, List<SDriveFile>> {
         private MyCallBack caller;

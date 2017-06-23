@@ -1,6 +1,7 @@
 package thesis.tg.com.s_cloud.data;
 
 import android.content.Context;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 
 import com.google.android.gms.auth.api.Auth;
@@ -142,12 +143,19 @@ public class DrivesManager {
     }
 
     public String getLocalPath() {
-        File localfolder = android.os.Environment.getExternalStorageDirectory();
+        File localfolder = Environment.getExternalStorageDirectory();
         File appFolder = new File(localfolder, "S-Cloud");
-        if (!appFolder.exists())
-            appFolder.mkdir();
+        if (!appFolder.exists()) {
+            boolean isuc = appFolder.mkdirs();
+            if (!isuc){
+                return "21412";
+            }
+        }
         return appFolder.getPath();
     }
+
+
+
 
     public void setSuccessLogin(int driveType){
         loggedInDrives[ba.getResourcesUtils().getIndexByType(driveType)] = 1;
@@ -158,9 +166,13 @@ public class DrivesManager {
     }
 
     public boolean isTriedLoginAll(){
+        int count = 0;
         for (int i : loggedInDrives){
             if (i == 0)
-                return false;
+                if(count > 1)
+                    return false;
+                else
+                    count++;
         }
         return true;
     }

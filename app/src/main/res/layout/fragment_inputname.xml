@@ -35,7 +35,7 @@
                 android:text="@string/create_folder"
                 android:textAlignment="center"
                 android:textColor="@color/gray"
-                android:textSize="@dimen/textSize_25"
+                android:textSize="@dimen/textSize_16"
                 android:textStyle="bold" />
             <ImageView
                 android:layout_width="wrap_content"
@@ -49,15 +49,15 @@
 
         <EditText
             android:id="@+id/edtFolderName"
-            android:imeOptions="actionDone"
-            android:theme="@style/Theme.App.GrayText"
-            android:textColor="@color/gray_dark_transparent"
-            android:textColorHint="@color/gray_light"
-            android:layout_marginBottom="@dimen/margin_10"
-            android:minWidth="@dimen/carousel_height"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_10"
             android:hint="@string/folder_name"
-            android:layout_height="wrap_content" />
+            android:imeOptions="actionDone"
+            android:minWidth="@dimen/carousel_height"
+            android:textColor="@color/gray"
+            android:textColorHint="@color/gray_light"
+            android:theme="@style/Theme.App.GrayText" />
 
     </LinearLayout>
 

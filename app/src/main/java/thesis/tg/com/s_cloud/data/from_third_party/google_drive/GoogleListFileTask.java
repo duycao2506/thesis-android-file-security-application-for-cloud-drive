@@ -15,18 +15,22 @@ import thesis.tg.com.s_cloud.data.from_third_party.task.FileListingTask;
 import thesis.tg.com.s_cloud.entities.SDriveFile;
 import thesis.tg.com.s_cloud.entities.SDriveFolder;
 import thesis.tg.com.s_cloud.utils.DriveType;
+import thesis.tg.com.s_cloud.utils.EventConst;
 
 /**
  * Created by admin on 5/8/17.
  */
 
 public class GoogleListFileTask extends FileListingTask{
+
     Drive driveService;
 
     public GoogleListFileTask(Drive driveService, String folderId) {
         super(folderId);
         this.driveService = driveService;
     }
+
+
 
 
     @Override
@@ -38,9 +42,12 @@ public class GoogleListFileTask extends FileListingTask{
                 .setFields("nextPageToken, files(id, name, originalFilename, mimeType, size, modifiedTime, fullFileExtension, capabilities(canListChildren))");
         if (nextPageToken != null && !nextPageToken.isEmpty())
             tmpList = tmpList.setPageToken(nextPageToken);
-        if (folderId != null && !folderId.isEmpty())
-            tmpList = tmpList.setQ("'" + folderId + "' in parents and trashed=false");
 
+        if (folderId.compareTo(EventConst.SEARCH)==0)
+            tmpList = tmpList.setQ("'me' in owners and name contains '"+ searchToken +"'" + " and trashed=false");
+        else {
+            tmpList = tmpList.setQ(("'" + folderId + "' in parents and") + "trashed=false");
+        }
         FileList result = tmpList.execute();
         List<File> files = result.getFiles();
 

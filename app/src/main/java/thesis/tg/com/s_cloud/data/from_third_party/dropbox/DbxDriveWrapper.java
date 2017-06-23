@@ -10,6 +10,8 @@ import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.android.AuthActivity;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.auth.DbxUserAuthRequests;
+import com.dropbox.core.v2.files.DbxUserFilesRequests;
+import com.dropbox.core.v2.files.SearchBuilder;
 import com.dropbox.core.v2.users.DbxUserUsersRequests;
 import com.dropbox.core.v2.users.FullAccount;
 

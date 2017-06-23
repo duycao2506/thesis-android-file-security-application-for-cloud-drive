@@ -10,7 +10,9 @@ import thesis.tg.com.s_cloud.data.CloudDriveWrapper;
 import thesis.tg.com.s_cloud.data.DrivesManager;
 import thesis.tg.com.s_cloud.data.from_third_party.task.TransferTaskManager;
 import thesis.tg.com.s_cloud.framework_components.data.from_server.VolleyHelper;
+import thesis.tg.com.s_cloud.framework_components.utils.EventBroker;
 import thesis.tg.com.s_cloud.utils.DriveType;
+import thesis.tg.com.s_cloud.utils.NotificationHandler;
 import thesis.tg.com.s_cloud.utils.ResourcesUtils;
 import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
 
@@ -25,7 +27,8 @@ public class BaseApplication extends MultiDexApplication {
     private DrivesManager driveMannager;
     private ResourcesUtils resourcesUtils;
     private TransferTaskManager transferTaskManager;
-
+    private EventBroker eventBroker;
+    private NotificationHandler notificationHandler;
 
 
     @Override
@@ -41,6 +44,8 @@ public class BaseApplication extends MultiDexApplication {
         this.driveMannager = DrivesManager.create(this);
         this.resourcesUtils = ResourcesUtils.getInstance(this);
         this.transferTaskManager = TransferTaskManager.getInstance(this);
+        this.eventBroker = EventBroker.getInstance(this);
+        notificationHandler = new NotificationHandler(this);
     }
 
     private void createDriveWrappers() {
@@ -79,5 +84,9 @@ public class BaseApplication extends MultiDexApplication {
 
     public TransferTaskManager getTransferTaskManager() {
         return transferTaskManager;
+    }
+
+    public EventBroker getEventBroker() {
+        return eventBroker;
     }
 }

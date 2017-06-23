@@ -138,4 +138,8 @@ public class CloudDriveWrapper {
     public int getType(){
         return 0;
     }
+
+    public void updateSearchContext(String query) {
+        this.glftList.get(glftList.size()-1).setSearchToken(query);
+    }
 }

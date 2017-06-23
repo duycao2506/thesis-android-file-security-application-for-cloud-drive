@@ -64,7 +64,7 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
         @Override
         public void callback(String message, int code, Object data) {
             initCredential();
-            EventBroker.getInstance().publish(EventConst.LOGIN_SUCCESS,getType(),null);
+            EventBroker.getInstance((BaseApplication) context.getApplicationContext()).publish(EventConst.LOGIN_SUCCESS,getType(),null);
         }
     };
 
@@ -72,7 +72,7 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
         @Override
         public void callback(String message, int code, Object data) {
             signOut();
-            EventBroker.getInstance().publish(EventConst.DISCONNECT, getType(), null);
+            EventBroker.getInstance((BaseApplication) context.getApplicationContext()).publish(EventConst.DISCONNECT, getType(), null);
         }
     };
 

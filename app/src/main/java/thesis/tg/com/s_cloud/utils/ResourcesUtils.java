@@ -2,6 +2,8 @@ package thesis.tg.com.s_cloud.utils;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Environment;
+import android.util.Log;
 import android.util.SparseArray;
 
 import java.util.HashMap;
@@ -10,6 +12,8 @@ import thesis.tg.com.s_cloud.R;
 import thesis.tg.com.s_cloud.data.DrivesManager;
 import thesis.tg.com.s_cloud.entities.SDriveFile;
 import thesis.tg.com.s_cloud.framework_components.BaseApplication;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by CKLD on 5/27/17.
@@ -118,5 +122,27 @@ public class ResourcesUtils {
         return (int) hashmapOrderResources.get(driveType);
     }
 
+    public boolean isExternalStorageAvailable() {
+
+        String state = Environment.getExternalStorageState();
+        boolean mExternalStorageAvailable = false;
+        boolean mExternalStorageWriteable = false;
+
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            // We can read and write the media
+            mExternalStorageAvailable = mExternalStorageWriteable = true;
+        } else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+            // We can only read the media
+            mExternalStorageAvailable = true;
+            mExternalStorageWriteable = false;
+        } else {
+            // Something else is wrong. It may be one of many other states, but
+            // all we need
+            // to know is we can neither read nor write
+            mExternalStorageAvailable = mExternalStorageWriteable = false;
+        }
+
+        return mExternalStorageAvailable && mExternalStorageWriteable;
+    }
 
 }

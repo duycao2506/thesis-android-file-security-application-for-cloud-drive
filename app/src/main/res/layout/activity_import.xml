@@ -5,9 +5,15 @@
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimaryDark"
+    android:background="@color/colorPrimary"
     tools:context="thesis.tg.com.s_cloud.user_interface.activity.ImportActivity">
-    <include layout="@layout/appbar_layout"/>
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:popupTheme="@style/AppTheme.PopupOverlay"
+        android:theme="@style/AppTheme.AppBarOverlay"/>
     <FrameLayout
         android:padding="@dimen/margin_30"
         android:layout_width="match_parent"

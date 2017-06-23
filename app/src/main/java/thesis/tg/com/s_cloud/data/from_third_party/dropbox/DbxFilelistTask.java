@@ -7,6 +7,9 @@ import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.FolderMetadata;
 import com.dropbox.core.v2.files.ListFolderResult;
 import com.dropbox.core.v2.files.Metadata;
+import com.dropbox.core.v2.files.SearchMatch;
+import com.dropbox.core.v2.files.SearchMode;
+import com.dropbox.core.v2.files.SearchResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +19,7 @@ import thesis.tg.com.s_cloud.entities.SDriveFile;
 import thesis.tg.com.s_cloud.entities.SDriveFolder;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
 import thesis.tg.com.s_cloud.utils.DriveType;
+import thesis.tg.com.s_cloud.utils.EventConst;
 
 /**
  * Created by admin on 5/21/17.
@@ -43,7 +47,11 @@ public class DbxFilelistTask extends FileListingTask{
     public ArrayList<SDriveFile> toSDriveFile(List driveFiles) {
         ArrayList<SDriveFile> sDriveFiles = new ArrayList<>();
         for (Object obj : driveFiles){
-            Metadata md = (Metadata) obj;
+            Metadata md = null;
+            if (obj instanceof SearchMatch)
+                md = ((SearchMatch) obj).getMetadata();
+            else
+                md = (Metadata) obj;
             FileMetadata fmd = null;
             FolderMetadata fomd =  null;
             SDriveFile sdf = null;
@@ -87,6 +95,11 @@ public class DbxFilelistTask extends FileListingTask{
     protected List<SDriveFile> getDataFromApi() throws Exception {
         if (this.nextPageToken == END_TOKEN)
             return new ArrayList< SDriveFile>();
+        if (this.folderId == EventConst.SEARCH) {
+            SearchResult sr = dbxClientV2.files().searchBuilder("",searchToken).withMode(SearchMode.FILENAME).start();
+            this.nextPageToken = END_TOKEN;
+            return toSDriveFile(sr.getMatches());
+        }
         ListFolderResult lfr = nextPageToken.length() == 0?
                 dbxClientV2.files().listFolder(folderId)
                 : dbxClientV2.files().listFolderContinue(nextPageToken);

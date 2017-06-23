@@ -120,6 +120,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     if (result.isSuccess()) {
                         resultintent.putExtra(EventConst.GOOGLE_CONNECT,true);
                         btnGoogle.setActivated(false);
+                        gdw.setOnConnectedAction(null);
                     }
                 }
                 break;
