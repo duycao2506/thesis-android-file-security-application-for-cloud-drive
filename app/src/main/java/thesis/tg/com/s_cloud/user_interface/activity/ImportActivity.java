@@ -3,6 +3,7 @@ package thesis.tg.com.s_cloud.user_interface.activity;
 import android.content.Context;
 import android.net.wifi.WifiManager;
 import android.os.Environment;
+import android.support.design.widget.AppBarLayout;
 import android.support.v4.os.EnvironmentCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -35,7 +36,7 @@ import static android.content.ContentValues.TAG;
 
 public class ImportActivity extends AppCompatActivity {
 
-    private final int PORT = 8765;
+    private final int PORT = 8800;
     public static final String
             JS_FOLDER = "js",
             CSS_FOLDER = "css",
@@ -55,9 +56,12 @@ public class ImportActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_import);
         Toolbar tb = (Toolbar) findViewById(R.id.toolbar);
+
         setSupportActionBar(tb);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(R.string.import_from_pc);
+        getSupportActionBar().setTitle("");
+        getSupportActionBar().setElevation(0);
+
 
         tvIpAddress = (TextView) findViewById(R.id.tvIpAddress);
 
@@ -118,8 +122,9 @@ public class ImportActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        destroyTmpFolder();
         server.stop();
+        destroyTmpFolder();
+
     }
 
     private class SCloudHttpd extends NanoHTTPD {

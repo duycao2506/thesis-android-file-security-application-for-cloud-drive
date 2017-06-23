@@ -79,6 +79,13 @@ public class TransferingTaskFragment extends RecycleViewFragment {
     public void onDestroy() {
         super.onDestroy();
         this.unRegister(this.globalEvents,this);
+        ((TransferingTaskAdapter)this.listViewAdapter).removeCaller();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        ((TransferingTaskAdapter)this.listViewAdapter).removeCaller();
     }
 
     @Override

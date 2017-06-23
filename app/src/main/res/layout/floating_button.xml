@@ -23,7 +23,7 @@
         android:layout_gravity="bottom|right"
         fab:fab_addButtonColorNormal="@color/colorSecondary"
         fab:fab_addButtonColorPressed="@color/colorSecondaryDark"
-        fab:fab_addButtonPlusIconColor="@color/white"
+        fab:fab_addButtonPlusIconColor="@color/kp_btn_txt_color_state"
         fab:fab_labelStyle="@style/menu_labels_style"
         android:layout_marginBottom="@dimen/margin_20"
         android:layout_marginRight="@dimen/margin_20"

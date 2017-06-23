@@ -29,9 +29,9 @@ public class UploadTask extends TransferTask {
     protected void afterTransfer(Boolean aVoid) {
         super.afterTransfer(aVoid);
         if (aVoid)
-            EventBroker.getInstance().publish(EventConst.FINISH_UPLOADING, getType(),this.file);
+            EventBroker.getInstance(ba).publish(EventConst.FINISH_UPLOADING, getType(),this.file);
         else
-            EventBroker.getInstance().publish(EventConst.FAIL_TRANSFER,getType(),this.file);
+            EventBroker.getInstance(ba).publish(EventConst.FAIL_TRANSFER,getType(),this.file);
     }
 
 

@@ -110,4 +110,16 @@
     <string name="nothing_toshow">There is nothing to show</string>
     <string name="please_access_to_this_address_on_a_web_browser">Access this address via a web browser</string>
     <string name="import_from_pc">Import from PC</string>
+    <string name="sdcardnotmount">SD Card is not mounted</string>
+    <string name="title_activity_register">Register</string>
+    <string name="check_internet">Check your internet connection</string>
+    <string name="job">Job</string>
+    <string name="birthday">Birthday</string>
+    <string name="where_you_live">Where you live ?</string>
+    <string name="country">Country</string>
+    <string name="when_was_you_born">When was you born?</string>
+    <string name="what_you_do">What do you do?</string>
+    <string name="what_yourname">What\'s your name?</string>
+    <string name="email_to_contact">Your email to contact?</string>
+    <string name="what_s_your_password">What\'s your password?</string>
 </resources>

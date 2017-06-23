@@ -5,6 +5,9 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import thesis.tg.com.s_cloud.framework_components.BaseApplication;
+import thesis.tg.com.s_cloud.utils.ResourcesUtils;
+
 /**
  * Created by Toan on 12/2/2016.
  */
@@ -13,16 +16,19 @@ public class EventBroker {
     public Map<String, Set<MyCallBack>> MyCallBacks;
 
     private static EventBroker mInstance;
+    private BaseApplication ba;
 
     private EventBroker() {
         MyCallBacks = new HashMap<String, Set<MyCallBack>>();
     }
 
-    public static EventBroker getInstance() {
-        if (mInstance == null) {
-            mInstance = new EventBroker();
+    public static EventBroker getInstance(BaseApplication application) {
+        EventBroker eventBroker = application.getEventBroker();
+        if (eventBroker == null) {
+            eventBroker = new EventBroker();
+            eventBroker.setBa(application);
         }
-        return mInstance;
+        return eventBroker;
     }
 
     public synchronized void register(MyCallBack MyCallBack, String event) {
@@ -49,5 +55,9 @@ public class EventBroker {
         for (MyCallBack MyCallBack : MyCallBackList) {
             MyCallBack.callback(event, code, data);
         }
+    }
+
+    public void setBa(BaseApplication ba) {
+        this.ba = ba;
     }
 }

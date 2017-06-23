@@ -6,8 +6,8 @@
                 android:angle="90"
                 android:centerY="40%"
                 android:gradientRadius="5"
-                android:startColor="@color/colorPrimaryDark"
-                android:endColor="@color/colorPrimaryLight"
+                android:startColor="@color/colorPrimary"
+                android:endColor="@color/colorSecondaryLight"
                 android:type="linear" />
         </shape>
     </item>

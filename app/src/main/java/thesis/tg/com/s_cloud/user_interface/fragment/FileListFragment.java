@@ -60,7 +60,7 @@ public class FileListFragment extends RecycleViewFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        register(globalEvents, this);
+
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
@@ -76,6 +76,7 @@ public class FileListFragment extends RecycleViewFragment {
     @Override
     protected void onKasperViewCreate(View parent) {
         super.onKasperViewCreate(parent);
+        register(globalEvents, this);
         if (dataList == null){
             dataList = new ArrayList<>();
         }

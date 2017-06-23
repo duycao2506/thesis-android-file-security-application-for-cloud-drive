@@ -12,6 +12,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
@@ -39,6 +40,7 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
 
     Button btnLogin, btnDropbox, btnGoogle;
     EditText edtusername, edtpassword;
+    TextView btnSignup;
     private GoogleApiClient mGoogleApiClient;
 //
     GoogleDriveWrapper gdwrapper;
@@ -74,6 +76,11 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
 
         gdwrapper = (GoogleDriveWrapper) ba.getDriveWrapper(DriveType.GOOGLE);
         this.mGoogleApiClient = gdwrapper.getClient();
+
+        // btn sign up
+        btnSignup = (TextView) findViewById(R.id.btnSignup);
+        btnSignup.setOnClickListener(this);
+
 
 
 
@@ -197,6 +204,11 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
                 break;
             case R.id.btnfacebook:
                 com.dropbox.core.android.Auth.startOAuth2Authentication(this,getString(R.string.dbox_app_key));
+                break;
+            case R.id.btnSignup:
+                Intent ins = new Intent(this, RegisterActivity.class);
+                startActivityForResult(ins, EventConst.SIGN_UP_REQUEST_CODE);
+                break;
             default:
                 break;
         }

@@ -8,6 +8,9 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS_PRIVILEGED" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <uses-permission-sdk-23 android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
@@ -28,7 +31,9 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".user_interface.activity.LoginActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait">
+
+        </activity>
         <activity
             android:name="com.dropbox.core.android.AuthActivity"
             android:configChanges="orientation|keyboard"
@@ -46,16 +51,33 @@
         </activity>
         <activity
             android:name=".user_interface.activity.HomeActivity"
-            android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:screenOrientation="portrait"><intent-filter>
+            <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter></activity>
         <activity android:name=".user_interface.activity.ProfileActivity" />
         <activity android:name=".user_interface.activity.TransferingActivity" />
-        <activity android:name=".user_interface.activity.ImportActivity"></activity>
+        <activity android:name=".user_interface.activity.ImportActivity" />
+
+        <!-- <receiver -->
+        <!-- android:name=".utils.InternetChangeReceiver" -->
+        <!-- android:enabled="true" -->
+        <!-- android:exported="true"> -->
+        <!-- <intent-filter> -->
+        <!-- &lt;!&ndash; Intent filters for broadcast receiver &ndash;&gt; -->
+        <!-- <action android:name="android.net.conn.CONNECTIVITY_CHANGE" /> -->
+        <!-- <action android:name="android.net.wifi.WIFI_STATE_CHANGED" /> -->
+        <!-- <action android:name="android.net.wifi.STATE_CHANGE" /> -->
+        <!-- </intent-filter> -->
+
+
+        <!-- </receiver> -->
+        <activity
+            android:name=".user_interface.activity.RegisterActivity"
+            android:label="@string/title_activity_register"
+            android:theme="@style/AppTheme" />
+        <activity android:name=".user_interface.activity.OtpActivity"></activity>
     </application>
 
 </manifest>

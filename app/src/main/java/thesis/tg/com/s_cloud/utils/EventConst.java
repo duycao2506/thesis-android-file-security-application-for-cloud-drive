@@ -45,4 +45,6 @@ public interface EventConst {
     String EMPTY = "Empty";
     String NOTICE = "Notice";
     String HIDE_NOTICE = "HIDE NOTICE";
+    int SIGN_UP_REQUEST_CODE = 32;
+    String SEARCH = "SEARCH";
 }

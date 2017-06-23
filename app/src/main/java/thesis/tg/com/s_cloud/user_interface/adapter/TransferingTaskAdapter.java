@@ -43,6 +43,15 @@ public class TransferingTaskAdapter extends KasperRecycleAdapter implements MyCa
     @Override
     public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
         super.onDetachedFromRecyclerView(recyclerView);
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(RecyclerView.ViewHolder holder) {
+        int pos = holder.getAdapterPosition();
+        if (pos >= this.entities.size() || pos < 0) return;
+    }
+
+    public void removeCaller(){
         for (int i = 0; i < entities.size(); i++){
             ((TransferTask)entities.get(i)).setCaller(null);
         }

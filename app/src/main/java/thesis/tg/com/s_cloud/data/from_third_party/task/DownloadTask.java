@@ -31,9 +31,9 @@ public class DownloadTask extends TransferTask {
     protected void afterTransfer(Boolean aVoid) {
         super.afterTransfer(aVoid);
         if (aVoid)
-            EventBroker.getInstance().publish(EventConst.FINISH_DOWNLOADING, this.to, this.file);
+            EventBroker.getInstance(ba).publish(EventConst.FINISH_DOWNLOADING, this.to, this.file);
         else
-            EventBroker.getInstance().publish(EventConst.FAIL_TRANSFER, this.to, this.file);
+            EventBroker.getInstance(ba).publish(EventConst.FAIL_TRANSFER, this.to, this.file);
     }
 
 }
