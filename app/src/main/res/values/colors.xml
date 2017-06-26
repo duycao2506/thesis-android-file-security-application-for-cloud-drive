@@ -48,4 +48,12 @@
     <color name="red">#e94f4f</color>
     <color name="orange">#ffd54f</color>
     <color name="whiteTrans" >#eeffffff</color>
+
+    <color name="colorSecFirst">#ffd54f</color>
+    <color name="colorSecSecond">#ffb34f</color>
+    <color name="colorSecThird">#ff9e4f</color>
+    <color name="colorSecForth">#ff984f</color>
+    <color name="colorSecFifth">#ff6f4f</color>
+    <color name="colorSecSixth">#ff664f</color>
+    <color name="colorSecSeventh">#ff584f</color>
 </resources>

@@ -28,10 +28,12 @@
 
         <Button
             style="@style/KasperButton"
+            android:theme="@style/KasperButton"
             android:id="@+id/btnFixDriveConn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/fix_it"
+            android:textColor="@color/kp_btn_txt_color_state"
             />
 
     </LinearLayout>

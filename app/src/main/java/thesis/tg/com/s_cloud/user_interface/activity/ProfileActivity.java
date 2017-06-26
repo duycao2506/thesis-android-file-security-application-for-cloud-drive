@@ -1,5 +1,6 @@
 package thesis.tg.com.s_cloud.user_interface.activity;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +9,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.gms.auth.api.Auth;
@@ -15,14 +18,15 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.squareup.picasso.Picasso;
 
+import java.util.Calendar;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 import thesis.tg.com.s_cloud.R;
-import thesis.tg.com.s_cloud.data.CloudDriveWrapper;
-import thesis.tg.com.s_cloud.data.DrivesManager;
 import thesis.tg.com.s_cloud.data.from_third_party.dropbox.DbxDriveWrapper;
 import thesis.tg.com.s_cloud.data.from_third_party.google_drive.GoogleDriveWrapper;
 import thesis.tg.com.s_cloud.entities.DriveUser;
 import thesis.tg.com.s_cloud.framework_components.BaseApplication;
+import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
 import thesis.tg.com.s_cloud.utils.DriveType;
 import thesis.tg.com.s_cloud.utils.EventConst;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
@@ -41,6 +45,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     Intent resultintent;
     BaseApplication ba;
 
+
+    //Profile View
+
+    EditText edtFullname, edtJob, edtCountry, edtBirthday, edtEmail, edtConfirmPass, edtPass;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,14 +63,52 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         gac = gdw.getClient();
         ddw = (DbxDriveWrapper) ba.getDriveWrapper(DriveType.DROPBOX);
         resultintent = new Intent();
-        setResult(EventConst.LOGIN_SUCCESS_RESULT_CODE,resultintent);
+        setResult(EventConst.LOGIN_SUCCESS_RESULT_CODE, resultintent);
+
+        assignViews();
+        pourDataOnViews();
+
+
 
         setUpView();
     }
 
+    private void pourDataOnViews() {
+        this.edtBirthday.setText(DriveUser.getInstance().getBirthday());
+        this.edtCountry.setText(DriveUser.getInstance().getCountry());
+        this.edtEmail.setText(DriveUser.getInstance().getEmail());
+        this.edtFullname.setText(DriveUser.getInstance().getName());
+        this.edtJob.setText(DriveUser.getInstance().getJob());
+    }
+
+    private void assignViews() {
+        edtFullname = (EditText) findViewById(R.id.edtProfileName);
+
+        edtBirthday = (EditText) findViewById(R.id.edtProfileBirthday);
+        edtBirthday.setOnClickListener(this);
+        edtBirthday.setFocusable(false);
+
+
+        edtCountry = (EditText) findViewById(R.id.edtProfileCountry);
+
+        edtEmail = (EditText) findViewById(R.id.edtProfileEmail);
+        edtEmail.setEnabled(false);
+
+        edtJob = (EditText) findViewById(R.id.edtProfileJob);
+
+        edtConfirmPass = (EditText) findViewById(R.id.edtProfilePasswordCnf);
+        edtPass = (EditText) findViewById(R.id.edtProfilePassword);
+    }
+
     private void setUpView() {
         civProfileAvatar = (CircleImageView) findViewById(R.id.ivProfileAvatar);
-        Picasso.with(this).load(DriveUser.getInstance().getAvatar()).into(civProfileAvatar);
+        if (DriveUser.getInstance().getAvatarLink() != null
+                && DriveUser.getInstance().getAvatarLink().length() > 0)
+            Picasso.with(this).load(DriveUser.getInstance().getAvatarLink()).into(civProfileAvatar);
+        else if (DriveUser.getInstance().getAvatar() != null)
+            Picasso.with(this).load(DriveUser.getInstance().getAvatar()).into(civProfileAvatar);
+        else
+            civProfileAvatar.setImageResource(DriveUser.getInstance().getDefaultAvatar());
         tvNameHeader = (TextView) findViewById(R.id.tvHeaderName);
         tvNameHeader.setText(DriveUser.getInstance().getName());
         btnGoogle = (Button) findViewById(R.id.btnConnectGoogle);
@@ -80,15 +127,14 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onClick(View v) {
         int id = v.getId();
-        switch (id){
+        switch (id) {
             case R.id.btnConnectGoogle:
                 ba.getDriveMannager().refreshLoginAttemps();
                 if (!btnGoogle.isActivated()) {
-                    resultintent.putExtra(EventConst.GOOGLE_CONNECT,false);
+                    resultintent.putExtra(EventConst.GOOGLE_CONNECT, false);
                     gdw.setOnConnectedAction(gdw.getSignoutAction());
                     btnGoogle.setActivated(true);
-                }
-                else {
+                } else {
                     Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(gac);
                     startActivityForResult(signInIntent, RESOLVE_CONNECTION_REQUEST_CODE);
                 }
@@ -96,18 +142,45 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             case R.id.btnConnectDropbox:
                 ba.getDriveMannager().refreshLoginAttemps();
                 if (!btnDropbox.isActivated()) {
-                    resultintent.putExtra(EventConst.DBX_CONNECT,false);
-                    ddw.signOut();
-                    ddw.saveAccToken(this, "");
-                    btnDropbox.setActivated(true);
-                }
-                else {
+                    resultintent.putExtra(EventConst.DBX_CONNECT, false);
+                    ddw.signOut(new MyCallBack() {
+                        @Override
+                        public void callback(String message, int code, Object data) {
+                            ddw.saveAccToken(ProfileActivity.this, "");
+                            btnDropbox.setActivated(true);
+                        }
+                    });
+                } else {
                     com.dropbox.core.android.Auth.startOAuth2Authentication(this, getString(R.string.dbox_app_key));
                 }
+                break;
+            case R.id.edtProfileBirthday:
+                //To show current date in the datepicker
+                Calendar mcurrentDate = Calendar.getInstance();
+                int mYear = mcurrentDate.get(Calendar.YEAR);
+                int mMonth = mcurrentDate.get(Calendar.MONTH);
+                int mDay = mcurrentDate.get(Calendar.DAY_OF_MONTH);
+
+                DatePickerDialog mDatePicker = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+                    public void onDateSet(DatePicker datepicker, int selectedyear, int selectedmonth, int selectedday) {
+                        // TODO Auto-generated method stub
+                    /*      Your code   to get date and time    */
+                        StringBuilder sb = new StringBuilder();
+                        sb.append(selectedday);
+                        sb.append("/");
+                        sb.append(selectedmonth);
+                        sb.append("/");
+                        sb.append(selectedyear);
+                        edtBirthday.setText(sb.toString());
+                    }
+                }, mYear, mMonth, mDay);
+                mDatePicker.setTitle(getString(R.string.se_date));
+                mDatePicker.show();
                 break;
             default:
                 break;
         }
+
     }
 
     @Override
@@ -118,7 +191,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 if (resultCode == RESULT_OK) {
                     GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
                     if (result.isSuccess()) {
-                        resultintent.putExtra(EventConst.GOOGLE_CONNECT,true);
+                        resultintent.putExtra(EventConst.GOOGLE_CONNECT, true);
                         btnGoogle.setActivated(false);
                         gdw.setOnConnectedAction(null);
                     }
@@ -133,10 +206,10 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     protected void onResume() {
         super.onResume();
         String token = com.dropbox.core.android.Auth.getOAuth2Token();
-        if (token != null){
+        if (token != null) {
             ddw.saveAccToken(this, token);
             btnDropbox.setActivated(false);
-            resultintent.putExtra(EventConst.DBX_CONNECT,true);
+            resultintent.putExtra(EventConst.DBX_CONNECT, true);
         }
     }
 
@@ -150,7 +223,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        switch (id){
+        switch (id) {
             case android.R.id.home:
                 finish();
                 break;

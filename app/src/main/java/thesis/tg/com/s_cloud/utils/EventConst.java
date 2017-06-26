@@ -47,4 +47,8 @@ public interface EventConst {
     String HIDE_NOTICE = "HIDE NOTICE";
     int SIGN_UP_REQUEST_CODE = 32;
     String SEARCH = "SEARCH";
+    String AUTH_JSON_STRING = "auth_json_string";
+    String USER_JSON = "user_json";
+    String LOGIN_SCLOUD = "login_scloud";
+    String SET_PASSWORD = "set_password";
 }

@@ -1,29 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="thesis.tg.com.s_cloud.user_interface.activity.OtpActivity">
-    <LinearLayout
-        android:layout_gravity="center"
-        android:orientation="vertical"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/textSize_30"
-            android:text="123456"
-            />
-        
+    <include layout="@layout/appbar_layout"/>
+    <FrameLayout
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        >
         <LinearLayout
-            android:orientation="horizontal"
+            android:layout_gravity="center"
+            android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
-            
+            <TextView
+                android:id="@+id/tvOtpCode"
+                android:textColor="@color/colorPrimary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="90sp"
+                android:text="250149"
+                />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:background="@color/gray_light"
+                android:gravity="center"
+                android:layout_width="300sp"
+                android:id="@+id/progressOutside"
+                android:layout_height="@dimen/margin_10"
+                android:layout_marginTop="@dimen/margin_20">
+                <View
+                    android:id="@+id/progressInside"
+                    android:layout_width="3sp"
+                    android:background="@color/colorSecondary"
+
+                    android:layout_height="match_parent"/>
+            </LinearLayout>
+
         </LinearLayout>
-        
-    </LinearLayout>
-</FrameLayout>
+        <include layout="@layout/loading_layout" android:visibility="gone"/>
+        <include layout="@layout/notice_layout" android:visibility="gone"/>
+    </FrameLayout>
+</android.support.design.widget.CoordinatorLayout>
+

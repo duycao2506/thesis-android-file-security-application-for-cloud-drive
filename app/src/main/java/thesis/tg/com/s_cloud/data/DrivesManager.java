@@ -33,8 +33,6 @@ import thesis.tg.com.s_cloud.utils.ResourcesUtils;
  */
 
 public class DrivesManager {
-
-
     private BaseApplication ba;
     private int numOfDrives = 3;
     private int[] loggedInDrives ;

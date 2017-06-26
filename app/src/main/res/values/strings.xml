@@ -35,6 +35,19 @@
     <string name="orange">#ffd54f</string>
 
 
+    <string-array name="colorChangeArray">
+        <item>#e8e8e8</item>
+        <item>#ffd54f</item>
+        <item>#ffb34f</item>
+        <item>#ff9e4f</item>
+        <item>#ff794f</item>
+        <item>#ff6e4f</item>
+        <item>#ff564f</item>
+        <item>#ff484f</item>
+
+    </string-array>
+
+
     <string name="app_name">S-Cloud</string>
     <string name="cant_internet">Cannot Connect to Internet</string>
     <string name="error_check_internet">Error checking internet connection</string>
@@ -122,4 +135,19 @@
     <string name="what_yourname">What\'s your name?</string>
     <string name="email_to_contact">Your email to contact?</string>
     <string name="what_s_your_password">What\'s your password?</string>
+    <string name="get_otp">Get Otp Code</string>
+    <string name="signing_up">Signing up...</string>
+    <string name="signin_ing">Signing in...</string>
+    <string name="se_date">Select date</string>
+    <string name="more6">Password has to be more than 6 characters</string>
+    <string name="confirm_wrong">Confirm wrongly!!!</string>
+    <string name="got_info_then_set_pass">We have got your information via one of your drive service account. Please set the password you will use to sign in our service</string>
+    <string name="file_name">Name</string>
+    <string name="size">Size</string>
+    <string name="last_modified_date">Last Modified Date</string>
+    <string name="file_type">Type</string>
+    <string name="unknown">Unknown</string>
+    <string name="unavail">Unavailable</string>
+    <string name="del_a_file">Delete a file</string>
+    <string name="ausure">Are you sure to delete this file?</string>
 </resources>

@@ -48,9 +48,9 @@ public class FileViewHolder extends RecyclerView.ViewHolder implements EntitySho
         date = (TextView) itemView.findViewById(R.id.tvInfoFile);
         btnMenu = (ImageButton) itemView.findViewById(R.id.btnFileMenu);
         thumbnail = (ImageView) itemView.findViewById(R.id.ivThumbnail);
-        imgDrive1 = (ImageView) itemView.findViewById(R.id.ivLocalDrive);
-        imgDrive2 = (ImageView) itemView.findViewById(R.id.ivGoogleDrive);
-        imgDrive3 = (ImageView) itemView.findViewById(R.id.ivDrive3);
+//        imgDrive1 = (ImageView) itemView.findViewById(R.id.ivLocalDrive);
+//        imgDrive2 = (ImageView) itemView.findViewById(R.id.ivGoogleDrive);
+//        imgDrive3 = (ImageView) itemView.findViewById(R.id.ivDrive3);
 
     }
 
@@ -70,9 +70,9 @@ public class FileViewHolder extends RecyclerView.ViewHolder implements EntitySho
         //Folder or File Distringuish
         int visibility = isFolder ? View.GONE: View.VISIBLE;
         btnMenu.setVisibility(visibility);
-        imgDrive1.setVisibility(visibility);
-        imgDrive2.setVisibility(visibility);
-        imgDrive3.setVisibility(visibility);
+//        imgDrive1.setVisibility(visibility);
+//        imgDrive2.setVisibility(visibility);
+//        imgDrive3.setVisibility(visibility);
 
 
         btnMenu.setOnClickListener(new View.OnClickListener() {

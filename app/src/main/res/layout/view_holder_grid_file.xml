@@ -41,33 +41,33 @@
                 <!--/>-->
         </FrameLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:orientation="horizontal"
-            android:layout_height="@dimen/drive_signal_thickness">
-            <ImageButton
-                android:id="@+id/ivLocalDrive"
-                android:layout_weight="1"
-                android:background="@color/gray_dark_transparent"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                />
-            <ImageButton
-                android:id="@+id/ivGoogleDrive"
-                android:layout_weight="1"
-                android:background="@color/red"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                />
+        <!--<LinearLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:orientation="horizontal"-->
+            <!--android:layout_height="@dimen/drive_signal_thickness">-->
+            <!--<ImageButton-->
+                <!--android:id="@+id/ivLocalDrive"-->
+                <!--android:layout_weight="1"-->
+                <!--android:background="@color/gray_dark_transparent"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="match_parent"-->
+                <!--/>-->
+            <!--<ImageButton-->
+                <!--android:id="@+id/ivGoogleDrive"-->
+                <!--android:layout_weight="1"-->
+                <!--android:background="@color/red"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="match_parent"-->
+                <!--/>-->
 
-            <ImageButton
-                android:id="@+id/ivDrive3"
-                android:layout_weight="1"
-                android:background="@color/blue_link"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                />
-        </LinearLayout>
+            <!--<ImageButton-->
+                <!--android:id="@+id/ivDrive3"-->
+                <!--android:layout_weight="1"-->
+                <!--android:background="@color/blue_link"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="match_parent"-->
+                <!--/>-->
+        <!--</LinearLayout>-->
         <LinearLayout
             android:layout_width="match_parent"
             android:orientation="horizontal"

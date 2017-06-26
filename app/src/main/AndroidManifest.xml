@@ -77,7 +77,7 @@
             android:name=".user_interface.activity.RegisterActivity"
             android:label="@string/title_activity_register"
             android:theme="@style/AppTheme" />
-        <activity android:name=".user_interface.activity.OtpActivity"></activity>
+        <activity android:name=".user_interface.activity.OtpActivity"/>
     </application>
 
 </manifest>
