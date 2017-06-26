@@ -38,6 +38,7 @@ public class NotConnectedCloudFragment extends KasperFragment {
                     (ba.getResourcesUtils().getDriveIconId(driveType));
         }
         btnFix = (Button) parent.findViewById(R.id.btnFixDriveConn);
+        btnFix.setActivated(true);
         btnFix.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

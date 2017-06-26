@@ -3,16 +3,13 @@ package thesis.tg.com.s_cloud.data.from_third_party.dropbox;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.android.AuthActivity;
 import com.dropbox.core.v2.DbxClientV2;
-import com.dropbox.core.v2.auth.DbxUserAuthRequests;
-import com.dropbox.core.v2.files.DbxUserFilesRequests;
-import com.dropbox.core.v2.files.SearchBuilder;
-import com.dropbox.core.v2.users.DbxUserUsersRequests;
 import com.dropbox.core.v2.users.FullAccount;
 
 import java.io.IOException;
@@ -30,6 +27,7 @@ import thesis.tg.com.s_cloud.utils.EventConst;
 
 public class DbxDriveWrapper extends CloudDriveWrapper {
     private DbxClientV2 dbxClientV2;
+    private Context context;
 
     private DbxDriveWrapper(){
 
@@ -46,6 +44,7 @@ public class DbxDriveWrapper extends CloudDriveWrapper {
     public void signIn(final Context context, final MyCallBack caller) {
         final String accessToken = getAccessToken(context); //generate Access Token
         if (accessToken != null && accessToken.length() > 0) {
+            this.context = context;
             new AsyncTask<Void, Void, String>(){
                 @Override
                 protected String doInBackground(Void... params) {
@@ -64,7 +63,6 @@ public class DbxDriveWrapper extends CloudDriveWrapper {
                         if (user.isSignedIn()){
                             user.setId(getType(),fa.getAccountId());
                             user.setDropboxEmail(fa.getEmail());
-                            caller.callback(EventConst.ADD_DRIVE,getType(), null);
                             //TODO: send accesstoken to add drive on server
                             resetListFileTask();
                             return EventConst.LOGIN_SUCCESS;
@@ -139,15 +137,31 @@ public class DbxDriveWrapper extends CloudDriveWrapper {
     }
 
     @Override
-    public void signOut() {
-        super.signOut();
-        try {
-            dbxClientV2.auth().tokenRevoke();
-        } catch (DbxException e) {
-            e.printStackTrace();
-        }
-        dbxClientV2 = null;
-        AuthActivity.result = null;
+    public void signOut(final MyCallBack caller) {
+        super.signOut(caller);
+        new AsyncTask<Void, Void, Boolean>(){
+            @Override
+            protected Boolean doInBackground(Void... params) {
+                try {
+
+                    dbxClientV2.auth().tokenRevoke();
+                } catch (DbxException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+                dbxClientV2 = null;
+                AuthActivity.result = null;
+                return true;
+            }
+
+            @Override
+            protected void onPostExecute(Boolean aVoid) {
+                super.onPostExecute(aVoid);
+                if (caller != null)
+                    caller.callback("asd",1,aVoid);
+            }
+        }.execute();
+
 
     }
 

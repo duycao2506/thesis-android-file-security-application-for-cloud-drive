@@ -1,11 +1,14 @@
 package thesis.tg.com.s_cloud.user_interface.activity;
 
 import android.app.ProgressDialog;
+import android.app.admin.DeviceAdminInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.system.Os;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -20,11 +23,23 @@ import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import thesis.tg.com.s_cloud.R;
+import thesis.tg.com.s_cloud.data.from_local.MockData;
 import thesis.tg.com.s_cloud.data.from_third_party.dropbox.DbxDriveWrapper;
 import thesis.tg.com.s_cloud.data.from_third_party.google_drive.GoogleDriveWrapper;
+import thesis.tg.com.s_cloud.entities.DriveUser;
 import thesis.tg.com.s_cloud.framework_components.BaseApplication;
+import thesis.tg.com.s_cloud.framework_components.data.from_server.GETRequestService;
+import thesis.tg.com.s_cloud.framework_components.data.from_server.GeneralResponse;
+import thesis.tg.com.s_cloud.framework_components.data.from_server.POSTRequestService;
+import thesis.tg.com.s_cloud.framework_components.data.from_server.RequestService;
 import thesis.tg.com.s_cloud.utils.DriveType;
 import thesis.tg.com.s_cloud.utils.EventConst;
 import thesis.tg.com.s_cloud.utils.DataUtils;
@@ -169,6 +184,7 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
 
     private void controlInit() {
         this.btnLogin = (Button) findViewById(R.id.btnlogin);
+        this.btnLogin.setActivated(true);
         btnLogin.setOnClickListener(this);
         this.btnGoogle = (Button) findViewById(R.id.btngoogle);
         btnGoogle.setOnClickListener(this);
@@ -185,18 +201,49 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
         int id = v.getId();
         switch (id){
             case R.id.btnlogin:
-
+                progressDialog = UiUtils.getDefaultProgressDialog(this,false,getString(R.string.signin_ing));
                 progressDialog.show();
-                DataUtils.waitFor(3000, LoginActivity.this, new MyCallBack() {
+
+
+                //GETACCESSTOKEN
+                POSTRequestService prs = new POSTRequestService(this, RequestService.RequestServiceConstant.api1, new MyCallBack() {
                     @Override
                     public void callback(String message, int code, Object data) {
-                        finish();
+                        Log.d("RESP", ((GeneralResponse)data).getResponse());
+                        String auth_json_string = MockData.auth_resp;
+                        JSONObject auth_json;
+                        try{
+                            auth_json = new JSONObject(auth_json_string);
+                            if (auth_json.getString("status").compareTo("success")==0)
+                                DriveUser.getInstance().saveAccToken(LoginActivity.this,auth_json.getString("auth_token"));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        //GETPROFILE
+                        POSTRequestService prs2 = new POSTRequestService(LoginActivity.this, RequestService.RequestServiceConstant.api1, new MyCallBack() {
+                            @Override
+                            public void callback(String message, int code, Object data) {
+                                Log.d("RESP", ((GeneralResponse)data).getResponse());
+                                //TODO: generate response json and check success status
+                                try{
+                                    JSONObject jso = new JSONObject(((GeneralResponse) data).getResponse());
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                DriveUser.getInstance().copyFromJSON(MockData.jsonuser);
+                                LoginActivity.this.callback(EventConst.LOGIN_SUCCESS,1,null);
+                            }
+                        }, new GeneralResponse());
+                        prs2.executeService();
+
                     }
-                });
+                }, new GeneralResponse());
+                prs.executeService();
                 break;
             case R.id.btngoogle:
                 if (mGoogleApiClient.isConnected())
-                    gdwrapper.signOut();
+                    gdwrapper.signOut(null);
                 else {
                     Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
                     startActivityForResult(signInIntent, RESOLVE_CONNECTION_REQUEST_CODE);
@@ -225,6 +272,20 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
                     progressDialog.show();
                     if (result.isSuccess())
                         this.callback(LOGIN_SUCCESS, DriveType.GOOGLE,null);
+                }
+                break;
+            case EventConst.SIGN_UP_REQUEST_CODE:
+                if (resultCode == RESULT_OK){
+                    JSONObject auth_json;
+                    JSONObject user_json;
+                    try {
+                        auth_json = new JSONObject(data.getStringExtra(EventConst.AUTH_JSON_STRING));
+                        user_json = new JSONObject(data.getStringExtra(EventConst.USER_JSON));
+                        Log.d("userjson",user_json.toString());
+                        Log.d("authjson",auth_json.toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
                 break;
             default:

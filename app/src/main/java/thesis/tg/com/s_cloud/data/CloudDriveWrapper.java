@@ -58,7 +58,7 @@ public class CloudDriveWrapper {
     }
 
 
-    public void signOut() {
+    public void signOut(MyCallBack caller) {
 
     }
 

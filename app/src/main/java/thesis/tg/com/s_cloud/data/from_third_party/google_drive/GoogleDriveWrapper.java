@@ -9,7 +9,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -52,7 +51,7 @@ import static thesis.tg.com.s_cloud.utils.EventConst.RESOLVE_CONNECTION_REQUEST_
 
 public class GoogleDriveWrapper extends CloudDriveWrapper implements
         GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener  {
+        GoogleApiClient.OnConnectionFailedListener {
     private GoogleApiClient mGoogleApiClient;
     private GoogleAccountCredential mGoogleCredential;
     private Drive driveService;
@@ -64,34 +63,33 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
         @Override
         public void callback(String message, int code, Object data) {
             initCredential();
-            EventBroker.getInstance((BaseApplication) context.getApplicationContext()).publish(EventConst.LOGIN_SUCCESS,getType(),null);
+            EventBroker.getInstance((BaseApplication) context.getApplicationContext()).publish(EventConst.LOGIN_SUCCESS, getType(), null);
         }
     };
 
     private MyCallBack signoutAction = new MyCallBack() {
         @Override
         public void callback(String message, int code, Object data) {
-            signOut();
+            signOut(null);
             EventBroker.getInstance((BaseApplication) context.getApplicationContext()).publish(EventConst.DISCONNECT, getType(), null);
         }
     };
 
-    public void setOnConnectedAction(MyCallBack callBack){
+    public void setOnConnectedAction(MyCallBack callBack) {
         this.onConnectedAction = callBack;
     }
 
-    public MyCallBack getSignoutAction(){
+    public MyCallBack getSignoutAction() {
         return signoutAction;
     }
 
 
-    private GoogleDriveWrapper(){
+    private GoogleDriveWrapper() {
 
     }
 
 
-
-    public static GoogleDriveWrapper getInstance(BaseApplication application){
+    public static GoogleDriveWrapper getInstance(BaseApplication application) {
         if (!application.isDriveWrapperCreated(DriveType.GOOGLE))
             return new GoogleDriveWrapper();
         return (GoogleDriveWrapper) application.getDriveWrapper(DriveType.GOOGLE);
@@ -100,6 +98,7 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
 
     /**
      * context has to be both connection fail listenner and connection success listenner
+     *
      * @param context
      * @return
      */
@@ -127,7 +126,7 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
     public void handleSignInResult(final GoogleSignInResult result, final MyCallBack afterLoginCallback) {
         Log.d("HELLO", "handleSignInResult:" + result.isSuccess());
 
-        new AsyncTask<Void, Void, String>(){
+        new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... params) {
                 if (result.isSuccess()) {
@@ -139,15 +138,14 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
 
                     //TODO: Create User
                     DriveUser user = DriveUser.getInstance();
-                    if (user.isSignedIn())
-                    {
-                        user.setId(getType(),acct.getId());
+                    if (user.isSignedIn()) {
+                        user.setId(getType(), acct.getId());
                         user.setGoogleEmail(acct.getEmail());
                         initCredential();
                         //TODO: send authtoken to get add drive on server
                         return EventConst.LOGIN_SUCCESS;
                     }
-                    user.setId(getType(),acct.getId());
+                    user.setId(getType(), acct.getId());
                     user.setGoogleEmail(acct.getEmail());
 
                     //TODO: send accesstoken to get userid from server
@@ -156,7 +154,7 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
                     user.setAvatar(acct.getPhotoUrl());
 
                     //wait until connection is established
-                    while (connection_ok == 0){
+                    while (connection_ok == 0) {
                         try {
                             Thread.sleep(100);
                         } catch (InterruptedException e) {
@@ -166,7 +164,7 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
                     if (connection_ok == -1) return EventConst.LOGIN_FAIL;
                     initCredential();
                     return EventConst.LOGIN_SUCCESS;
-                }else {
+                } else {
                     return EventConst.LOGIN_FAIL;
                 }
             }
@@ -174,7 +172,7 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
             @Override
             protected void onPostExecute(String aVoid) {
                 super.onPostExecute(aVoid);
-                afterLoginCallback.callback(aVoid, getType(),DriveUser.getInstance());
+                afterLoginCallback.callback(aVoid, getType(), DriveUser.getInstance());
             }
 
             @Override
@@ -188,7 +186,7 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
 
     }
 
-    private void initCredential(){
+    private void initCredential() {
         mGoogleCredential = GoogleAccountCredential.usingOAuth2(context, scopes);
         mGoogleCredential.setSelectedAccountName(DriveUser.getInstance().getGoogle_email());
         mGoogleCredential.setSelectedAccount(new Account(DriveUser.getInstance().getGoogle_email(), AccountManager.KEY_ACCOUNT_TYPE));
@@ -201,16 +199,18 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
         addNewListFileTask("root");
     }
 
-    public void signOut() {
+    public void signOut(final MyCallBack caller) {
         Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient).setResultCallback(
                 new ResultCallback<Status>() {
                     @Override
                     public void onResult(Status status) {
                         // ...
+                        if (caller == null) return;
                         if (status.isSuccess())
-                            Log.d("LOG_OT","Success");
+                            caller.callback("", 1, true);
                         else
-                            Log.d("LOG_OT","FAIL");
+                            caller.callback("", 1, false);
+                        Log.d("LOG_OT", "FAIL");
                     }
                 });
     }
@@ -225,7 +225,6 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
     }
 
 
-
     /**
      * Drive folder and files methods
      */
@@ -238,13 +237,11 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
     }
 
 
-    public void addNewListFileTask(String folderId){
+    public void addNewListFileTask(String folderId) {
         super.addNewListFileTask(folderId);
-        GoogleListFileTask glft = new GoogleListFileTask(driveService,folderId);
+        GoogleListFileTask glft = new GoogleListFileTask(driveService, folderId);
         glftList.add(glft);
     }
-
-
 
 
     @Override
@@ -262,6 +259,7 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
 
     /**
      * Google Drive
+     *
      * @param connectionResult
      */
 
@@ -289,7 +287,6 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
             onConnectedAction = null;
         }
     }
-
 
 
     @Override

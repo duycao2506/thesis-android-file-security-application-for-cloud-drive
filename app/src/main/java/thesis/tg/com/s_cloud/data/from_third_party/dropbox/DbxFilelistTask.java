@@ -1,6 +1,7 @@
 package thesis.tg.com.s_cloud.data.from_third_party.dropbox;
 
 import android.util.Log;
+import android.webkit.MimeTypeMap;
 
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.FileMetadata;
@@ -64,6 +65,7 @@ public class DbxFilelistTask extends FileListingTask{
                 sdf.setFileSize(fmd.getSize());
                 String[] tokens = fmd.getName().split("[/\\.]");
                 String ext = tokens[tokens.length-1];
+                sdf.setMimeType(MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext))   ;
                 sdf.setExtension(ext);
                 sdf.setFolder(folderId);
                 sdf.setCloud_type(DriveType.DROPBOX);

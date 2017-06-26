@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/padding_16"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:textColor="@color/colorPrimary"
+            android:text="@string/file_name"
+            android:textSize="@dimen/textSize_14"
+            android:textStyle="bold" />
+
+        <TextView
+            android:theme="@style/Theme.App.GrayText"
+            android:id="@+id/tvFileName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/padding_4"
+            android:textColor="@color/gray"
+            android:textSize="@dimen/textSize_18" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/padding_16"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:textColor="@color/colorPrimary"
+            android:layout_height="wrap_content"
+            android:text="@string/size"
+            android:textSize="@dimen/textSize_14"
+            android:textStyle="bold" />
+
+        <TextView
+            android:theme="@style/Theme.App.GrayText"
+            android:id="@+id/tvFilesize"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/padding_4"
+            android:textColor="@color/gray"
+            android:textSize="@dimen/textSize_18" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/padding_16"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:textColor="@color/colorPrimary"
+            android:layout_height="wrap_content"
+            android:text="@string/file_type"
+            android:textSize="@dimen/textSize_14"
+            android:textStyle="bold" />
+
+        <TextView
+            android:theme="@style/Theme.App.GrayText"
+            android:id="@+id/tvFileType"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/padding_4"
+            android:textColor="@color/gray"
+            android:textSize="@dimen/textSize_18" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/padding_16"
+        android:orientation="vertical">
+
+        <android.support.v7.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:textColor="@color/colorPrimary"
+            android:layout_height="wrap_content"
+            android:text="@string/last_modified_date"
+            android:textSize="@dimen/textSize_14"
+            android:textStyle="bold" />
+
+        <TextView
+            android:theme="@style/Theme.App.GrayText"
+            android:id="@+id/tvFileLastModified"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/padding_4"
+            android:textColor="@color/gray"
+            android:textSize="@dimen/textSize_18" />
+
+    </LinearLayout>
+
+
+</LinearLayout>

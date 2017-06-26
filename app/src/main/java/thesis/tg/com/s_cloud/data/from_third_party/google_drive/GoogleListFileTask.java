@@ -69,11 +69,14 @@ public class GoogleListFileTask extends FileListingTask{
         for (Object obj : driveFiles){
             File file = (File) obj;
             boolean isFolder = file.getCapabilities().getCanListChildren();
+            if (file.getSize() == null && !isFolder)
+                continue;
             SDriveFile sDriveFile = isFolder? new SDriveFolder() : new SDriveFile();
             sDriveFile.setLastModifiedDate(file.getModifiedTime().toString());
             sDriveFile.setId(file.getId());
             sDriveFile.setName(file.getOriginalFilename() == null ? file.getName() : file.getOriginalFilename());
-            sDriveFile.setFileSize(file.getSize() == null ? -1 : file.getSize());
+
+            sDriveFile.setFileSize( file.getSize() == null? -1 : file.getSize());
             sDriveFile.setMimeType(file.getMimeType());
             sDriveFile.setExtension(file.getFullFileExtension());
 

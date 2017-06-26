@@ -34,8 +34,8 @@ public class RequestService {
 
     public interface RequestServiceConstant {
         String BASE_URL = "http://jsonplaceholder.typicode.com/";
-        String api1 = "";
-
+        String api1 = "posts";
+        String api2 = "posts/1";
     }
 
 

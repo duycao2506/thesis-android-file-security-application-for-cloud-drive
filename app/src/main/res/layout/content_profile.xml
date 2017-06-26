@@ -125,7 +125,7 @@
 
             <EditText
                 android:theme="@style/Theme.App.GrayText"
-                android:id="@+id/edtJob"
+                android:id="@+id/edtProfileJob"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/padding_4"
@@ -151,7 +151,7 @@
 
             <EditText
                 android:theme="@style/Theme.App.GrayText"
-                android:id="@+id/edtBirthday"
+                android:id="@+id/edtProfileBirthday"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/padding_4"
@@ -177,7 +177,7 @@
 
             <EditText
                 android:theme="@style/Theme.App.GrayText"
-                android:id="@+id/edtCountry"
+                android:id="@+id/edtProfileCountry"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/padding_4"
@@ -203,7 +203,7 @@
 
             <EditText
                 android:theme="@style/Theme.App.GrayText"
-                android:id="@+id/edtPassword"
+                android:id="@+id/edtProfilePassword"
                 android:inputType="textPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -214,7 +214,7 @@
                 android:textSize="@dimen/textSize_18" />
             <EditText
                 android:theme="@style/Theme.App.GrayText"
-                android:id="@+id/edtPasswordCnf"
+                android:id="@+id/edtProfilePasswordCnf"
                 android:inputType="textPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

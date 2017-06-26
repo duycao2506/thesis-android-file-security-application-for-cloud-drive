@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.design.widget.AppBarLayout;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
@@ -32,8 +33,11 @@ import thesis.tg.com.s_cloud.R;
 import thesis.tg.com.s_cloud.data.DrivesManager;
 import thesis.tg.com.s_cloud.entities.DriveUser;
 import thesis.tg.com.s_cloud.entities.SDriveFile;
+import thesis.tg.com.s_cloud.entities.SDriveFolder;
 import thesis.tg.com.s_cloud.framework_components.BaseApplication;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
+import thesis.tg.com.s_cloud.user_interface.fragment.FileInfoFragment;
+import thesis.tg.com.s_cloud.user_interface.fragment.NameInputFragment;
 
 import static thesis.tg.com.s_cloud.utils.EventConst.LOGIN_CANCEL_RESULT_CODE;
 
@@ -93,6 +97,26 @@ public class UiUtils {
         ab.show();
     }
 
+    public static void showDeleteFileConfirmation(final Activity context, final SDriveFile file){
+        AlertDialog.Builder ab = new AlertDialog.Builder(context, R.style.KasperAlertDialog);
+        ab.setTitle(R.string.del_a_file);
+        ab.setMessage(R.string.ausure);
+        ab.setPositiveButton(R.string.OK, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                BaseApplication ba = (BaseApplication) context.getApplicationContext();
+                ba.getDriveWrapper(file.getCloud_type()).requestDelete(file.getId(), (MyCallBack) context);
+            }
+        });
+        ab.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        ab.show();
+    }
+
 
     public static void buildFileMenu(final SDriveFile data, final Context context) {
 
@@ -109,9 +133,6 @@ public class UiUtils {
                 .addItem(R.id.delete, R.string.delete,ContextCompat.getDrawable(context,R.drawable.ic_delete_black_24dp));
 
 
-
-
-
         BottomSheetMenuDialog dialog = bsb.setItemClickListener(new BottomSheetItemClickListener() {
                     @Override
                     public void onBottomSheetItemClick(MenuItem item) {
@@ -123,10 +144,10 @@ public class UiUtils {
                                 open(data,context);
                                 break;
                             case R.id.info:
+                                openInfo(data, context);
                                 break;
                             case R.id.delete:
-                                BaseApplication ba = (BaseApplication) context.getApplicationContext();
-                                ba.getDriveWrapper(data.getCloud_type()).requestDelete(data.getId(), (MyCallBack) context);
+                                showDeleteFileConfirmation((Activity) context,data);
                                 break;
                             default:
                                 break;
@@ -150,6 +171,12 @@ public class UiUtils {
         } catch (ActivityNotFoundException e) {
             Toast.makeText(context, "No handler for this type of file.", Toast.LENGTH_LONG).show();
         }
+    }
+
+    public static void openInfo(SDriveFile file, Context context){
+        FileInfoFragment df = new FileInfoFragment();
+        df.setData(file);
+        df.show(((FragmentActivity)context).getSupportFragmentManager(),"File Info");
     }
 
     public static void buildDriveMenu(final SDriveFile data, final Context context, final boolean isSync) {

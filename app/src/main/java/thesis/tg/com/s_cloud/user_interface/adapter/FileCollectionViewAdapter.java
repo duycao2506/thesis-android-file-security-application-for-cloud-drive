@@ -1,5 +1,6 @@
 package thesis.tg.com.s_cloud.user_interface.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
@@ -14,6 +15,7 @@ import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
 import thesis.tg.com.s_cloud.user_interface.adapter.view_holder.FileViewHolder;
 import thesis.tg.com.s_cloud.user_interface.fragment.FileListFragment;
 import thesis.tg.com.s_cloud.utils.EventConst;
+import thesis.tg.com.s_cloud.utils.UiUtils;
 
 import static android.R.attr.filter;
 
@@ -45,9 +47,24 @@ public class FileCollectionViewAdapter extends KasperRecycleAdapter{
             public void onClick(View v) {
                 //TODO Open folder or open file
                 SDriveFile sdf = (SDriveFile) entities.get(position);
-                if (!(sdf instanceof SDriveFolder)) return;
+                if (!(sdf instanceof SDriveFolder)) {
+                    UiUtils.openInfo(sdf,context);
+                    return;
+                }
                 ((MyCallBack)context).callback(EventConst.OPEN_FOLDER,position
                         ,sdf);
+            }
+        });
+
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                SDriveFile sdf = (SDriveFile) entities.get(position);
+                if (sdf instanceof SDriveFolder)
+                    UiUtils.showDeleteFileConfirmation((Activity) context,sdf);
+                else
+                    UiUtils.buildFileMenu(sdf,context);
+                return true;
             }
         });
 

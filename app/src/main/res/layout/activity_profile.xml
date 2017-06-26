@@ -6,6 +6,12 @@
     android:layout_height="match_parent"
     tools:context="thesis.tg.com.s_cloud.user_interface.activity.ProfileActivity">
 
+    <View
+        android:layout_width="0sp"
+        android:layout_height="0sp"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -32,28 +38,6 @@
                 android:layout_height="@dimen/profile_header_height"
                 android:background="@color/colorPrimary">
 
-                <ImageView
-                    android:id="@+id/imageView5"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/profile_header_height"
-                    android:adjustViewBounds="true"
-                    android:cropToPadding="true"
-                    android:paddingBottom="0sp"
-                    android:scaleType="fitEnd"
-                    android:tint="@color/white"
-                    app:srcCompat="@drawable/headerpic" />
-
-                <ImageView
-                    android:id="@+id/imageView4"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/profile_header_height"
-                    android:adjustViewBounds="true"
-                    android:alpha="0.8"
-                    android:background="@color/colorPrimary"
-                    android:cropToPadding="true"
-                    android:paddingBottom="0sp"
-                    android:scaleType="fitEnd"
-                    android:tint="@color/white" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -77,7 +61,7 @@
                         android:layout_height="wrap_content"
                         android:layout_margin="@dimen/padding_16"
                         android:text="Le Thi Truong Giang"
-                        android:textColor="@color/white"
+                        android:textColor="@color/colorSecondary"
                         android:textSize="@dimen/textSize_18" />
                 </LinearLayout>
 
