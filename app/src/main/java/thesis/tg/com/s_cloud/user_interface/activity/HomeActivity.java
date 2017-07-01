@@ -25,11 +25,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.daimajia.androidanimations.library.Techniques;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.api.services.drive.model.FileList;
 import com.squareup.picasso.Picasso;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -57,6 +59,7 @@ import thesis.tg.com.s_cloud.utils.DriveType;
 import thesis.tg.com.s_cloud.utils.EventConst;
 import thesis.tg.com.s_cloud.utils.UiUtils;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
+
 import static thesis.tg.com.s_cloud.user_interface.fragment.FileListFragment.ViewMode.GRID;
 import static thesis.tg.com.s_cloud.user_interface.fragment.FileListFragment.ViewMode.LIST;
 
@@ -75,7 +78,7 @@ public class HomeActivity extends KasperActivity implements
     private ScheduledExecutorService scheduler;
 
 
-    public interface FragmentStackName{
+    public interface FragmentStackName {
         String FILES = "FILES";
     }
 
@@ -106,22 +109,22 @@ public class HomeActivity extends KasperActivity implements
                         callerRefresh = HomeActivity.this;
                         folderPathFragment.refreshWithFolder(topFragment.getFragmentName());
                         getSupportActionBar().setTitle(topFragment.getFragmentName());
-                        changeFragment(R.id.fragmentHolder,flf,ROOT_TAG);
+                        changeFragment(R.id.fragmentHolder, flf, ROOT_TAG);
                         navigationView.setCheckedItem(code);
                     }
                     flf.loadRefresh(callerRefresh);
                     break;
                 case EventConst.DISCONNECT:
-                    DriveUser.getInstance().setId(code,null);
+                    ba.getDriveUser().setId(code, null);
                     if (topFragment != null && topFragment.getDriveType() == code)
                         changeToNotConnected(code);
                     break;
             }
-            if (ba.getDriveMannager().isTriedLoginAll()){
-                if (topFragment == null){
+            if (ba.getDriveMannager().isTriedLoginAll()) {
+                if (topFragment == null) {
                     onNavigationItemSelected(navigationView.getMenu().findItem(R.id.gdrive));
                 }
-                if (generalProgressDialog==null)
+                if (generalProgressDialog == null)
                     return;
                 generalProgressDialog.dismiss();
                 generalProgressDialog = null;
@@ -138,42 +141,37 @@ public class HomeActivity extends KasperActivity implements
         @Override
         public boolean onQueryTextChange(String newText) {
 
-            if ( topFragment == null) {
+            if (topFragment == null) {
                 return false;
             }
             ba.getDriveWrapper(topFragment.getDriveType()).updateSearchContext(newText);
-            callback(START,1,null);
+            callback(START, 1, null);
             topFragment.loadRefresh(HomeActivity.this);
             return true;
         }
     };
 
 
-
-
     private MenuItemCompat.OnActionExpandListener onSearchStartCancelListenner = new MenuItemCompat.OnActionExpandListener() {
         @Override
         public boolean onMenuItemActionExpand(MenuItem item) {
-            if (topFragment==null) return false;
-            backFolder(getSupportFragmentManager().getBackStackEntryCount()-1);
+            if (topFragment == null) return false;
+            backFolder(getSupportFragmentManager().getBackStackEntryCount() - 1);
             SDriveFolder sdf = new SDriveFolder();
             sdf.setName("Search");
             sdf.setId(EventConst.SEARCH);
-            callback(EventConst.OPEN_FOLDER,1,sdf);
+            callback(EventConst.OPEN_FOLDER, 1, sdf);
             showHideFab(View.GONE);
             return true;
         }
 
         @Override
         public boolean onMenuItemActionCollapse(MenuItem item) {
-            backFolder(getSupportFragmentManager().getBackStackEntryCount()-1);
+            backFolder(getSupportFragmentManager().getBackStackEntryCount() - 1);
             showHideFab(View.VISIBLE);
             return true;
         }
     };
-
-
-
 
 
     @Override
@@ -185,7 +183,6 @@ public class HomeActivity extends KasperActivity implements
 
         getSupportActionBar().setHomeButtonEnabled(true);
         registerCallBack();
-
 
 
         //Refresh Login Attempts
@@ -207,17 +204,17 @@ public class HomeActivity extends KasperActivity implements
         fabmenu = (FloatingActionsMenu) findViewById(R.id.multiple_actions);
         fabmenu.setOnFloatingActionsMenuUpdateListener(new FloatingActionsMenu.OnFloatingActionsMenuUpdateListener() {
             View v = findViewById(R.id.ivBlueScreen);
+
             @Override
             public void onMenuExpanded() {
-                UiUtils.OpeningAnimate(v,Techniques.FadeIn,300);
+                UiUtils.OpeningAnimate(v, Techniques.FadeIn, 300);
             }
 
             @Override
             public void onMenuCollapsed() {
-                UiUtils.ClosingAnimate(v,Techniques.FadeOut,300);
+                UiUtils.ClosingAnimate(v, Techniques.FadeOut, 300);
             }
         });
-
 
 
         if (!folderPathFragment.isAdded()) {
@@ -226,21 +223,22 @@ public class HomeActivity extends KasperActivity implements
             folderPathFragment.refreshWithFolder("Root");
         }
 
-        generalProgressDialog = UiUtils.getDefaultProgressDialog(HomeActivity.this,true,getString(R.string.checking_login));
+        generalProgressDialog = UiUtils.getDefaultProgressDialog(HomeActivity.this, true, getString(R.string.checking_login));
         generalProgressDialog.show();
 
 
         if (((GoogleDriveWrapper) ba.getDriveWrapper(DriveType.GOOGLE)).getClient() == null)
             ((GoogleDriveWrapper) ba.getDriveWrapper(DriveType.GOOGLE)).googleSignInServiceInit(ba);
-        DriveUser.getInstance().autoSignIn(this, new MyCallBack() {
+        ba.getDriveUser().autoSignIn(this, new MyCallBack() {
             @Override
             public void callback(String message, int code, Object data) {
 
                 if (((boolean) data)) {
                     updateNavHeader();
+                    ba.getDriveMannager().refreshLoginAttemps();
                     ba.getDriveMannager().autoSignIn(HomeActivity.this, signInCallback);
-                }else{
-//                    int availableDrive = DriveUser.getInstance().getAvailableDrive();
+                } else {
+//                    int availableDrive = ba.getDriveUser()().getAvailableDrive();
 //                    if (availableDrive != -1)
 //                        signInCallback.callback(EventConst.RELOGIN_SUCCESS,availableDrive,null);
 //                    else
@@ -257,10 +255,9 @@ public class HomeActivity extends KasperActivity implements
         });
 
 
+        ((FileListFragment) fragmentNavigator.get(DriveType.LOCAL)).loadRefresh(this);
 
-        ((FileListFragment)fragmentNavigator.get(DriveType.LOCAL)).loadRefresh(this);
-
-        if (!ba.getResourcesUtils().isExternalStorageAvailable()){
+        if (!ba.getResourcesUtils().isExternalStorageAvailable()) {
             makeMessage(getString(R.string.sdcardnotmount));
         }
 
@@ -269,24 +266,24 @@ public class HomeActivity extends KasperActivity implements
     }
 
 
-    private void registerCallBack(){
-        EventBroker.getInstance(ba).register(this.signInCallback,EventConst.LOGIN_SUCCESS);
-        EventBroker.getInstance(ba).register(this.signInCallback,EventConst.RELOGIN_SUCCESS);
-        EventBroker.getInstance(ba).register(this.signInCallback,EventConst.DISCONNECT);
-        EventBroker.getInstance(ba).register(this.signInCallback,EventConst.LOGIN_FAIL);
-        EventBroker.getInstance(ba).register(this.signInCallback,EventConst.RELOGIN_FAIL);
-        EventBroker.getInstance(ba).register(this,EventConst.FINISH_DOWNLOADING);
-        EventBroker.getInstance(ba).register(this,EventConst.FINISH_UPLOADING);
+    private void registerCallBack() {
+        EventBroker.getInstance(ba).register(this.signInCallback, EventConst.LOGIN_SUCCESS);
+        EventBroker.getInstance(ba).register(this.signInCallback, EventConst.RELOGIN_SUCCESS);
+        EventBroker.getInstance(ba).register(this.signInCallback, EventConst.DISCONNECT);
+        EventBroker.getInstance(ba).register(this.signInCallback, EventConst.LOGIN_FAIL);
+        EventBroker.getInstance(ba).register(this.signInCallback, EventConst.RELOGIN_FAIL);
+        EventBroker.getInstance(ba).register(this, EventConst.FINISH_DOWNLOADING);
+        EventBroker.getInstance(ba).register(this, EventConst.FINISH_UPLOADING);
     }
 
-    private void unregisterCallback(){
-        EventBroker.getInstance(ba).unRegister(this.signInCallback,EventConst.LOGIN_SUCCESS);
-        EventBroker.getInstance(ba).unRegister(this.signInCallback,EventConst.RELOGIN_SUCCESS);
-        EventBroker.getInstance(ba).unRegister(this.signInCallback,EventConst.DISCONNECT);
-        EventBroker.getInstance(ba).unRegister(this.signInCallback,EventConst.LOGIN_FAIL);
-        EventBroker.getInstance(ba).unRegister(this.signInCallback,EventConst.RELOGIN_FAIL);
-        EventBroker.getInstance(ba).unRegister(this,EventConst.FINISH_DOWNLOADING);
-        EventBroker.getInstance(ba).unRegister(this,EventConst.FINISH_UPLOADING);
+    private void unregisterCallback() {
+        EventBroker.getInstance(ba).unRegister(this.signInCallback, EventConst.LOGIN_SUCCESS);
+        EventBroker.getInstance(ba).unRegister(this.signInCallback, EventConst.RELOGIN_SUCCESS);
+        EventBroker.getInstance(ba).unRegister(this.signInCallback, EventConst.DISCONNECT);
+        EventBroker.getInstance(ba).unRegister(this.signInCallback, EventConst.LOGIN_FAIL);
+        EventBroker.getInstance(ba).unRegister(this.signInCallback, EventConst.RELOGIN_FAIL);
+        EventBroker.getInstance(ba).unRegister(this, EventConst.FINISH_DOWNLOADING);
+        EventBroker.getInstance(ba).unRegister(this, EventConst.FINISH_UPLOADING);
 
     }
 
@@ -302,20 +299,20 @@ public class HomeActivity extends KasperActivity implements
                     EventConst.FILE_SELECT_REQUEST_CODE);
         } catch (android.content.ActivityNotFoundException ex) {
             // Potentially direct the user to the Market with a Dialog
-           this.callback(EventConst.MESSAGE,1,getString(R.string.please_setup_file_manager));
+            this.callback(EventConst.MESSAGE, 1, getString(R.string.please_setup_file_manager));
         }
     }
 
     @Override
     protected void initFragment() {
         folderPathFragment = new FolderPathFragment();
-        fragmentNavigator.put(DriveType.GOOGLE,new FileListFragment.Builder()
+        fragmentNavigator.put(DriveType.GOOGLE, new FileListFragment.Builder()
                 .setFragmentName(getString(R.string.g_drive))
                 .setDriveType(DriveType.GOOGLE)
                 .setFolder("root")
                 .setViewMode(LIST)
                 .setBa(this.ba)
-                .build() );
+                .build());
         fragmentNavigator.put(DriveType.DROPBOX, new FileListFragment.Builder()
                 .setFragmentName(getString(R.string.dbox))
                 .setDriveType(DriveType.DROPBOX)
@@ -326,7 +323,7 @@ public class HomeActivity extends KasperActivity implements
         fragmentNavigator.put(DriveType.LOCAL, new FileListFragment.Builder()
                 .setFragmentName(getString(R.string.local_storage))
                 .setDriveType(DriveType.LOCAL)
-                .setFolder(Environment.getExternalStorageDirectory().getPath()+"/"+getString(R.string.app_name))
+                .setFolder(Environment.getExternalStorageDirectory().getPath() + "/" + getString(R.string.app_name))
                 .setViewMode(LIST)
                 .setBa(this.ba)
                 .build());
@@ -359,8 +356,7 @@ public class HomeActivity extends KasperActivity implements
                 searchManager.getSearchableInfo(getComponentName()));
 
         svFile.setOnQueryTextListener(this.onQueryTextListener);
-        MenuItemCompat.setOnActionExpandListener(menu.findItem(R.id.searchCommonView),this.onSearchStartCancelListenner);
-
+        MenuItemCompat.setOnActionExpandListener(menu.findItem(R.id.searchCommonView), this.onSearchStartCancelListenner);
 
 
         return super.onCreateOptionsMenu(menu);
@@ -369,12 +365,12 @@ public class HomeActivity extends KasperActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        switch (id){
+        switch (id) {
             case android.R.id.home:
                 doHomeEvent();
                 break;
             case R.id.viewmode:
-                if (topFragment==null)
+                if (topFragment == null)
                     break;
                 changeViewMode(item, topFragment);
                 break;
@@ -382,13 +378,13 @@ public class HomeActivity extends KasperActivity implements
         return true;
     }
 
-    private FileListFragment getTopFragment(){
+    private FileListFragment getTopFragment() {
         String tag = FragmentStackName.FILES
-                +(getSupportFragmentManager().getBackStackEntryCount()-1);
+                + (getSupportFragmentManager().getBackStackEntryCount() - 1);
 
 
         FileListFragment ff = (FileListFragment) getSupportFragmentManager().findFragmentByTag(tag);
-        if (ff == null){
+        if (ff == null) {
             ff = (FileListFragment) getSupportFragmentManager().findFragmentByTag(ROOT_TAG);
         }
         return ff;
@@ -400,8 +396,7 @@ public class HomeActivity extends KasperActivity implements
             ff.changeViewMode(LIST);
             item.setIcon(R.drawable.ic_grid);
             item.setTitle(getString(R.string.list_mode));
-        }
-        else {
+        } else {
             item.setIcon(R.drawable.ic_list);
             ff.changeViewMode(GRID);
             item.setTitle(getString(R.string.grid_mode));
@@ -410,14 +405,13 @@ public class HomeActivity extends KasperActivity implements
 
     private void doHomeEvent() {
         int countStack = getSupportFragmentManager().getBackStackEntryCount();
-        if (countStack > 1)
-        {
+        if (countStack > 1) {
             FileListFragment.ViewMode vm = topFragment.getVm();
             getSupportFragmentManager().popBackStackImmediate();
             if (countStack == 2)
                 toggle.setDrawerIndicatorEnabled(true);
             backFolderHandle(vm);
-        }else{
+        } else {
             drawer.openDrawer(GravityCompat.START);
         }
     }
@@ -430,7 +424,7 @@ public class HomeActivity extends KasperActivity implements
     private void setupNavigationDrawer() {
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(
-                this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close){
+                this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close) {
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
@@ -466,9 +460,9 @@ public class HomeActivity extends KasperActivity implements
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                switch (id){
+                switch (id) {
                     case R.id.local:
-                        if (!ba.getResourcesUtils().isExternalStorageAvailable()){
+                        if (!ba.getResourcesUtils().isExternalStorageAvailable()) {
                             makeMessage(getString(R.string.sdcardnotmount));
                             break;
                         }
@@ -487,7 +481,7 @@ public class HomeActivity extends KasperActivity implements
 //                        HomeActivity.this.hideFolderBar(View.GONE);
 //                        TransferingTaskFragment ttf = new TransferingTaskFragment();
 //                        HomeActivity.this.changeFragment(R.id.fragmentHolder,ttf,null);
-                        Intent inte = new Intent(HomeActivity.this,TransferingActivity.class);
+                        Intent inte = new Intent(HomeActivity.this, TransferingActivity.class);
                         startActivity(inte);
                         break;
                     case R.id.nav_import:
@@ -502,17 +496,17 @@ public class HomeActivity extends KasperActivity implements
                         ba.getDriveWrapper(DriveType.GOOGLE).signOut(new MyCallBack() {
                             @Override
                             public void callback(String message, int code, Object data) {
-                                Log.d("LGOUT", ((boolean)data)? "True" : "False");
+                                Log.d("LGOUT", ((boolean) data) ? "True" : "False");
                             }
                         });
                         ba.getDriveWrapper(DriveType.DROPBOX).signOut(new MyCallBack() {
                             @Override
                             public void callback(String message, int code, Object data) {
-                                Log.d("LGOUT", ((boolean)data)? "True" : "False");
+                                Log.d("LGOUT", ((boolean) data) ? "True" : "False");
                             }
                         });
-                        DriveUser.getInstance().signOut();
-                        DriveUser.getInstance().deleteAccessToken(HomeActivity.this);
+                        ba.getDriveUser().signOut();
+                        ba.getDriveUser().deleteAccessToken(HomeActivity.this);
                         Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
                         startActivity(intent);
                         finish();
@@ -522,12 +516,12 @@ public class HomeActivity extends KasperActivity implements
 
                 }
             }
-        },150);
+        }, 150);
         return true;
     }
 
     private void hideFolderBar(int visibility) {
-        if(visibility == this.findViewById(R.id.app_bar_extension).getVisibility()) return;
+        if (visibility == this.findViewById(R.id.app_bar_extension).getVisibility()) return;
         this.findViewById(R.id.app_bar_extension).setVisibility(visibility);
     }
 
@@ -535,32 +529,33 @@ public class HomeActivity extends KasperActivity implements
         showHideFab(View.GONE);
         notconnectedFragment.setDrive(id);
         if (notconnectedFragment.isVisible()) return;
-        this.changeFragment(R.id.fragmentHolder,notconnectedFragment,ROOT_TAG);
+        this.changeFragment(R.id.fragmentHolder, notconnectedFragment, ROOT_TAG);
         topFragment = null;
         this.folderPathFragment.refreshWithFolder(getString(R.string.not_connected));
     }
 
     private boolean isConnectedDrive(int id) {
-        return DriveUser.getInstance().isSignedIn(id);
+        return ba.getDriveUser().isSignedIn(id);
     }
 
     private void changeDrive(int id) {
         FileListFragment fragment;
         fragment = (FileListFragment) fragmentNavigator.get(id);
-        if (topFragment != null && fragment.getDriveType() == topFragment.getDriveType())
-            return;
-        topFragment = fragment;
+        if (getSupportFragmentManager().getBackStackEntryCount() > 1)
+            backFolder(getSupportFragmentManager().getBackStackEntryCount() - 1);
         folderPathFragment.refreshWithFolder(getString(ba.getResourcesUtils().getStringId(id)));
-
-        changeFragment(R.id.fragmentHolder,fragment, ROOT_TAG);
+        if (topFragment == null || fragment.getDriveType() != topFragment.getDriveType()) {
+            topFragment = fragment;
+            changeFragment(R.id.fragmentHolder, fragment, ROOT_TAG);
+            return;
+        }
         showHideFab(View.VISIBLE);
     }
 
 
-
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.hdProfile:
                 Intent intent = new Intent(HomeActivity.this, ProfileActivity.class);
                 startActivityForResult(intent, EventConst.PROFILE_OPEN);
@@ -585,7 +580,7 @@ public class HomeActivity extends KasperActivity implements
     @Override
     public synchronized void callback(String message, int code, Object data) {
         super.callback(message, code, data);
-        switch (message){
+        switch (message) {
             case EventConst.OPEN_FOLDER:
                 showHideFab(View.VISIBLE);
                 toggle.setDrawerIndicatorEnabled(false);
@@ -594,28 +589,29 @@ public class HomeActivity extends KasperActivity implements
                 ba.getDriveWrapper(topFragment.getDriveType()).addNewListFileTask(sdfo.getId());
                 //Create new fragment
                 topFragment = new FileListFragment.Builder()
-                                .setDriveType(topFragment
+                        .setDriveType(topFragment
                                 .getDriveType())
-                                .setFragmentName(sdfo.getName())
-                                .setFolder(sdfo.getId())
-                                .setBa(this.ba)
-                                .setViewMode(topFragment.getVm())
-                                .build();
-                this.addFragmentToStack(R.id.fragmentHolder,topFragment,FragmentStackName.FILES);
-                this.callback(HomeActivity.START,1,null);
+                        .setFragmentName(sdfo.getName())
+                        .setFolder(sdfo.getId())
+                        .setBa(this.ba)
+                        .setViewMode(topFragment.getVm())
+                        .build();
+                this.addFragmentToStack(R.id.fragmentHolder, topFragment, FragmentStackName.FILES);
+                this.callback(HomeActivity.START, 1, null);
                 topFragment.loadRefresh(this);
                 getSupportActionBar().setTitle(topFragment.getFragmentName());
                 break;
             case EventConst.BACK_FOLDER:
-                if (code == getSupportFragmentManager().getBackStackEntryCount()-1){
+                if (code == getSupportFragmentManager().getBackStackEntryCount() - 1) {
                     MenuItem menuItem = menu.findItem(R.id.searchCommonView);
-                    if (menuItem.isActionViewExpanded()){
+                    if (menuItem.isActionViewExpanded()) {
                         menuItem.collapseActionView();
                         break;
                     }
                 }
                 backFolder(code);
-                if (topFragment != null && topFragment.getFolder() == EventConst.SEARCH) showHideFab(View.GONE);
+                if (topFragment != null && topFragment.getFolder() == EventConst.SEARCH)
+                    showHideFab(View.GONE);
                 break;
             case EventConst.SCROLL_DOWN:
                 showHideFab(View.GONE);
@@ -625,11 +621,11 @@ public class HomeActivity extends KasperActivity implements
                 showHideFab(View.VISIBLE);
                 break;
             case EventConst.DELETE_FILE:
-                topFragment.callback(message,code,data);
+                topFragment.callback(message, code, data);
                 break;
             case EventConst.FINISH_DOWNLOADING:
             case EventConst.FINISH_UPLOADING:
-                ((FileListFragment)fragmentNavigator.get(code)).loadRefresh(null);
+                ((FileListFragment) fragmentNavigator.get(code)).loadRefresh(null);
                 break;
             case EventConst.MESSAGE:
                 this.makeMessage(data.toString());
@@ -640,17 +636,17 @@ public class HomeActivity extends KasperActivity implements
     }
 
     private void makeMessage(final String s) {
-        if (snackbarNoti == null){
-            this.snackbarNoti = Snackbar.make(cl,s,Snackbar.LENGTH_LONG);
-        }else
+        if (snackbarNoti == null) {
+            this.snackbarNoti = Snackbar.make(cl, s, Snackbar.LENGTH_LONG);
+        } else
             snackbarNoti.setText(s);
         snackbarNoti.show();
     }
 
-    private void showHideStaticMessage(String mess, boolean show){
-        if (staticSnack == null){
-            this.staticSnack = Snackbar.make(cl,mess,Snackbar.LENGTH_INDEFINITE);
-        }else
+    private void showHideStaticMessage(String mess, boolean show) {
+        if (staticSnack == null) {
+            this.staticSnack = Snackbar.make(cl, mess, Snackbar.LENGTH_INDEFINITE);
+        } else
             staticSnack.setText(mess);
         if (!show)
             staticSnack.dismiss();
@@ -659,7 +655,7 @@ public class HomeActivity extends KasperActivity implements
     }
 
 
-    private void showHideFab(int visibility){
+    private void showHideFab(int visibility) {
         if (fabmenu.getVisibility() != visibility) {
             if (visibility == View.GONE)
                 UiUtils.ClosingAnimate(fabmenu, Techniques.SlideOutDown, 300);
@@ -671,21 +667,21 @@ public class HomeActivity extends KasperActivity implements
     private void updateNavHeader() {
         TextView tvname = (TextView) header.findViewById(R.id.tvUserName);
         CircleImageView civAvatar = (CircleImageView) header.findViewById(R.id.imvAvatarUser);
-        tvname.setText(DriveUser.getInstance().getName());
-        if (DriveUser.getInstance().getAvatarLink() != null && DriveUser.getInstance().getAvatarLink().length() > 0)
-            Picasso.with(this).load(DriveUser.getInstance().getAvatarLink()).into(civAvatar);
-        else if (DriveUser.getInstance().getAvatar() != null)
-            Picasso.with(this).load(DriveUser.getInstance().getAvatar()).into(civAvatar);
+        tvname.setText(ba.getDriveUser().getName());
+        if (ba.getDriveUser().getAvatarLink() != null && ba.getDriveUser().getAvatarLink().length() > 0)
+            Picasso.with(this).load(ba.getDriveUser().getAvatarLink()).into(civAvatar);
+        else if (ba.getDriveUser().getAvatar() != null)
+            Picasso.with(this).load(ba.getDriveUser().getAvatar()).into(civAvatar);
         else
-            civAvatar.setImageResource(DriveUser.getInstance().getDefaultAvatar());
+            civAvatar.setImageResource(ba.getDriveUser().getDefaultAvatar());
     }
 
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ((GoogleDriveWrapper)ba.getDriveWrapper(DriveType.GOOGLE))
-                .getClient().disconnect();
+//        ((GoogleDriveWrapper)ba.getDriveWrapper(DriveType.GOOGLE))
+//                .getClient().disconnect();
         unregisterCallback();
         scheduler.shutdown();
     }
@@ -694,27 +690,26 @@ public class HomeActivity extends KasperActivity implements
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode){
+        switch (requestCode) {
             case EventConst.FILE_SELECT_REQUEST_CODE:
                 if (resultCode == RESULT_OK) {
                     // Get the Uri of the selected file
                     Uri uri = data.getData();
                     Log.d("TAG", "File Uri: " + uri.toString());
                     // Get the path
-                    String path = DataUtils.getPath(this,uri);
+                    String path = DataUtils.getPath(this, uri);
                     String type = getContentResolver().getType(uri);
-                    SDriveFile sdf = new SDriveFile(new File(path),type);
+                    SDriveFile sdf = new SDriveFile(new File(path), type);
                     sdf.setCloud_type(DriveType.LOCAL_STORAGE);
                     sdf.setFolder(topFragment.getFolder());
 
 
-                    if (path == null || path.length() == 0)
-                    {
-                        this.callback(EventConst.MESSAGE,1,getString(R.string.cannot_accesS_file));
+                    if (path == null || path.length() == 0) {
+                        this.callback(EventConst.MESSAGE, 1, getString(R.string.cannot_accesS_file));
                         return;
-                    }else{
+                    } else {
                         //TODO: maybe sycned
-                        ba.getDriveMannager().transferDataTo(topFragment.getDriveType(),sdf,false);
+                        ba.getDriveMannager().transferDataTo(topFragment.getDriveType(), sdf, false);
                     }
                     Log.d("TAG", "File Path: " + path);
                 }
@@ -722,14 +717,14 @@ public class HomeActivity extends KasperActivity implements
             case EventConst.PROFILE_OPEN:
                 boolean google = data.getBooleanExtra(EventConst.GOOGLE_CONNECT, true);
                 boolean dropbox = data.getBooleanExtra(EventConst.DBX_CONNECT, true);
-                if (google && !DriveUser.getInstance().isSignedIn(DriveType.GOOGLE))
+                if (google && !ba.getDriveUser().isSignedIn(DriveType.GOOGLE))
                     ba.getDriveMannager().autoSignInGoogle(this, this.signInCallback);
-                if (dropbox && !DriveUser.getInstance().isSignedIn(DriveType.DROPBOX))
+                if (dropbox && !ba.getDriveUser().isSignedIn(DriveType.DROPBOX))
                     ba.getDriveMannager().autoSignInDropbox(this, this.signInCallback);
-                if (!google && DriveUser.getInstance().isSignedIn(DriveType.GOOGLE))
-                    this.signInCallback.callback(EventConst.DISCONNECT,DriveType.GOOGLE,null);
-                if (!dropbox && DriveUser.getInstance().isSignedIn(DriveType.DROPBOX))
-                    this.signInCallback.callback(EventConst.DISCONNECT,DriveType.DROPBOX,null);
+                if (!google && ba.getDriveUser().isSignedIn(DriveType.GOOGLE))
+                    this.signInCallback.callback(EventConst.DISCONNECT, DriveType.GOOGLE, null);
+                if (!dropbox && ba.getDriveUser().isSignedIn(DriveType.DROPBOX))
+                    this.signInCallback.callback(EventConst.DISCONNECT, DriveType.DROPBOX, null);
 
                 break;
             default:
@@ -741,7 +736,7 @@ public class HomeActivity extends KasperActivity implements
     public void onBackPressed() {
         int countStack = getSupportFragmentManager().getBackStackEntryCount();
         if (countStack == 1)
-            UiUtils.showExitAlertDialog(this,0);
+            UiUtils.showExitAlertDialog(this, 0);
         else {
             if (countStack == 2)
                 toggle.setDrawerIndicatorEnabled(true);
@@ -752,8 +747,8 @@ public class HomeActivity extends KasperActivity implements
     }
 
 
-    private void backFolderHandle(FileListFragment.ViewMode vm){
-        this.callback(HomeActivity.FINISH,1,null);
+    private void backFolderHandle(FileListFragment.ViewMode vm) {
+        this.callback(HomeActivity.FINISH, 1, null);
         folderPathFragment.backFolderStepSize(1);
         topFragment = getTopFragment();
         if (topFragment.getVm() != vm)
@@ -762,7 +757,7 @@ public class HomeActivity extends KasperActivity implements
         ba.getDriveWrapper(topFragment.getDriveType()).popListFileTask();
     }
 
-    private void startInternetCheckingCirculation(){
+    private void startInternetCheckingCirculation() {
         scheduler =
                 Executors.newSingleThreadScheduledExecutor();
 
@@ -781,15 +776,15 @@ public class HomeActivity extends KasperActivity implements
                             Log.e("CHECK INTERNET", getString(R.string.check_internet), e);
                         }
                         if (!isConnected && (staticSnack == null || !staticSnack.isShown()))
-                            showHideStaticMessage(getString(R.string.check_internet),true);
+                            showHideStaticMessage(getString(R.string.check_internet), true);
                         if (isConnected && staticSnack != null && staticSnack.isShown())
                             staticSnack.dismiss();
                     }
                 }, 0, 1, TimeUnit.MINUTES);
     }
 
-    private void backFolder(int numBack){
-        for (int i = 0 ; i < numBack; i ++){
+    private void backFolder(int numBack) {
+        for (int i = 0; i < numBack; i++) {
             onBackPressed();
         }
     }

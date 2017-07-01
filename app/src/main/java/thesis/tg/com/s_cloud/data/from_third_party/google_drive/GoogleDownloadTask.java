@@ -43,7 +43,7 @@ public class GoogleDownloadTask extends DownloadTask {
 
         OutputStream fos = file.getOutputStream(this.to,file.getName(), ba);
         outputStream = new SConnectOutputstream(DataUtils.getDataHeader(), fos);
-        outputStream.setPrgresslistenner(this);
+        outputStream.setPrgresslistenner(at);
         InputStream is = driveService.files().get(file.getId())
                 .executeMediaAsInputStream();
         byte[] buffer = new byte[2048];

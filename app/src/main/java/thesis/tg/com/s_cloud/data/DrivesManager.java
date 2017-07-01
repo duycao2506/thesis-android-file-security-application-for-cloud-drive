@@ -71,7 +71,7 @@ public class DrivesManager {
                 else {
                     tt = new LocalImportTask(ba);
                 }
-                if (tt== null) return;
+                if (tt == null) return;
                 break;
             case DriveType.DROPBOX:
                 tt = new DbxUploadTask(
@@ -99,14 +99,14 @@ public class DrivesManager {
     public void autoSignInDropbox(Context context, MyCallBack caller){
         //Dropbox
         DbxDriveWrapper dbxDriveWrapper = ((DbxDriveWrapper)ba.getDriveWrapper(DriveType.DROPBOX));
-        if (!DriveUser.getInstance().isSignedIn(DriveType.DROPBOX))
+        if (!ba.getDriveUser().isSignedIn(DriveType.DROPBOX))
             dbxDriveWrapper.signIn(context, caller);
     }
 
     public void autoSignInGoogle(Context context, final MyCallBack caller){
         //Sign int automatically first
         final GoogleDriveWrapper googleDriveWrapper = (GoogleDriveWrapper) ba.getDriveWrapper(DriveType.GOOGLE);
-        if (!DriveUser.getInstance().isSignedIn(DriveType.GOOGLE)) {
+        if (!ba.getDriveUser().isSignedIn(DriveType.GOOGLE)) {
             GoogleApiClient gac = null;
             gac =  googleDriveWrapper.getClient();
             if (gac == null)

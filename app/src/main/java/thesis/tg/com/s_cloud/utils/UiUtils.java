@@ -189,7 +189,7 @@ public class UiUtils {
                 .setItemClickListener(new BottomSheetItemClickListener() {
                     @Override
                     public void onBottomSheetItemClick(MenuItem item) {
-                        if (DriveUser.getInstance().isSignedIn(item.getItemId())){
+                        if (ba.getDriveUser().isSignedIn(item.getItemId())){
                             ba.getDriveMannager().transferDataTo(item.getItemId(),data,isSync);
                         }else{
                             Toast.makeText(context

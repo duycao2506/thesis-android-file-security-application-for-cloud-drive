@@ -11,6 +11,7 @@ import org.json.JSONObject;
 
 import thesis.tg.com.s_cloud.R;
 import thesis.tg.com.s_cloud.data.from_local.MockData;
+import thesis.tg.com.s_cloud.framework_components.BaseApplication;
 import thesis.tg.com.s_cloud.framework_components.data.from_server.GeneralResponse;
 import thesis.tg.com.s_cloud.framework_components.data.from_server.POSTRequestService;
 import thesis.tg.com.s_cloud.framework_components.data.from_server.RequestService;
@@ -77,10 +78,11 @@ public class DriveUser extends SuperObject {
     private static DriveUser instance;
 
 
-    public static DriveUser getInstance() {
-        if (instance == null)
-            instance = new DriveUser();
-        return instance;
+    public static DriveUser getInstance(BaseApplication ba) {
+        if (ba.getDriveUser() != null)
+            return ba.getDriveUser();
+        ba.setDriveUser(new DriveUser());
+        return ba.getDriveUser();
     }
 
     public String getEmail() {
@@ -191,13 +193,14 @@ public class DriveUser extends SuperObject {
         prefs.edit().putString("scloud-access-token", token).apply();
     }
 
-    public void autoSignIn(Context context, final MyCallBack myCallBack) {
+    public void autoSignIn(final Context context, final MyCallBack myCallBack) {
         if (isSignedIn()) {
             myCallBack.callback(EventConst.LOGIN_SCLOUD, 1, true);
         } else if (getAccessToken(context) == null) {
             myCallBack.callback(EventConst.LOGIN_SCLOUD, 1, false);
         } else {
-            POSTRequestService prs = new POSTRequestService(context, RequestService.RequestServiceConstant.api1, new MyCallBack() {
+            POSTRequestService prs = new POSTRequestService
+                    (context, RequestService.RequestServiceConstant.api1, new MyCallBack() {
                 @Override
                 public void callback(String message, int code, Object data) {
                     //TODO: check validation
@@ -205,7 +208,8 @@ public class DriveUser extends SuperObject {
                     //TODO: get Profile by AccessToken
                     Log.d("AutoLogin", data.toString());
                     //Processing Profile
-                    DriveUser.getInstance().copyFromJSON(MockData.jsonuser);
+                    ((BaseApplication)context.getApplicationContext())
+                            .getDriveUser().copyFromJSON(MockData.jsonuser);
                     myCallBack.callback(EventConst.LOGIN_SCLOUD, 1, true);
                 }
             }, new GeneralResponse());

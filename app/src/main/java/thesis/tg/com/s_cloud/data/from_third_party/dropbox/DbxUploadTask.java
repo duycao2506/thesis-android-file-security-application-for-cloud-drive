@@ -36,7 +36,7 @@ public class DbxUploadTask extends UploadTask {
         OutputStream os = uu.getOutputStream();
 
         SConnectInputStream scis = new SConnectInputStream(file.getInputstream(ba));
-        scis.setPrgressUpdater(this);
+        scis.setPrgressUpdater(at);
         SequenceInputStream inputStream =
                 new SequenceInputStream(new ByteArrayInputStream(
                         DataUtils.getDataHeader()),

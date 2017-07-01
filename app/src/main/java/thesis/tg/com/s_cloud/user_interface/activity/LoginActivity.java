@@ -215,7 +215,7 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
                         try{
                             auth_json = new JSONObject(auth_json_string);
                             if (auth_json.getString("status").compareTo("success")==0)
-                                DriveUser.getInstance().saveAccToken(LoginActivity.this,auth_json.getString("auth_token"));
+                                ba.getDriveUser().saveAccToken(LoginActivity.this,auth_json.getString("auth_token"));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -231,7 +231,7 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
-                                DriveUser.getInstance().copyFromJSON(MockData.jsonuser);
+                                ba.getDriveUser().copyFromJSON(MockData.jsonuser);
                                 LoginActivity.this.callback(EventConst.LOGIN_SUCCESS,1,null);
                             }
                         }, new GeneralResponse());

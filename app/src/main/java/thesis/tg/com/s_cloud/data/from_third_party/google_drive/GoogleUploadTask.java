@@ -34,7 +34,7 @@ public class GoogleUploadTask extends UploadTask {
     protected void transfer() throws IOException, DbxException{
         super.transfer();
         SConnectInputStream scis = new SConnectInputStream(file.getInputstream(ba));
-        scis.setPrgressUpdater(this);
+        scis.setPrgressUpdater(at);
         DriveContentInputStream dvic = new DriveContentInputStream(
                 file.getMimeType(),
                 scis,

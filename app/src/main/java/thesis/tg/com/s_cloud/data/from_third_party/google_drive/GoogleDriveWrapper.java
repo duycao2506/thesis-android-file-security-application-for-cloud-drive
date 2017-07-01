@@ -127,6 +127,7 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
         Log.d("HELLO", "handleSignInResult:" + result.isSuccess());
 
         new AsyncTask<Void, Void, String>() {
+            BaseApplication ba = (BaseApplication) context.getApplicationContext();
             @Override
             protected String doInBackground(Void... params) {
                 if (result.isSuccess()) {
@@ -137,7 +138,7 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
                     GoogleSignInAccount acct = result.getSignInAccount();
 
                     //TODO: Create User
-                    DriveUser user = DriveUser.getInstance();
+                    DriveUser user = ba.getDriveUser();
                     if (user.isSignedIn()) {
                         user.setId(getType(), acct.getId());
                         user.setGoogleEmail(acct.getEmail());
@@ -172,7 +173,7 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
             @Override
             protected void onPostExecute(String aVoid) {
                 super.onPostExecute(aVoid);
-                afterLoginCallback.callback(aVoid, getType(), DriveUser.getInstance());
+                afterLoginCallback.callback(aVoid, getType(), ba.getDriveUser());
             }
 
             @Override
@@ -187,9 +188,10 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
     }
 
     private void initCredential() {
+        BaseApplication ba = (BaseApplication) context.getApplicationContext();
         mGoogleCredential = GoogleAccountCredential.usingOAuth2(context, scopes);
-        mGoogleCredential.setSelectedAccountName(DriveUser.getInstance().getGoogle_email());
-        mGoogleCredential.setSelectedAccount(new Account(DriveUser.getInstance().getGoogle_email(), AccountManager.KEY_ACCOUNT_TYPE));
+        mGoogleCredential.setSelectedAccountName(ba.getDriveUser().getGoogle_email());
+        mGoogleCredential.setSelectedAccount(new Account(ba.getDriveUser().getGoogle_email(), AccountManager.KEY_ACCOUNT_TYPE));
         HttpTransport transport = AndroidHttp.newCompatibleTransport();
         JsonFactory jsonFactory = JacksonFactory.getDefaultInstance();
         driveService = new com.google.api.services.drive.Drive.Builder(
