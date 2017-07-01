@@ -8,7 +8,9 @@ import android.util.SparseArray;
 import thesis.tg.com.s_cloud.R;
 import thesis.tg.com.s_cloud.data.CloudDriveWrapper;
 import thesis.tg.com.s_cloud.data.DrivesManager;
+import thesis.tg.com.s_cloud.data.from_third_party.google_drive.GoogleDriveWrapper;
 import thesis.tg.com.s_cloud.data.from_third_party.task.TransferTaskManager;
+import thesis.tg.com.s_cloud.entities.DriveUser;
 import thesis.tg.com.s_cloud.framework_components.data.from_server.VolleyHelper;
 import thesis.tg.com.s_cloud.framework_components.utils.EventBroker;
 import thesis.tg.com.s_cloud.utils.DriveType;
@@ -29,6 +31,7 @@ public class BaseApplication extends MultiDexApplication {
     private TransferTaskManager transferTaskManager;
     private EventBroker eventBroker;
     private NotificationHandler notificationHandler;
+    private DriveUser driveUser;
 
 
     @Override
@@ -41,6 +44,7 @@ public class BaseApplication extends MultiDexApplication {
                 .build()
         );
         createDriveWrappers();
+        this.driveUser = DriveUser.getInstance(this);
         this.driveMannager = DrivesManager.create(this);
         this.resourcesUtils = ResourcesUtils.getInstance(this);
         this.transferTaskManager = TransferTaskManager.getInstance(this);
@@ -88,5 +92,19 @@ public class BaseApplication extends MultiDexApplication {
 
     public EventBroker getEventBroker() {
         return eventBroker;
+    }
+
+    public DriveUser getDriveUser() {
+        return driveUser;
+    }
+
+    public void setDriveUser(DriveUser driveUser) {
+        this.driveUser = driveUser;
+    }
+
+    @Override
+    public void onTerminate() {
+        super.onTerminate();
+        ((GoogleDriveWrapper)getDriveWrapper(DriveType.GOOGLE)).getClient().disconnect();
     }
 }

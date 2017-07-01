@@ -64,12 +64,7 @@ public class TransferingTaskAdapter extends KasperRecycleAdapter implements MyCa
                 int pos = this.findObj(data);
                 if (pos == -1)
                     break;
-                ((Activity) this.context).runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        notifyItemChanged(findObj(data));
-                    }
-                });
+                notifyItemChanged(findObj(data));
                 break;
             default:
                 break;

@@ -33,7 +33,7 @@ public class DbxDownloadTask extends DownloadTask {
 
         OutputStream fos = file.getOutputStream(this.to,file.getName(),ba);
         outputStream = new SConnectOutputstream(DataUtils.getDataHeader(), fos);
-        outputStream.setPrgresslistenner(this);
+        outputStream.setPrgresslistenner(at);
         InputStream is = dbxClientV2.files().download(file.getId()).getInputStream();
         byte[] buffer = new byte[2048];
         int numRead = 0;

@@ -59,7 +59,7 @@ public class DbxDriveWrapper extends CloudDriveWrapper {
                         e.printStackTrace();
                     }
                     if (fa != null){
-                        DriveUser user = DriveUser.getInstance();
+                        DriveUser user = ((BaseApplication)context.getApplicationContext()).getDriveUser();
                         if (user.isSignedIn()){
                             user.setId(getType(),fa.getAccountId());
                             user.setDropboxEmail(fa.getEmail());
@@ -149,14 +149,18 @@ public class DbxDriveWrapper extends CloudDriveWrapper {
                     e.printStackTrace();
                     return false;
                 }
-                dbxClientV2 = null;
-                AuthActivity.result = null;
                 return true;
             }
 
             @Override
             protected void onPostExecute(Boolean aVoid) {
                 super.onPostExecute(aVoid);
+                if (aVoid)
+                {
+
+                    dbxClientV2 = null;
+                    AuthActivity.result = null;
+                }
                 if (caller != null)
                     caller.callback("asd",1,aVoid);
             }

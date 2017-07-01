@@ -74,11 +74,11 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void pourDataOnViews() {
-        this.edtBirthday.setText(DriveUser.getInstance().getBirthday());
-        this.edtCountry.setText(DriveUser.getInstance().getCountry());
-        this.edtEmail.setText(DriveUser.getInstance().getEmail());
-        this.edtFullname.setText(DriveUser.getInstance().getName());
-        this.edtJob.setText(DriveUser.getInstance().getJob());
+        this.edtBirthday.setText(ba.getDriveUser().getBirthday());
+        this.edtCountry.setText(ba.getDriveUser().getCountry());
+        this.edtEmail.setText(ba.getDriveUser().getEmail());
+        this.edtFullname.setText(ba.getDriveUser().getName());
+        this.edtJob.setText(ba.getDriveUser().getJob());
     }
 
     private void assignViews() {
@@ -102,20 +102,20 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     private void setUpView() {
         civProfileAvatar = (CircleImageView) findViewById(R.id.ivProfileAvatar);
-        if (DriveUser.getInstance().getAvatarLink() != null
-                && DriveUser.getInstance().getAvatarLink().length() > 0)
-            Picasso.with(this).load(DriveUser.getInstance().getAvatarLink()).into(civProfileAvatar);
-        else if (DriveUser.getInstance().getAvatar() != null)
-            Picasso.with(this).load(DriveUser.getInstance().getAvatar()).into(civProfileAvatar);
+        if (ba.getDriveUser().getAvatarLink() != null
+                && ba.getDriveUser().getAvatarLink().length() > 0)
+            Picasso.with(this).load(ba.getDriveUser().getAvatarLink()).into(civProfileAvatar);
+        else if (ba.getDriveUser().getAvatar() != null)
+            Picasso.with(this).load(ba.getDriveUser().getAvatar()).into(civProfileAvatar);
         else
-            civProfileAvatar.setImageResource(DriveUser.getInstance().getDefaultAvatar());
+            civProfileAvatar.setImageResource(ba.getDriveUser().getDefaultAvatar());
         tvNameHeader = (TextView) findViewById(R.id.tvHeaderName);
-        tvNameHeader.setText(DriveUser.getInstance().getName());
+        tvNameHeader.setText(ba.getDriveUser().getName());
         btnGoogle = (Button) findViewById(R.id.btnConnectGoogle);
-        btnGoogle.setActivated(!DriveUser.getInstance().isSignedIn(DriveType.GOOGLE));
+        btnGoogle.setActivated(!ba.getDriveUser().isSignedIn(DriveType.GOOGLE));
         btnGoogle.setOnClickListener(this);
         btnDropbox = (Button) findViewById(R.id.btnConnectDropbox);
-        btnDropbox.setActivated(!DriveUser.getInstance().isSignedIn(DriveType.DROPBOX));
+        btnDropbox.setActivated(!ba.getDriveUser().isSignedIn(DriveType.DROPBOX));
         btnDropbox.setOnClickListener(this);
     }
 
@@ -132,8 +132,15 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                 ba.getDriveMannager().refreshLoginAttemps();
                 if (!btnGoogle.isActivated()) {
                     resultintent.putExtra(EventConst.GOOGLE_CONNECT, false);
-                    gdw.setOnConnectedAction(gdw.getSignoutAction());
-                    btnGoogle.setActivated(true);
+                    gdw.signOut(new MyCallBack() {
+                        @Override
+                        public void callback(String message, int code, Object data) {
+                            if ((boolean) data)
+                                btnGoogle.setActivated(true);
+                            else
+                                gdw.setOnConnectedAction(gdw.getSignoutAction());
+                        }
+                    });
                 } else {
                     Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(gac);
                     startActivityForResult(signInIntent, RESOLVE_CONNECTION_REQUEST_CODE);

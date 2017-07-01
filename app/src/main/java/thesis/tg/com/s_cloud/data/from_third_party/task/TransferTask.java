@@ -16,7 +16,7 @@ import thesis.tg.com.s_cloud.utils.EventConst;
  * Created by admin on 5/20/17.
  */
 
-public class TransferTask extends SuperObject implements MyCallBack{
+public class TransferTask extends SuperObject{
     TransferTaskManager manager;
     protected BaseApplication ba;
     MyCallBack caller;
@@ -64,7 +64,10 @@ public class TransferTask extends SuperObject implements MyCallBack{
         this.manager.add(this);
     }
 
-    protected AsyncTask<Void,Void,Boolean> at = new AsyncTask<Void, Void, Boolean>(){
+
+    protected TransferInternalTask at = new TransferInternalTask();
+
+    private class TransferInternalTask extends  AsyncTask<Void, Long, Boolean> implements MyCallBack {
         @Override
         protected Boolean doInBackground(Void...params) {
             try {
@@ -77,11 +80,34 @@ public class TransferTask extends SuperObject implements MyCallBack{
         }
 
         @Override
+        protected void onProgressUpdate(Long... values) {
+            super.onProgressUpdate(values);
+            finishSize = values[0];
+            if (caller == null) return;
+            caller.callback(EventConst.PROGRESS_UPDATE, 0, TransferTask.this);
+        }
+
+        @Override
         protected void onPostExecute(Boolean aVoid) {
             super.onPostExecute(aVoid);
             afterTransfer(aVoid);
         }
-    };
+
+        @Override
+        public void callback(String message, int code, Object data) {
+            switch (message){
+                case EventConst.PROGRESS_UPDATE:
+                    if ((long) data > finishSize) {
+                        finishSize = (long) data;
+                        publishProgress(finishSize);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
 
     protected void afterTransfer(Boolean aVoid) {
         manager.remove(this);
@@ -106,20 +132,7 @@ public class TransferTask extends SuperObject implements MyCallBack{
     }
 
 
-    @Override
-    public void callback(String message, int code, Object data) {
-        switch (message){
-            case EventConst.PROGRESS_UPDATE:
-                if ((long) data > this.finishSize) {
-                    this.finishSize = (long) data;
-                    if (this.caller == null) break;
-                    this.caller.callback(message, 1, this);
-                }
-                break;
-            default:
-                break;
-        }
-    }
+
 
 
     public SDriveFile getFile() {
