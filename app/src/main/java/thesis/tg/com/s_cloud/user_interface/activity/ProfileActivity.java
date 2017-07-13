@@ -139,6 +139,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                                 btnGoogle.setActivated(true);
                             else
                                 gdw.setOnConnectedAction(gdw.getSignoutAction());
+                            DriveUser.getInstance(ba).setId(DriveType.GOOGLE,null);
                         }
                     });
                 } else {
@@ -154,6 +155,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                         @Override
                         public void callback(String message, int code, Object data) {
                             ddw.saveAccToken(ProfileActivity.this, "");
+                            DriveUser.getInstance(ba).setId(DriveType.DROPBOX,null);
                             btnDropbox.setActivated(true);
                         }
                     });
@@ -199,6 +201,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                     GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
                     if (result.isSuccess()) {
                         resultintent.putExtra(EventConst.GOOGLE_CONNECT, true);
+                        DriveUser.getInstance(ba).setId(DriveType.GOOGLE,null);
                         btnGoogle.setActivated(false);
                         gdw.setOnConnectedAction(null);
                     }
@@ -217,6 +220,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             ddw.saveAccToken(this, token);
             btnDropbox.setActivated(false);
             resultintent.putExtra(EventConst.DBX_CONNECT, true);
+            DriveUser.getInstance(ba).setId(DriveType.DROPBOX,null);
         }
     }
 

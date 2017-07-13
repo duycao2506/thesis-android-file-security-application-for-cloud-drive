@@ -144,7 +144,8 @@ public class DbxDriveWrapper extends CloudDriveWrapper {
             protected Boolean doInBackground(Void... params) {
                 try {
 
-                    dbxClientV2.auth().tokenRevoke();
+                    if (dbxClientV2 != null)
+                        dbxClientV2.auth().tokenRevoke();
                 } catch (DbxException e) {
                     e.printStackTrace();
                     return false;

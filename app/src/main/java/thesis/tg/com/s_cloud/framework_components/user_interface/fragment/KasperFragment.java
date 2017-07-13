@@ -58,12 +58,11 @@ public class KasperFragment extends Fragment implements GlobalEventListennerDele
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         ba = (BaseApplication) getActivity().getApplication();
-        View parent = inflater.inflate(res,container, false);
-
+        parent = inflater.inflate(res,container, false);
         onKasperViewCreate(parent);
-        
         return parent;
     }
+
 
     /**
      *

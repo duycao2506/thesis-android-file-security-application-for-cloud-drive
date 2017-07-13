@@ -58,10 +58,11 @@
     <string name="password">Password</string>
     <string name="username">Username</string>
     <string name="sign_in">Sign In</string>
-    <string name="login_with_google">Google Login</string>
-    <string name="login_with_dropbox">Dropbox Login</string>
+    <string name="google_sign_up">Sign up with Google </string>
+    <string name="dbx_sign_up">Sign up with Dropbox</string>
     <string name="tap_here">Tap here</string>
     <string name="don_t_have_an_account">Don\'t have an account?</string>
+    <string name="or">or</string>
     <string name="search">Search</string>
     <string name="viewmode">View Mode</string>
     <string name="navigation_drawer_open">Open Navigation Drawer</string>
@@ -136,8 +137,8 @@
     <string name="email_to_contact">Your email to contact?</string>
     <string name="what_s_your_password">What\'s your password?</string>
     <string name="get_otp">Get Otp Code</string>
-    <string name="signing_up">Signing up...</string>
-    <string name="signin_ing">Signing in...</string>
+    <string name="signing_up">Signing up…</string>
+    <string name="signin_ing">Signing in…</string>
     <string name="se_date">Select date</string>
     <string name="more6">Password has to be more than 6 characters</string>
     <string name="confirm_wrong">Confirm wrongly!!!</string>

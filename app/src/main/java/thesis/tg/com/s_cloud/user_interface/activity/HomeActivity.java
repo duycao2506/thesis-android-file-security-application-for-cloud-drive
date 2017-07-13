@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -103,14 +104,17 @@ public class HomeActivity extends KasperActivity implements
                     updateNavHeader();
                     FileListFragment flf = (FileListFragment) fragmentNavigator.get(code);
                     MyCallBack callerRefresh = null;
-                    if (topFragment == null) {
+                    if (topFragment == flf || topFragment == null) {
                         HomeActivity.this.callback(HomeActivity.START, 1, null);
-                        topFragment = flf;
                         callerRefresh = HomeActivity.this;
-                        folderPathFragment.refreshWithFolder(topFragment.getFragmentName());
-                        getSupportActionBar().setTitle(topFragment.getFragmentName());
-                        changeFragment(R.id.fragmentHolder, flf, ROOT_TAG);
+                        if (topFragment == null) {
+                            topFragment = flf;
+                            changeFragment(R.id.fragmentHolder, flf, ROOT_TAG);
+                        }
+                        folderPathFragment.refreshWithFolder(flf.getFragmentName());
+                        getSupportActionBar().setTitle(flf.getFragmentName());
                         navigationView.setCheckedItem(code);
+
                     }
                     flf.loadRefresh(callerRefresh);
                     break;
@@ -223,7 +227,7 @@ public class HomeActivity extends KasperActivity implements
             folderPathFragment.refreshWithFolder("Root");
         }
 
-        generalProgressDialog = UiUtils.getDefaultProgressDialog(HomeActivity.this, true, getString(R.string.checking_login));
+        generalProgressDialog = UiUtils.getDefaultProgressDialog(HomeActivity.this, false, getString(R.string.checking_login));
         generalProgressDialog.show();
 
 
@@ -233,19 +237,21 @@ public class HomeActivity extends KasperActivity implements
             @Override
             public void callback(String message, int code, Object data) {
 
-                if (((boolean) data)) {
+                if ((boolean) data) {
                     updateNavHeader();
-                    ba.getDriveMannager().refreshLoginAttemps();
-                    ba.getDriveMannager().autoSignIn(HomeActivity.this, signInCallback);
-                } else {
-//                    int availableDrive = ba.getDriveUser()().getAvailableDrive();
-//                    if (availableDrive != -1)
-//                        signInCallback.callback(EventConst.RELOGIN_SUCCESS,availableDrive,null);
-//                    else
-//                    {
+                    ArrayList<Integer> availableDrive = ba.getDriveUser().getAvailableDrives();
+                    if (availableDrive.size() > 0){
+                        for (Integer drivekey : availableDrive) {
+                            signInCallback.callback(EventConst.LOGIN_SUCCESS,drivekey,null);
+                        }
+                    }
+                    else {
+                        ba.getDriveMannager().autoSignIn(HomeActivity.this, signInCallback);
+//                        generalProgressDialog.dismiss();
 //                        changeToNotConnected(0);
-//                        //TODO: handle when there is no drive signed in
-//                    }
+                    }
+//                    ba.getDriveMannager().autoSignIn(HomeActivity.this, signInCallback);
+                } else {
                     generalProgressDialog.dismiss();
                     Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
                     startActivity(intent);
@@ -327,8 +333,7 @@ public class HomeActivity extends KasperActivity implements
                 .setViewMode(LIST)
                 .setBa(this.ba)
                 .build());
-        notconnectedFragment = new NotConnectedCloudFragment();
-        notconnectedFragment.setDrive(0);
+
         getSupportActionBar().setTitle(R.string.app_name);
     }
 
@@ -527,11 +532,14 @@ public class HomeActivity extends KasperActivity implements
 
     private void changeToNotConnected(int id) {
         showHideFab(View.GONE);
-        notconnectedFragment.setDrive(id);
+        if (notconnectedFragment == null) {
+            notconnectedFragment = new NotConnectedCloudFragment();
+        }
         if (notconnectedFragment.isVisible()) return;
         this.changeFragment(R.id.fragmentHolder, notconnectedFragment, ROOT_TAG);
         topFragment = null;
         this.folderPathFragment.refreshWithFolder(getString(R.string.not_connected));
+        this.notconnectedFragment.setDrive(id);
     }
 
     private boolean isConnectedDrive(int id) {

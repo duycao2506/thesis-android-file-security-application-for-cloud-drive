@@ -1,7 +1,11 @@
 package thesis.tg.com.s_cloud.user_interface.fragment;
 
 import android.content.Intent;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
@@ -25,18 +29,15 @@ public class NotConnectedCloudFragment extends KasperFragment {
         this.setResource(R.layout.fragment_cloud_n_connected);
     }
 
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
     @Override
     protected void onKasperViewCreate(View parent) {
         super.onKasperViewCreate(parent);
-        ivDriveIcon = (ImageView) parent.findViewById(R.id.ivNconnectedDrico);
-        if (driveType == 0) {
-            if (ivDriveIcon == null) return;
-            ivDriveIcon.setImageResource(R.drawable.ic_cloud_upload_black_24dp);
-            return;
-        }else {
-            ivDriveIcon.setImageResource
-                    (ba.getResourcesUtils().getDriveIconId(driveType));
-        }
         btnFix = (Button) parent.findViewById(R.id.btnFixDriveConn);
         btnFix.setActivated(true);
         btnFix.setOnClickListener(new View.OnClickListener() {
@@ -46,6 +47,15 @@ public class NotConnectedCloudFragment extends KasperFragment {
                 getActivity().startActivityForResult(intent,EventConst.PROFILE_OPEN);
             }
         });
+        ivDriveIcon = (ImageView) parent.findViewById(R.id.ivNconnectedDrico);
+        if (driveType == 0) {
+            if (ivDriveIcon == null) return;
+            ivDriveIcon.setImageResource(R.drawable.ic_cloud_upload_black_24dp);
+        }else {
+            ivDriveIcon.setImageResource
+                    (ba.getResourcesUtils().getDriveIconId(driveType));
+        }
+
     }
 
     public void setDrive(int driveType){
