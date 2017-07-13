@@ -170,8 +170,8 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
                 UiUtils.OpeningAnimate(edtusername,Techniques.FadeInLeft, UiUtils.TIME_ANIMATE_STANDARD);
                 UiUtils.OpeningAnimate(edtpassword,Techniques.FadeInRight, UiUtils.TIME_ANIMATE_STANDARD);
                 UiUtils.OpeningAnimate(btnLogin,Techniques.FadeIn, UiUtils.TIME_ANIMATE_STANDARD);
-                UiUtils.OpeningAnimate(btnDropbox,Techniques.FadeIn, UiUtils.TIME_ANIMATE_STANDARD);
-                UiUtils.OpeningAnimate(btnGoogle,Techniques.FadeIn, UiUtils.TIME_ANIMATE_STANDARD);
+//                UiUtils.OpeningAnimate(btnDropbox,Techniques.FadeIn, UiUtils.TIME_ANIMATE_STANDARD);
+//                UiUtils.OpeningAnimate(btnGoogle,Techniques.FadeIn, UiUtils.TIME_ANIMATE_STANDARD);
 
 
             }
@@ -186,10 +186,10 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
         this.btnLogin = (Button) findViewById(R.id.btnlogin);
         this.btnLogin.setActivated(true);
         btnLogin.setOnClickListener(this);
-        this.btnGoogle = (Button) findViewById(R.id.btngoogle);
-        btnGoogle.setOnClickListener(this);
-        this.btnDropbox = (Button) findViewById(R.id.btnfacebook);
-        btnDropbox.setOnClickListener(this);
+//        this.btnGoogle = (Button) findViewById(R.id.btngoogle);
+//        btnGoogle.setOnClickListener(this);
+//        this.btnDropbox = (Button) findViewById(R.id.btnfacebook);
+//        btnDropbox.setOnClickListener(this);
         this.edtusername = (EditText) findViewById(R.id.edtUsr);
         this.edtpassword = (EditText) findViewById(R.id.edtPassword);
     }
@@ -241,17 +241,17 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
                 }, new GeneralResponse());
                 prs.executeService();
                 break;
-            case R.id.btngoogle:
-                if (mGoogleApiClient.isConnected())
-                    gdwrapper.signOut(null);
-                else {
-                    Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-                    startActivityForResult(signInIntent, RESOLVE_CONNECTION_REQUEST_CODE);
-                }
-                break;
-            case R.id.btnfacebook:
-                com.dropbox.core.android.Auth.startOAuth2Authentication(this,getString(R.string.dbox_app_key));
-                break;
+//            case R.id.btngoogle:
+//                if (mGoogleApiClient.isConnected())
+//                    gdwrapper.signOut(null);
+//                else {
+//                    Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+//                    startActivityForResult(signInIntent, RESOLVE_CONNECTION_REQUEST_CODE);
+//                }
+//                break;
+//            case R.id.btnfacebook:
+//                com.dropbox.core.android.Auth.startOAuth2Authentication(this,getString(R.string.dbox_app_key));
+//                break;
             case R.id.btnSignup:
                 Intent ins = new Intent(this, RegisterActivity.class);
                 startActivityForResult(ins, EventConst.SIGN_UP_REQUEST_CODE);

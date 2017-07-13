@@ -202,7 +202,10 @@ public class GoogleDriveWrapper extends CloudDriveWrapper implements
     }
 
     public void signOut(final MyCallBack caller) {
-        Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient).setResultCallback(
+        if (!mGoogleApiClient.isConnected())
+            caller.callback("",1,true);
+        else
+            Auth.GoogleSignInApi.revokeAccess(mGoogleApiClient).setResultCallback(
                 new ResultCallback<Status>() {
                     @Override
                     public void onResult(Status status) {

@@ -9,6 +9,12 @@ import android.util.SparseArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import thesis.tg.com.s_cloud.R;
 import thesis.tg.com.s_cloud.data.from_local.MockData;
 import thesis.tg.com.s_cloud.framework_components.BaseApplication;
@@ -26,7 +32,7 @@ import thesis.tg.com.s_cloud.utils.EventConst;
 
 public class DriveUser extends SuperObject {
     private String email;
-    private SparseArray<String> drive_ids;
+    private Map<Integer, String> drive_ids;
     private Uri avatar;
     private String avatarLink;
     private String country;
@@ -66,7 +72,7 @@ public class DriveUser extends SuperObject {
 
     protected DriveUser() {
         this.defaultAvatar = R.drawable.avatar;
-        this.drive_ids = new SparseArray<>();
+        this.drive_ids = new HashMap<Integer, String>();
         this.drive_ids.put(DriveType.LOCAL, "local");
         this.job = "";
         this.email = "";
@@ -122,14 +128,11 @@ public class DriveUser extends SuperObject {
     }
 
     public boolean isSignedIn(int type) {
-        boolean res = (this.drive_ids.get(type) != null);
-        return res;
+        return (this.drive_ids.get(type) != null);
     }
 
     public boolean isSignedIn() {
-        return (getId() != null && getId().length() > 0) ||
-                (this.drive_ids.get(DriveType.GOOGLE) != null) ||
-                (this.drive_ids.get(DriveType.DROPBOX) != null);
+        return (getId() != null && getId().length() > 0);
     }
 
     public Uri getAvatar() {
@@ -150,16 +153,21 @@ public class DriveUser extends SuperObject {
     }
 
 
-    public int getAvailableDrive() {
-        if (this.drive_ids.get(DriveType.GOOGLE) != null) return DriveType.GOOGLE;
-        if (this.drive_ids.get(DriveType.DROPBOX) != null) return DriveType.DROPBOX;
-        return -1;
+    public ArrayList<Integer> getAvailableDrives() {
+        Set<Integer> drivekeys = drive_ids.keySet();
+        ArrayList<Integer> availKeys = new ArrayList<>();
+        for (Integer key: drivekeys
+             ) {
+            if (key == DriveType.LOCAL) continue;
+            if (this.drive_ids.get(key) != null) availKeys.add(key);
+        }
+        return availKeys;
     }
 
     public void signOut() {
         this.setId(null);
-        this.drive_ids.remove(DriveType.GOOGLE);
-        this.drive_ids.remove(DriveType.DROPBOX);
+        Map<Integer, String> sa = new HashMap<>();
+        this.drive_ids.clear();
     }
 
     public void copyFromJSON(String response) {
