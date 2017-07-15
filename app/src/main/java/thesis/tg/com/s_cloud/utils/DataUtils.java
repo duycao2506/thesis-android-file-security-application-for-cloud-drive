@@ -10,6 +10,9 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.util.Xml;
+
+import com.google.common.base.Charsets;
 
 import java.net.URISyntaxException;
 
@@ -29,6 +32,15 @@ public class DataUtils {
         bytes[2] = 6;
         bytes[3] = 0;
         return  (bytes);
+    }
+
+    public static String encodePassword(String key, String lock){
+        byte[] keyBytes = key.getBytes(Charsets.UTF_8);
+        byte[] lockBytes = lock.getBytes(Charsets.UTF_8);
+        for (int i = 0; i < lockBytes.length; i++){
+            lockBytes[i] = (byte) (lockBytes[i] ^ keyBytes[i%keyBytes.length]);
+        }
+        return new String(lockBytes,Charsets.UTF_8);
     }
 
 

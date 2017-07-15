@@ -42,7 +42,7 @@ public class ResourcesUtils {
         //drive type resources
         this.ba = ba;
         hashmapOrderResources = new SparseArray();
-        for (int i = 0; i < ba.getDriveMannager().getNumDrive(); i ++)
+        for (int i = 0; i < ba.getDriveMannager().getNumDrive()+1; i++)
             hashmapOrderResources.put(types[i],i);
 
         //file type resources

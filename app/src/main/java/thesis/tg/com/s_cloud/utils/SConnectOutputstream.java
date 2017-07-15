@@ -17,7 +17,6 @@ import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
  */
 
 public class SConnectOutputstream extends OutputStream {
-
     byte[] header;
     OutputStream outputStream;
     boolean isEncrypted = true;
@@ -66,7 +65,7 @@ public class SConnectOutputstream extends OutputStream {
 
         this.outputStream.write(tmp, 0, len - index);
 
-        progress+= len;
+        progress += len;
 
         if (prgresslistenner != null)
             this.prgresslistenner.callback(EventConst.PROGRESS_UPDATE, 1,progress);

@@ -7,8 +7,11 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import org.json.JSONObject;
+
 import thesis.tg.com.s_cloud.R;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
+import thesis.tg.com.s_cloud.utils.DriveType;
 import thesis.tg.com.s_cloud.utils.EventConst;
 
 /**
@@ -18,6 +21,17 @@ import thesis.tg.com.s_cloud.utils.EventConst;
 public class PasswordSetFragment extends BottomSheetDialogFragment implements View.OnClickListener{
     View parent;
     ImageView btnOk, btnCancel;
+
+    int drivetype;
+
+    public int getDrivetype() {
+        return drivetype;
+    }
+
+    public void setDrivetype(int drivetype) {
+        this.drivetype = drivetype;
+    }
+
     EditText edtConfPass, edtPass;
     MyCallBack caller;
 
@@ -41,10 +55,10 @@ public class PasswordSetFragment extends BottomSheetDialogFragment implements Vi
 
 
 
-        btnCancel = (ImageView) parent.findViewById(R.id.btnCancelFolder);
+        btnCancel = (ImageView) parent.findViewById(R.id.btnCancelRegister);
         btnCancel.setOnClickListener(this);
         btnCancel.setActivated(true);
-        btnOk = (ImageView) parent.findViewById(R.id.btnOkayFolder);
+        btnOk = (ImageView) parent.findViewById(R.id.btnOkRegister);
         btnOk.setOnClickListener(this);
         btnOk.setActivated(true);
         this.getDialog().getContext().setTheme(android.R.style.Theme_Material_Light_Dialog_NoActionBar);
@@ -58,7 +72,11 @@ public class PasswordSetFragment extends BottomSheetDialogFragment implements Vi
         int id = v.getId();
         switch (id){
             case R.id.btnCancelRegister:
-                caller.callback(EventConst.SET_PASSWORD, EventConst.FAIL,"");
+                caller.callback(
+                        drivetype == DriveType.DROPBOX?
+                                EventConst.CANCEL_SIGNUP_DROPBOX : EventConst.CANCEL_SIGNUP_GOOGLE,
+                            EventConst.FAIL,
+                            "");
                 dismiss();
                 break;
             case R.id.btnOkRegister:
@@ -79,4 +97,6 @@ public class PasswordSetFragment extends BottomSheetDialogFragment implements Vi
         }
 
     }
+
+
 }

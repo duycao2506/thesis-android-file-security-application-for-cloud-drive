@@ -33,7 +33,8 @@ public class RequestService {
     private String api;
 
     public interface RequestServiceConstant {
-        String BASE_URL = "http://jsonplaceholder.typicode.com/";
+        String BASE_URL = "https://scloud-server.herokuapp.com/";
+        String register = "auth/register";
         String api1 = "posts";
         String api2 = "posts/1";
     }

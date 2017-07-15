@@ -23,7 +23,6 @@ import thesis.tg.com.s_cloud.utils.SConnectInputStream;
 public class GoogleUploadTask extends UploadTask {
 
     Drive driveService;
-
     public GoogleUploadTask(Drive driveService, BaseApplication ba) {
         super(ba);
         this.driveService = driveService;
@@ -40,7 +39,11 @@ public class GoogleUploadTask extends UploadTask {
                 scis,
                 file.getFileSize());
 
-        dvic.setHeader(DataUtils.getDataHeader());
+        if (from == DriveType.LOCAL || from == DriveType.LOCAL_STORAGE) {
+            dvic.setHeader(DataUtils.getDataHeader());
+        }else{
+            scis.setShouldEncrypt(false);
+        }
 
         com.google.api.services.drive.model.File fileCnt = new com.google.api.services.drive.model.File();
 

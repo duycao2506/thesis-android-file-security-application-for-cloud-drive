@@ -6,6 +6,7 @@ import com.dropbox.core.v2.files.UploadUploader;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.SequenceInputStream;
 
@@ -37,11 +38,18 @@ public class DbxUploadTask extends UploadTask {
 
         SConnectInputStream scis = new SConnectInputStream(file.getInputstream(ba));
         scis.setPrgressUpdater(at);
-        SequenceInputStream inputStream =
-                new SequenceInputStream(new ByteArrayInputStream(
-                        DataUtils.getDataHeader()),
-                        scis);
+        InputStream inputStream;
 
+        if (from == DriveType.LOCAL || from == DriveType.LOCAL_STORAGE) {
+
+            inputStream = new SequenceInputStream(new ByteArrayInputStream(
+                    DataUtils.getDataHeader()),
+                    scis);
+        }
+        else {
+            scis.setShouldEncrypt(false);
+            inputStream = scis;
+        }
         byte[] buffer = new byte[2048];
         int numRead = 0;
         while ((numRead = inputStream.read(buffer)) >= 0) {

@@ -729,9 +729,9 @@ public class HomeActivity extends KasperActivity implements
                     ba.getDriveMannager().autoSignInGoogle(this, this.signInCallback);
                 if (dropbox && !ba.getDriveUser().isSignedIn(DriveType.DROPBOX))
                     ba.getDriveMannager().autoSignInDropbox(this, this.signInCallback);
-                if (!google && ba.getDriveUser().isSignedIn(DriveType.GOOGLE))
+                if (!google || !ba.getDriveUser().isSignedIn(DriveType.GOOGLE))
                     this.signInCallback.callback(EventConst.DISCONNECT, DriveType.GOOGLE, null);
-                if (!dropbox && ba.getDriveUser().isSignedIn(DriveType.DROPBOX))
+                if (!dropbox || !ba.getDriveUser().isSignedIn(DriveType.DROPBOX))
                     this.signInCallback.callback(EventConst.DISCONNECT, DriveType.DROPBOX, null);
 
                 break;

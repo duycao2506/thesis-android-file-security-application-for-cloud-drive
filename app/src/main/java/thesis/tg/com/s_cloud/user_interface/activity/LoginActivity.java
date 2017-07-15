@@ -5,10 +5,12 @@ import android.app.admin.DeviceAdminInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.system.Os;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -19,9 +21,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
+import com.dropbox.core.DbxException;
+import com.dropbox.core.DbxRequestConfig;
+import com.dropbox.core.v2.DbxClientV2;
+import com.dropbox.core.v2.users.FullAccount;
+import com.github.rubensousa.bottomsheetbuilder.BottomSheetBuilder;
+import com.github.rubensousa.bottomsheetbuilder.BottomSheetMenuDialog;
+import com.github.rubensousa.bottomsheetbuilder.adapter.BottomSheetItemClickListener;
 import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.drive.Drive;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -30,20 +41,26 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Map;
+
 import thesis.tg.com.s_cloud.R;
 import thesis.tg.com.s_cloud.data.from_local.MockData;
 import thesis.tg.com.s_cloud.data.from_third_party.dropbox.DbxDriveWrapper;
 import thesis.tg.com.s_cloud.data.from_third_party.google_drive.GoogleDriveWrapper;
 import thesis.tg.com.s_cloud.entities.DriveUser;
+import thesis.tg.com.s_cloud.entities.SDriveFile;
 import thesis.tg.com.s_cloud.framework_components.BaseApplication;
 import thesis.tg.com.s_cloud.framework_components.data.from_server.GETRequestService;
 import thesis.tg.com.s_cloud.framework_components.data.from_server.GeneralResponse;
 import thesis.tg.com.s_cloud.framework_components.data.from_server.POSTRequestService;
 import thesis.tg.com.s_cloud.framework_components.data.from_server.RequestService;
+import thesis.tg.com.s_cloud.user_interface.fragment.FileInfoFragment;
+import thesis.tg.com.s_cloud.user_interface.fragment.PasswordSetFragment;
 import thesis.tg.com.s_cloud.utils.DriveType;
 import thesis.tg.com.s_cloud.utils.EventConst;
 import thesis.tg.com.s_cloud.utils.DataUtils;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
+import thesis.tg.com.s_cloud.utils.ResourcesUtils;
 import thesis.tg.com.s_cloud.utils.UiUtils;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
@@ -54,10 +71,19 @@ import static thesis.tg.com.s_cloud.utils.EventConst.RESOLVE_CONNECTION_REQUEST_
 public class LoginActivity extends AppCompatActivity implements  View.OnClickListener, MyCallBack{
 
     Button btnLogin, btnDropbox, btnGoogle;
+
+    boolean signUpDbx = false;
+
+    String jsonObject =
+            "{" +
+                    "\"sda\":\"dsa\"";
+
     EditText edtusername, edtpassword;
     TextView btnSignup;
     private GoogleApiClient mGoogleApiClient;
 //
+
+    JSONObject registerObject;
     GoogleDriveWrapper gdwrapper;
     BaseApplication ba;
 
@@ -91,6 +117,9 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
 
         gdwrapper = (GoogleDriveWrapper) ba.getDriveWrapper(DriveType.GOOGLE);
         this.mGoogleApiClient = gdwrapper.getClient();
+        if (this.mGoogleApiClient == null ){
+            this.mGoogleApiClient = gdwrapper.googleSignInServiceInit(ba);
+        }
 
         // btn sign up
         btnSignup = (TextView) findViewById(R.id.btnSignup);
@@ -116,7 +145,10 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
         String token = com.dropbox.core.android.Auth.getOAuth2Token();
         if (token != null){
             ((DbxDriveWrapper)ba.getDriveWrapper(DriveType.DROPBOX)).saveAccToken(this, token);
-            this.callback(LOGIN_SUCCESS,DriveType.DROPBOX,null);
+            if (signUpDbx){
+                signUpDbx = false;
+                getInfoDropbox(this, token);
+            }
         }
     }
 
@@ -253,11 +285,27 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
 //                com.dropbox.core.android.Auth.startOAuth2Authentication(this,getString(R.string.dbox_app_key));
 //                break;
             case R.id.btnSignup:
-                Intent ins = new Intent(this, RegisterActivity.class);
-                startActivityForResult(ins, EventConst.SIGN_UP_REQUEST_CODE);
+                initRegisterObj();
+                buildSignUpOptionMenu();
+//                Intent ins = new Intent(this, RegisterActivity.class);
+//                startActivityForResult(ins, EventConst.SIGN_UP_REQUEST_CODE);
                 break;
             default:
                 break;
+        }
+    }
+
+    private void initRegisterObj() {
+        this.registerObject = new JSONObject();
+        try {
+            this.registerObject.put("email", "Not available");
+            this.registerObject.put("password", "Not available");
+            this.registerObject.put("birthday", "");
+            this.registerObject.put("job", "Not available");
+            this.registerObject.put("country", "Not available");
+            this.registerObject.put("fullname", "Not available");
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
@@ -269,23 +317,20 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
             case RESOLVE_CONNECTION_REQUEST_CODE:
                 if (resultCode == RESULT_OK) {
                     GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-                    progressDialog.show();
                     if (result.isSuccess())
-                        this.callback(LOGIN_SUCCESS, DriveType.GOOGLE,null);
+                        getInfoGoogle(this,result);
                 }
                 break;
             case EventConst.SIGN_UP_REQUEST_CODE:
                 if (resultCode == RESULT_OK){
-                    JSONObject auth_json;
                     JSONObject user_json;
                     try {
-                        auth_json = new JSONObject(data.getStringExtra(EventConst.AUTH_JSON_STRING));
-                        user_json = new JSONObject(data.getStringExtra(EventConst.USER_JSON));
-                        Log.d("userjson",user_json.toString());
-                        Log.d("authjson",auth_json.toString());
+                        this.registerObject = new JSONObject(data.getStringExtra(EventConst.USER_JSON));
+                        Log.d("userjson",this.registerObject.toString());
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
+                    this.callback(EventConst.SIGN_UP_SENT,DriveType.LOCAL,this.registerObject);
                 }
                 break;
             default:
@@ -313,9 +358,108 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
             case EventConst.LOGIN_FAIL:
                 Toast.makeText(this, R.string.fail_login,Toast.LENGTH_LONG).show();
                 break;
+            case EventConst.DBX_CONNECT:
+            case EventConst.GOOGLE_CONNECT:
+                PasswordSetFragment df = new PasswordSetFragment();
+                df.setCaller(this);
+                df.show(this.getSupportFragmentManager(),this.getString(R.string.file_info));
+                break;
+            case EventConst.CANCEL_SIGNUP_DROPBOX:
+                ((DbxDriveWrapper)ba.getDriveWrapper(DriveType.DROPBOX)).saveAccToken(this, null);
+                initRegisterObj();
+                break;
+            case EventConst.CANCEL_SIGNUP_GOOGLE:
+                progressDialog = UiUtils.getDefaultProgressDialog(this,false,getString(R.string.canceling));
+                progressDialog.show();
+                ((GoogleDriveWrapper) ba.getDriveWrapper(DriveType.GOOGLE)).signOut(new MyCallBack() {
+                    @Override
+                    public void callback(String message, int code, Object data) {
+                        if ((boolean)data){
+                            Log.d("CANCEL_SIGUP_GG","SUCC");
+                        }else
+                            Log.d("CANCEL_SIGUP_GG","FAIL");
+                        initRegisterObj();
+                        progressDialog.dismiss();
+                    }
+                });
+                break;
+            case EventConst.SET_PASSWORD:
+                try {
+                    registerObject.put("password",DataUtils.encodePassword(
+                            registerObject.get("email").toString(),
+                            data.toString()));
+                    registerObject.put("birthday","22/2/1900");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            case EventConst.SIGN_UP_SENT:
+                Log.d("REGOBJ",registerObject.toString());
+                final ProgressDialog pd = UiUtils.getDefaultProgressDialog(this,false,getString(R.string.signing_up));
+                pd.setCancelable(false);
+                pd.show();
+                POSTRequestService prs = new POSTRequestService(this, RequestService.RequestServiceConstant.register, new MyCallBack() {
+                    @Override
+                    public void callback(String message, int code, Object data) {
+                        GeneralResponse gr = (GeneralResponse) data;
+                        Log.d("RESP",gr.getResponse());
+                        pd.dismiss();
+                        try {
+                            JSONObject resp = new JSONObject(gr.getResponse());
+                            if (resp.get("status").toString().compareTo("success")==0)
+                                Toast.makeText(LoginActivity.this,getString(R.string.reg_succ_confirm),Toast.LENGTH_LONG).show();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                },new GeneralResponse());
+                prs.setJsonObject(registerObject);
+                prs.executeService();
+                break;
         }
     }
 
+
+
+    public void buildSignUpOptionMenu() {
+        final BaseApplication ba = (BaseApplication) this.getApplicationContext();
+        final ResourcesUtils resrcMnger = ba.getResourcesUtils();
+        BottomSheetBuilder bsb = new BottomSheetBuilder(this, R.style.AppTheme_BottomSheetDialog)
+                .setMode(BottomSheetBuilder.MODE_LIST)
+                .addTitleItem(R.string.register_dot)
+                .setTitleTextColorResource(R.color.gray_dark_transparent)
+                .setItemClickListener(new BottomSheetItemClickListener() {
+                    @Override
+                    public void onBottomSheetItemClick(MenuItem item) {
+                        switch (item.getItemId()){
+                            case DriveType.DROPBOX:
+                                signUpDbx=true;
+                                com.dropbox.core.android.Auth.startOAuth2Authentication(LoginActivity.this, getString(R.string.dbox_app_key));
+                                break;
+                            case DriveType.GOOGLE:
+                                Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
+                                startActivityForResult(signInIntent, RESOLVE_CONNECTION_REQUEST_CODE);
+                                break;
+                            case DriveType.LOCAL:
+                                Intent ins = new Intent(LoginActivity.this, RegisterActivity.class);
+                                ins.putExtra("registerObj",registerObject.toString());
+                                startActivityForResult(ins, EventConst.SIGN_UP_REQUEST_CODE);
+                                break;
+                        }
+                    }
+                });
+
+        for (int i = 0; i < ba.getDriveMannager().getNumDrive(); i++){
+            int type = resrcMnger.getTypeByIndex(i);
+            String optiontitle = "with " + ((type != DriveType.LOCAL) ? getString(resrcMnger.getStringId(type)) : "a form");
+            bsb = bsb.addItem(type,optiontitle, resrcMnger.getDriveIconId(type));
+        }
+
+
+        BottomSheetMenuDialog dialog = bsb.createDialog();
+//        dialog.setTitle(this.getString(R.string.which_drive));
+        dialog.show();
+    }
 
     @Override
     public void onBackPressed() {
@@ -325,5 +469,89 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
     @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
+    }
+
+
+
+    // Drive Sign Up Implementation
+    public void getInfoDropbox(final MyCallBack caller, final String accessToken){
+        progressDialog = UiUtils.getDefaultProgressDialog(this,false,getString(R.string.getdbxinfo));
+        progressDialog.show();
+        new AsyncTask<Void, Void, String>(){
+            @Override
+            protected String doInBackground(Void... params) {
+                DbxRequestConfig dbxRequestConfig = DbxRequestConfig.newBuilder("scloud/dgproduction").build();
+                DbxClientV2 dbxClientV2 = new DbxClientV2(dbxRequestConfig,accessToken);
+
+                //GEt ACcount;
+                FullAccount fa = null;
+                try {
+                    fa = dbxClientV2.users().getCurrentAccount();
+                } catch (DbxException e) {
+                    e.printStackTrace();
+                }
+                if (fa != null){
+                    //TODO: send accesstoken to get info from server
+                    try {
+                        registerObject.put("email",fa.getEmail());
+                        registerObject.put("country",fa.getCountry());
+                        registerObject.put("fullname",fa.getName());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    return EventConst.DBX_CONNECT;
+                }
+                return EventConst.LOGIN_FAIL;
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                caller.callback(s, DriveType.DROPBOX, null);
+                progressDialog.dismiss();
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    public void getInfoGoogle(final MyCallBack caller, final GoogleSignInResult result){
+        progressDialog = UiUtils.getDefaultProgressDialog(this,false,getString(R.string.getgoogleinfo));
+        new AsyncTask<Void, Void, String>() {
+            BaseApplication ba = (BaseApplication) LoginActivity.this.getApplicationContext();
+            @Override
+            protected String doInBackground(Void... params) {
+                if (result.isSuccess()) {
+                    mGoogleApiClient.connect();
+//                    if (1 == 1)
+//                        return LOGIN_FAIL;
+                    // Signed in successfully, show authenticated UI.
+                    GoogleSignInAccount acct = result.getSignInAccount();
+
+                    //TODO: Create User
+                    try {
+                        registerObject.put("email",acct.getEmail());
+                        registerObject.put("fullname",acct.getDisplayName());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    //wait until connection is established
+                    return EventConst.GOOGLE_CONNECT;
+                } else {
+                    return EventConst.LOGIN_FAIL;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(String aVoid) {
+                super.onPostExecute(aVoid);
+                progressDialog.dismiss();
+                caller.callback(aVoid, DriveType.GOOGLE, null);
+            }
+
+            @Override
+            protected void onCancelled() {
+                super.onCancelled();
+            }
+        }.execute();
     }
 }
