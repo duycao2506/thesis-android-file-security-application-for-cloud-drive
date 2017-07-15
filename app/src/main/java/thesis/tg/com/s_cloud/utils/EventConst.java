@@ -51,4 +51,7 @@ public interface EventConst {
     String USER_JSON = "user_json";
     String LOGIN_SCLOUD = "login_scloud";
     String SET_PASSWORD = "set_password";
+    String CANCEL_SIGNUP_GOOGLE = "cancelgooglesignup";
+    String CANCEL_SIGNUP_DROPBOX = "canceldropboxsignup";
+    String SIGN_UP_SENT = "signupsent";
 }

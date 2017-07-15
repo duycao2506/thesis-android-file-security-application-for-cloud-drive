@@ -151,4 +151,13 @@
     <string name="unavail">Unavailable</string>
     <string name="del_a_file">Delete a file</string>
     <string name="ausure">Are you sure to delete this file?</string>
+    <string name="register_dot">Register...</string>
+    <string name="no_file_handler">No handler for this type of file.</string>
+    <string name="file_info">File Info</string>
+    <string name="canceling">Cancelling...</string>
+    <string name="checkpass">Check password and confirm password correctly</string>
+    <string name="wrongemail">Wrong email input!</string>
+    <string name="reg_succ_confirm">Register Successfully, please confirm the account via your email!</string>
+    <string name="getgoogleinfo">Getting Google Info...</string>
+    <string name="getdbxinfo">Getting Dropbox Info...</string>
 </resources>

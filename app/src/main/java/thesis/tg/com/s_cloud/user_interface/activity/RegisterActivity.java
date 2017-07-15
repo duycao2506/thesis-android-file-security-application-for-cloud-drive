@@ -12,13 +12,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.Calendar;
+
+import javax.annotation.RegEx;
 
 import thesis.tg.com.s_cloud.R;
 import thesis.tg.com.s_cloud.data.from_local.MockData;
@@ -26,6 +33,7 @@ import thesis.tg.com.s_cloud.framework_components.data.from_server.GeneralRespon
 import thesis.tg.com.s_cloud.framework_components.data.from_server.POSTRequestService;
 import thesis.tg.com.s_cloud.framework_components.data.from_server.RequestService;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
+import thesis.tg.com.s_cloud.utils.DataUtils;
 import thesis.tg.com.s_cloud.utils.EventConst;
 import thesis.tg.com.s_cloud.utils.UiUtils;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
@@ -57,6 +65,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void assignViews() {
         edtFullname = (EditText) findViewById(R.id.edtProfileName);
+
         edtBirthday = (EditText) findViewById(R.id.edtProfileBirthday);
         edtBirthday.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,7 +99,7 @@ public class RegisterActivity extends AppCompatActivity {
         edtCountry = (EditText) findViewById(R.id.edtProfileCountry);
 
         edtEmail = (EditText) findViewById(R.id.edtProfileEmail);
-        edtEmail.setEnabled(false);
+        edtEmail.setEnabled(true);
 
         edtJob = (EditText) findViewById(R.id.edtProfileJob);
 
@@ -112,24 +121,33 @@ public class RegisterActivity extends AppCompatActivity {
                 finish();
                 break;
             case R.id.confirm:
-                final ProgressDialog pd = UiUtils.getDefaultProgressDialog(this,false,getString(R.string.signing_up));
-                pd.setCancelable(false);
-                pd.show();
-                POSTRequestService prs = new POSTRequestService(this, RequestService.RequestServiceConstant.api1, new MyCallBack() {
-                    @Override
-                    public void callback(String message, int code, Object data) {
-                        GeneralResponse gr = (GeneralResponse) data;
-                        Log.d("RESP",gr.getResponse());
-                        pd.dismiss();
-                        Intent dataIntent = new Intent();
-                        dataIntent.putExtra(EventConst.AUTH_JSON_STRING,MockData.auth_resp);
-                        dataIntent.putExtra(EventConst.USER_JSON, MockData.jsonuser);
-                        setResult(RESULT_OK, dataIntent);
-                        finish();
-                    }
-                },new GeneralResponse());
-                prs.executeService();
+                if (!checkInput()){
+                    break;
+                }
+                Intent dataIntent = new Intent();
+                dataIntent.putExtra(EventConst.USER_JSON, getRegisterObj().toString());
+                setResult(RESULT_OK, dataIntent);
+                finish();
                 break;
+        }
+        return true;
+    }
+
+    private boolean checkInput() {
+        String regexEmail =
+                "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$";
+        boolean email = Patterns.EMAIL_ADDRESS.matcher(edtEmail.getText()).matches();
+        if (!email)
+        {
+            Toast.makeText(this, R.string.wrongemail,Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        boolean pass = edtPass.getText().length() > 6
+                && edtPass.getText().toString().compareTo(edtConfirmPass.getText().toString()) == 0;
+        if (!pass){
+            Toast.makeText(this, R.string.checkpass,Toast.LENGTH_SHORT).show();
+            return false;
         }
         return true;
     }
@@ -138,5 +156,22 @@ public class RegisterActivity extends AppCompatActivity {
     public boolean onPrepareOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_has_confirm, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    public JSONObject getRegisterObj(){
+        JSONObject jsoRegister = new JSONObject();
+        try {
+            jsoRegister.put("email",edtEmail.getText().toString());
+            jsoRegister.put("password", DataUtils.encodePassword(
+                    edtEmail.getText().toString(),
+                    edtPass.getText().toString()));
+            jsoRegister.put("fullname", edtFullname.getText());
+            jsoRegister.put("job",edtJob.getText());
+            jsoRegister.put("country", edtCountry.getText());
+            jsoRegister.put("birthday",edtBirthday.getText());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return jsoRegister;
     }
 }

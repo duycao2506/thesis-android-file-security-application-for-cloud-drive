@@ -169,14 +169,14 @@ public class UiUtils {
         try {
             context.startActivity(newIntent);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(context, "No handler for this type of file.", Toast.LENGTH_LONG).show();
+            Toast.makeText(context, R.string.no_file_handler, Toast.LENGTH_LONG).show();
         }
     }
 
     public static void openInfo(SDriveFile file, Context context){
         FileInfoFragment df = new FileInfoFragment();
         df.setData(file);
-        df.show(((FragmentActivity)context).getSupportFragmentManager(),"File Info");
+        df.show(((FragmentActivity)context).getSupportFragmentManager(),context.getString(R.string.file_info));
     }
 
     public static void buildDriveMenu(final SDriveFile data, final Context context, final boolean isSync) {

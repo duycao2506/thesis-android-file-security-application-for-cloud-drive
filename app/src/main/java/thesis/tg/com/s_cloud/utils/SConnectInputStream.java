@@ -20,7 +20,15 @@ public class SConnectInputStream extends InputStream {
     InputStream is;
     MyCallBack prgressUpdater;
     long finishSize= 0;
+    boolean shouldEncrypt = true;
 
+    public boolean isShouldEncrypt() {
+        return shouldEncrypt;
+    }
+
+    public void setShouldEncrypt(boolean shouldEncrypt) {
+        this.shouldEncrypt = shouldEncrypt;
+    }
 
     public SConnectInputStream(InputStream is) {
         this.is = is;
@@ -45,13 +53,22 @@ public class SConnectInputStream extends InputStream {
     @Override
     public int read(@NonNull byte[] b, int off, int len) throws IOException {
         int n =  this.is.read(b, off, len);
-        for (int i = off; i < off+len; i ++){
-            b[i] = (byte) (b[i] ^ 2);
+
+        if (shouldEncrypt) {
+            for (int i = off; i < off + len; i++) {
+                b[i] = (byte) (b[i] ^ 2);
+            }
         }
         finishSize +=len;
         if (prgressUpdater != null)
             prgressUpdater.callback(EventConst.PROGRESS_UPDATE,1, finishSize);
 
         return n;
+    }
+
+    @Override
+    public void close() throws IOException {
+        super.close();
+        this.is.close();
     }
 }

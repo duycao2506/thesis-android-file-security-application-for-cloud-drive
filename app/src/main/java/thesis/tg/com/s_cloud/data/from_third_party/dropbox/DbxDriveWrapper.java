@@ -49,6 +49,7 @@ public class DbxDriveWrapper extends CloudDriveWrapper {
                 @Override
                 protected String doInBackground(Void... params) {
                     DbxRequestConfig dbxRequestConfig = DbxRequestConfig.newBuilder("scloud/dgproduction").build();
+
                     dbxClientV2 = new DbxClientV2(dbxRequestConfig,accessToken);
 
                     //GEt ACcount;
