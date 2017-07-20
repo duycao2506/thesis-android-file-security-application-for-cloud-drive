@@ -1,14 +1,13 @@
 package thesis.tg.com.s_cloud.user_interface.activity;
 
 import android.app.ProgressDialog;
-import android.app.admin.DeviceAdminInfo;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.support.v4.app.FragmentActivity;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.system.Os;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.auth0.android.jwt.JWT;
 import com.daimajia.androidanimations.library.Techniques;
 import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
@@ -32,29 +32,25 @@ import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.drive.Drive;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 import thesis.tg.com.s_cloud.R;
 import thesis.tg.com.s_cloud.data.from_local.MockData;
 import thesis.tg.com.s_cloud.data.from_third_party.dropbox.DbxDriveWrapper;
 import thesis.tg.com.s_cloud.data.from_third_party.google_drive.GoogleDriveWrapper;
-import thesis.tg.com.s_cloud.entities.DriveUser;
-import thesis.tg.com.s_cloud.entities.SDriveFile;
 import thesis.tg.com.s_cloud.framework_components.BaseApplication;
-import thesis.tg.com.s_cloud.framework_components.data.from_server.GETRequestService;
 import thesis.tg.com.s_cloud.framework_components.data.from_server.GeneralResponse;
 import thesis.tg.com.s_cloud.framework_components.data.from_server.POSTRequestService;
 import thesis.tg.com.s_cloud.framework_components.data.from_server.RequestService;
-import thesis.tg.com.s_cloud.user_interface.fragment.FileInfoFragment;
+import thesis.tg.com.s_cloud.security.AESCipher;
+import thesis.tg.com.s_cloud.security.RSACipher;
+import thesis.tg.com.s_cloud.security.SimpleRSACipher;
 import thesis.tg.com.s_cloud.user_interface.fragment.PasswordSetFragment;
 import thesis.tg.com.s_cloud.utils.DriveType;
 import thesis.tg.com.s_cloud.utils.EventConst;
@@ -65,6 +61,7 @@ import thesis.tg.com.s_cloud.utils.UiUtils;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 import static thesis.tg.com.s_cloud.utils.EventConst.LOGIN_CANCEL_RESULT_CODE;
+import static thesis.tg.com.s_cloud.utils.EventConst.LOGIN_FAIL;
 import static thesis.tg.com.s_cloud.utils.EventConst.LOGIN_SUCCESS;
 import static thesis.tg.com.s_cloud.utils.EventConst.RESOLVE_CONNECTION_REQUEST_CODE;
 
@@ -74,9 +71,6 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
 
     boolean signUpDbx = false;
 
-    String jsonObject =
-            "{" +
-                    "\"sda\":\"dsa\"";
 
     EditText edtusername, edtpassword;
     TextView btnSignup;
@@ -91,13 +85,6 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
     GoogleAccountCredential mCredential;
     ProgressDialog mProgress;
 
-    static final int REQUEST_ACCOUNT_PICKER = 1000;
-    static final int REQUEST_AUTHORIZATION = 1001;
-    static final int REQUEST_GOOGLE_PLAY_SERVICES = 1002;
-    static final int REQUEST_PERMISSION_GET_ACCOUNTS = 1003;
-
-    private static final String BUTTON_TEXT = "Call Drive API";
-    private static final String PREF_ACCOUNT_NAME = "accountName";
 
     ProgressDialog progressDialog;
 
@@ -107,6 +94,8 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ba = (BaseApplication) getApplication();
+
+
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setIndeterminate(true);
@@ -218,10 +207,6 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
         this.btnLogin = (Button) findViewById(R.id.btnlogin);
         this.btnLogin.setActivated(true);
         btnLogin.setOnClickListener(this);
-//        this.btnGoogle = (Button) findViewById(R.id.btngoogle);
-//        btnGoogle.setOnClickListener(this);
-//        this.btnDropbox = (Button) findViewById(R.id.btnfacebook);
-//        btnDropbox.setOnClickListener(this);
         this.edtusername = (EditText) findViewById(R.id.edtUsr);
         this.edtpassword = (EditText) findViewById(R.id.edtPassword);
     }
@@ -236,6 +221,21 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
                 progressDialog = UiUtils.getDefaultProgressDialog(this,false,getString(R.string.signin_ing));
                 progressDialog.show();
 
+                final String mac_addr = DataUtils.getMacAddress("wlan0",LoginActivity.this);
+                if (mac_addr.length() == 0)
+                {
+                    Toast.makeText(LoginActivity.this, R.string.plsusewifi,Toast.LENGTH_SHORT).show();
+                    progressDialog.dismiss();
+                    return;
+                }
+
+                try {
+                    ba.setSimpleCipher(new SimpleRSACipher(mac_addr,Build.MODEL,Build.BRAND));
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                    Toast.makeText(LoginActivity.this, R.string.cannotsecupack,Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 //GETACCESSTOKEN
                 POSTRequestService prs = new POSTRequestService(this, RequestService.RequestServiceConstant.api1, new MyCallBack() {
@@ -272,18 +272,11 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
                     }
                 }, new GeneralResponse());
                 prs.executeService();
+
+//                login("neverfail2506@gmail.com","password");
+
+
                 break;
-//            case R.id.btngoogle:
-//                if (mGoogleApiClient.isConnected())
-//                    gdwrapper.signOut(null);
-//                else {
-//                    Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
-//                    startActivityForResult(signInIntent, RESOLVE_CONNECTION_REQUEST_CODE);
-//                }
-//                break;
-//            case R.id.btnfacebook:
-//                com.dropbox.core.android.Auth.startOAuth2Authentication(this,getString(R.string.dbox_app_key));
-//                break;
             case R.id.btnSignup:
                 initRegisterObj();
                 buildSignUpOptionMenu();
@@ -292,6 +285,210 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
                 break;
             default:
                 break;
+        }
+    }
+
+    private void login2(String s, String s1) {
+
+    }
+
+    private void login(String email, String password) {
+        String userjsonstring = "{\n" +
+                "    \"email\":" + "\""+ email +"\",\n" +
+                "    \"password\": \""+password+"\",\n" +
+                "    \"mac_address\": \"\"\n" +
+                "}";
+        JSONObject user;
+        progressDialog = UiUtils.getDefaultProgressDialog(this,false,getString(R.string.signin_ing));
+        progressDialog.show();
+        final String mac_addr = DataUtils.getMacAddress("wlan0",LoginActivity.this);
+        try {
+            user = new JSONObject(userjsonstring);
+            if (mac_addr.length() == 0)
+            {
+                Toast.makeText(LoginActivity.this, R.string.plsusewifi,Toast.LENGTH_SHORT).show();
+                progressDialog.dismiss();
+                return;
+            }
+            user.put("mac_address",mac_addr);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(LoginActivity.this, R.string.plsusewifi,Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        //GETACCESSTOKEN
+        POSTRequestService prs = new POSTRequestService(this, RequestService.RequestServiceConstant.login, new MyCallBack() {
+            @Override
+            public void callback(String message, int code, Object data) {
+                Log.d("RESP", ((GeneralResponse)data).getResponse());
+                GeneralResponse gr = ((GeneralResponse)data);
+                String auth_json_string = gr.getResponse();
+                JSONObject auth_json;
+                if (gr.isResponseError()){
+                    this.callback(EventConst.LOGIN_FAIL,1,"");
+                    return;
+                }
+
+                //try requesting for root
+                try{
+                    auth_json = new JSONObject(auth_json_string);
+                    if (auth_json.getString("status").compareTo("success")==0) {
+                        final String auth_token = auth_json.getString("auth_token");
+//                        ba.getDriveUser().saveAccToken(LoginActivity.this, auth_token);
+                        //Check Main Key
+                        JWT firstToken = new JWT(auth_token);
+                        String mainkey = firstToken.getClaim("key").asString();
+                        boolean haveRoot = firstToken.getClaim("hasRoot").asBoolean();
+                        if (mainkey != null && mainkey.contains(" ")){
+                            // If not register root
+                            if (!haveRoot) {
+                                progressDialog.setMessage(getString(R.string.firsttobetheroot));
+                                requestRoot(LoginActivity.this,auth_token, getRootAssignRequestJSONObj(
+                                        ba,firstToken, mac_addr,""), new MyCallBack() {
+                                    @Override
+                                    public void callback(String message, int code, Object data) {
+                                        progressDialog.dismiss();
+                                        LoginActivity.this.callback(message,1,"");
+                                    }
+                                });
+                            }else{
+                                progressDialog.dismiss();
+                                Intent otpinput = new Intent(LoginActivity.this, OTPInputActivity.class);
+                                otpinput.putExtra("auth_token",auth_token);
+                                otpinput.putExtra("mac_addr",mac_addr);
+                                startActivityForResult(otpinput, EventConst.OTP_REQUEST_CODE);
+                            }
+
+
+                            //If not authorized device
+
+                        }else {
+                            ba.getDriveUser().setAccesstoken(auth_token);
+                            ba.getDriveUser().setMainKey(mainkey);
+                            progressDialog.dismiss();
+                            LoginActivity.this.callback(LOGIN_SUCCESS,1,"");
+                        }
+                    }else{
+                        progressDialog.dismiss();
+                        LoginActivity.this.callback(LOGIN_FAIL,1,"");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    progressDialog.dismiss();
+                    LoginActivity.this.callback(LOGIN_FAIL,1,"");
+                }
+            }
+        }, new GeneralResponse());
+        Log.e("USER",user.toString());
+        prs.setJsonObject(user);
+        prs.executeService();
+    }
+
+
+
+    public static JSONObject getRootAssignRequestJSONObj(BaseApplication ba, JWT firstToken, String mac_addr, String mainkey) throws Exception {
+        String rootAssignSamplejsonstring = "{\n" +
+                "    \"mac_address\": \"32:23:43:4F:2S:5D\",\n" +
+                "    \"os\": \"macOS Sierra\",\n" +
+                "    \"backup_key\": \"adsfasdf123\",\n" +
+                "    \"modulus\": \"123123123124123\",\n" +
+                "    \"exponent\": \"adfasdfasdf123123\",\n" +
+                "    \"encrypted_modulus\": \"123123asdf123\",\n" +
+                "    \"encrypted_exponent\": \"asdfasdf123123\",\n" +
+                "    \"is_root\":true\n" +
+                "}";
+
+        JSONObject rootAssignJSONObj = new JSONObject(rootAssignSamplejsonstring);
+        String modulus = firstToken.getClaim("modulus").asString();
+        int exponent = firstToken.getClaim("exponent").asInt();
+
+
+        ba.setSimpleCipher(new SimpleRSACipher(mac_addr,Build.BRAND,Build.MODEL));
+        String encrypted_modulus = ba.getSimpleCipher().getModulus().toString();
+        int encrypted_exponent = SimpleRSACipher.publicExponent.intValue();
+        String []keys = AESCipher.generateBackupKey(mainkey.length() == 0? AESCipher.generateNewMainKey() : mainkey);
+
+//        SharedPreferences sharedPreferences = ba.getSharedPreferences(ba.getPackageName(),MODE_PRIVATE);
+//        SharedPreferences.Editor spe = sharedPreferences.edit();
+//        spe.putString(EventConst.KEY_FOR_CHILD, keys[0]);
+//        spe.putString(EventConst.PRIV_COMPO, ba.getSimpleCipher(mac_addr).getPrivateComp().toString());
+//        spe.apply();
+
+        rootAssignJSONObj.put("os", Build.VERSION.CODENAME);
+        rootAssignJSONObj.put("mac_address",mac_addr);
+        rootAssignJSONObj.put("backup_key",keys[1]);
+        rootAssignJSONObj.put("modulus",modulus);
+        rootAssignJSONObj.put("exponent",exponent);
+        rootAssignJSONObj.put("encrypted_exponent",encrypted_exponent);
+        rootAssignJSONObj.put("encrypted_modulus",encrypted_modulus);
+
+        Log.e("ROOTASSIGN",rootAssignJSONObj.toString());
+        Log.e("Nonunique", Build.BRAND + " " + Build.MODEL);
+        return rootAssignJSONObj;
+    }
+
+    public static void requestForAuthorize(Context context, String authtoken, String otpcode, String mac_addr, MyCallBack caller ) throws UnsupportedEncodingException {
+        JWT jwt = new JWT(authtoken);
+        BaseApplication ba = (BaseApplication) context.getApplicationContext();
+        SimpleRSACipher rsac = ba.getSimpleCipher(mac_addr);
+        String modulus = rsac.getModulus().toString(); //jwt.getClaim("modulus").asString();
+        int exponent = SimpleRSACipher.publicExponent.intValue(); //jwt.getClaim("exponent").asInt();
+        String requestotpverisample = "{\n" +
+                "  \t\"modulus\": \""+modulus+"\",\n" +
+                "    \"exponent\":"+exponent+",\n" +
+                "    \"code\": \""+otpcode+"\",\n" +
+                "    \"mac_address\": \""+mac_addr+"\"\n" +
+                "}";
+        POSTRequestService postRequestServiceAuth = new POSTRequestService(context, RequestService.RequestServiceConstant.request_verification, caller, new GeneralResponse());
+        try {
+            JSONObject requestauthJSO = new JSONObject(requestotpverisample);
+            postRequestServiceAuth.setJsonObject(requestauthJSO);
+            Map<String, Object> headers = RequestService.getBaseHeaders();
+            headers.put("Authorization", "Bearer " +authtoken);
+            postRequestServiceAuth.setHeaders(headers);
+            postRequestServiceAuth.executeService();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void requestRoot(Context context, String authtoken, JSONObject rootassignjsonobj, final MyCallBack caller){
+        final BaseApplication ba = (BaseApplication) context.getApplicationContext();
+        try {
+            //Request assign this device as root
+            POSTRequestService rootprsc = new POSTRequestService(context,
+                    RequestService.RequestServiceConstant.assign_root,
+                    new MyCallBack() {
+                        @Override
+                        public void callback(String message, int code, Object data) {
+                            GeneralResponse gr = (GeneralResponse) data;
+                            if (!gr.isResponseError()){
+                                try {
+                                    JSONObject jsonObject = new JSONObject(gr.getResponse());
+                                    if (jsonObject.getString("status").compareTo("success")==0){
+                                        String auth_token2 = jsonObject.getString("auth_token");
+                                        JWT jwt = new JWT(auth_token2);
+                                        ba.getDriveUser().setAccesstoken(auth_token2);
+                                        ba.getDriveUser().setMainKey(jwt.getClaim("key").asString());
+                                        if (caller != null)
+                                            caller.callback(EventConst.LOGIN_SUCCESS, 1, auth_token2);
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                    caller.callback(EventConst.LOGIN_FAIL,1,"");
+                                }
+                            }
+                        }
+                    }, new GeneralResponse());
+            rootprsc.setJsonObject(rootassignjsonobj);
+            Map<String, Object> headers = RequestService.getBaseHeaders();
+            headers.put("Authorization", "Bearer " +authtoken);
+            rootprsc.setHeaders(headers);
+            rootprsc.executeService();
+        } catch (Exception e) {
+            e.printStackTrace();
+            caller.callback(EventConst.LOGIN_FAIL,1,"");
         }
     }
 
@@ -333,6 +530,12 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
                     this.callback(EventConst.SIGN_UP_SENT,DriveType.LOCAL,this.registerObject);
                 }
                 break;
+            case EventConst.OTP_REQUEST_CODE:
+                if (resultCode == RESULT_OK){
+                    ba.getDriveUser().setAccesstoken(data.getStringExtra("auth_token"));
+                    ba.getDriveUser().setMainKey(data.getStringExtra("main_key"));
+                    this.callback(LOGIN_SUCCESS,1,"");
+                }
             default:
                 break;
         }
@@ -403,6 +606,10 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
                         GeneralResponse gr = (GeneralResponse) data;
                         Log.d("RESP",gr.getResponse());
                         pd.dismiss();
+                        if (gr.isResponseError()){
+                            Toast.makeText(LoginActivity.this,getString(R.string.signupfail),Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                         try {
                             JSONObject resp = new JSONObject(gr.getResponse());
                             if (resp.get("status").toString().compareTo("success")==0)
@@ -514,7 +721,7 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
     }
 
     public void getInfoGoogle(final MyCallBack caller, final GoogleSignInResult result){
-        progressDialog = UiUtils.getDefaultProgressDialog(this,false,getString(R.string.getgoogleinfo));
+        progressDialog = UiUtils.getDefaultProgressDialog(this,false, getString(R.string.getgoogleinfo));
         new AsyncTask<Void, Void, String>() {
             BaseApplication ba = (BaseApplication) LoginActivity.this.getApplicationContext();
             @Override

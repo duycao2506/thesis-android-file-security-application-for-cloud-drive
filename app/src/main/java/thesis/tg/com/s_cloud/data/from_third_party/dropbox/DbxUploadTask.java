@@ -9,10 +9,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.SequenceInputStream;
+import java.security.NoSuchAlgorithmException;
 
 import thesis.tg.com.s_cloud.data.from_third_party.task.UploadTask;
 import thesis.tg.com.s_cloud.entities.SDriveFile;
 import thesis.tg.com.s_cloud.framework_components.BaseApplication;
+import thesis.tg.com.s_cloud.security.AESCipher;
+import thesis.tg.com.s_cloud.security.HeaderHandler;
 import thesis.tg.com.s_cloud.utils.DataUtils;
 import thesis.tg.com.s_cloud.utils.DriveType;
 import thesis.tg.com.s_cloud.utils.SConnectInputStream;
@@ -30,7 +33,7 @@ public class DbxUploadTask extends UploadTask {
     }
 
     @Override
-    protected void transfer() throws IOException, DbxException {
+    protected void transfer() throws IOException, DbxException, NoSuchAlgorithmException {
         super.transfer();
         //TODO: MORE is choosing folder
         UploadUploader uu = dbxClientV2.files().upload((from == DriveType.LOCAL_STORAGE? file.getFolder() : "") +"/"+file.getName());
@@ -41,10 +44,18 @@ public class DbxUploadTask extends UploadTask {
         InputStream inputStream;
 
         if (from == DriveType.LOCAL || from == DriveType.LOCAL_STORAGE) {
-
-            inputStream = new SequenceInputStream(new ByteArrayInputStream(
-                    DataUtils.getDataHeader()),
-                    scis);
+            try {
+                HeaderHandler hh = new HeaderHandler();
+                String halfkey = AESCipher.generateNewMainKey();
+                byte[] header = hh.getHeader(ba.getDriveUser().getEmail(), halfkey);
+                scis.setSm(AESCipher.initiateSecuredMachine(ba.getSimpleCipher(),halfkey,ba.getDriveUser().getMainKey()));
+                inputStream = new SequenceInputStream(new ByteArrayInputStream(
+                        header),
+                        scis);
+            }catch (Exception e){
+                e.printStackTrace();
+                throw e;
+            }
         }
         else {
             scis.setShouldEncrypt(false);
@@ -55,7 +66,6 @@ public class DbxUploadTask extends UploadTask {
         while ((numRead = inputStream.read(buffer)) >= 0) {
             os.write(buffer, 0, numRead);
         }
-        os.write(buffer);
         os.close();
         inputStream.close();
         uu.finish();

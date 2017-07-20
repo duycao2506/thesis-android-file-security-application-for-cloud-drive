@@ -1,31 +1,43 @@
 package thesis.tg.com.s_cloud.utils;
 
 import android.support.annotation.NonNull;
-import android.util.Log;
+import android.util.Base64;
 
-import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
+import thesis.tg.com.s_cloud.framework_components.BaseApplication;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
+import thesis.tg.com.s_cloud.security.AESCipher;
+import thesis.tg.com.s_cloud.security.HeaderHandler;
+import thesis.tg.com.s_cloud.security.SecuredMachine;
 
 /**
  * Created by admin on 5/12/17.
  */
 
 public class SConnectOutputstream extends OutputStream {
-    byte[] header;
+    BaseApplication ba;
     OutputStream outputStream;
     boolean isEncrypted = true;
     boolean checkEncrypt = false;
     MyCallBack prgresslistenner;
     long progress = 0;
 
-    public SConnectOutputstream(byte[] header, OutputStream outputStream) {
-        this.header = header;
+    byte[] header;
+
+    SecuredMachine sm;
+
+    public SecuredMachine getSm() {
+        return sm;
+    }
+
+    public void setSm(SecuredMachine sm) {
+        this.sm = sm;
+    }
+
+    public SConnectOutputstream(BaseApplication ba, OutputStream outputStream) {
+        this.ba = ba;
         this.outputStream = outputStream;
     }
 
@@ -44,12 +56,14 @@ public class SConnectOutputstream extends OutputStream {
 
         int index = off;
         if (!checkEncrypt) {
-            for (; index < header.length && index < len; index++) {
-                if (header[index] != b[index]) {
-                    index = off;
-                    isEncrypted = false;
-                    break;
-                }
+            HeaderHandler hh = new HeaderHandler();
+            byte[] emailb = Base64.decode(ba.getDriveUser().getEmail(),Base64.NO_WRAP);
+            byte[] halfkey = hh.getHalfKeyFromAPacket(emailb, b);
+            if (halfkey != null) {
+                sm = AESCipher.initiateSecuredMachine(ba.getSimpleCipher(),
+                        Base64.encodeToString(halfkey, Base64.NO_WRAP),
+                        ba.getDriveUser().getMainKey());
+                index = emailb.length + halfkey.length;
             }
             checkEncrypt = true;
         }
@@ -57,11 +71,9 @@ public class SConnectOutputstream extends OutputStream {
 
         byte[] tmp = new byte[len - (index - off)];
 
-
-        for (int i = index; i < len; i ++){
-            tmp[i-index] = isEncrypted? (byte) (b[i] ^ 2) : b[i];
+        for (int i = index; i < len; i++){
+            tmp[i-index] = sm != null? sm.decrypt(b[i]) : b[i];
         }
-
 
         this.outputStream.write(tmp, 0, len - index);
 

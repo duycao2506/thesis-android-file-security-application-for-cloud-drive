@@ -1,9 +1,12 @@
 package thesis.tg.com.s_cloud.framework_components;
 
 import android.content.Context;
+import android.os.Build;
 import android.support.multidex.MultiDex;
 import android.support.multidex.MultiDexApplication;
 import android.util.SparseArray;
+
+import java.io.UnsupportedEncodingException;
 
 import thesis.tg.com.s_cloud.R;
 import thesis.tg.com.s_cloud.data.CloudDriveWrapper;
@@ -13,6 +16,7 @@ import thesis.tg.com.s_cloud.data.from_third_party.task.TransferTaskManager;
 import thesis.tg.com.s_cloud.entities.DriveUser;
 import thesis.tg.com.s_cloud.framework_components.data.from_server.VolleyHelper;
 import thesis.tg.com.s_cloud.framework_components.utils.EventBroker;
+import thesis.tg.com.s_cloud.security.SimpleRSACipher;
 import thesis.tg.com.s_cloud.utils.DriveType;
 import thesis.tg.com.s_cloud.utils.NotificationHandler;
 import thesis.tg.com.s_cloud.utils.ResourcesUtils;
@@ -32,6 +36,7 @@ public class BaseApplication extends MultiDexApplication {
     private EventBroker eventBroker;
     private NotificationHandler notificationHandler;
     private DriveUser driveUser;
+    private SimpleRSACipher simpleCipher;
 
 
     @Override
@@ -107,4 +112,21 @@ public class BaseApplication extends MultiDexApplication {
         super.onTerminate();
         ((GoogleDriveWrapper)getDriveWrapper(DriveType.GOOGLE)).getClient().disconnect();
     }
+
+    public SimpleRSACipher getSimpleCipher(String mac_addr) throws UnsupportedEncodingException {
+        if (simpleCipher == null) {
+            this.simpleCipher = new SimpleRSACipher(mac_addr, Build.BRAND, Build.MODEL);
+        }
+        return simpleCipher;
+    }
+
+    public SimpleRSACipher getSimpleCipher(){
+        return simpleCipher;
+    }
+
+    public void setSimpleCipher(SimpleRSACipher simpleCipher) {
+        this.simpleCipher = simpleCipher;
+    }
+
+
 }

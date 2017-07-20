@@ -33,10 +33,13 @@ public class RequestService {
     private String api;
 
     public interface RequestServiceConstant {
-        String BASE_URL = "https://scloud-server.herokuapp.com/";
-        String register = "auth/register";
+        String BASE_URL2 = "https://scloud-server.herokuapp.com/";
+        String BASE_URL = "https://jsonplaceholder.typicode.com/";
         String api1 = "posts";
-        String api2 = "posts/1";
+        String register = "auth/register";
+        String login = "auth/login";
+        String assign_root = "key/root";
+        String request_verification = "devices/request-authorize";
     }
 
 
@@ -119,6 +122,11 @@ public class RequestService {
 
 
 
+    public static Map<String, Object> getBaseHeaders(){
+        Map<String, Object> headers = new HashMap<String, Object>();
+        headers.put("Content-Type","application/json");
+        return headers;
+    }
 
 
     protected static StringRequest createRequestPOST(String url, GeneralResponse modelResponse, Map params,byte[] body, Map headers) {

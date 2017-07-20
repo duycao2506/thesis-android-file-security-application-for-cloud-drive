@@ -553,6 +553,9 @@ public class HomeActivity extends KasperActivity implements
             backFolder(getSupportFragmentManager().getBackStackEntryCount() - 1);
         folderPathFragment.refreshWithFolder(getString(ba.getResourcesUtils().getStringId(id)));
         if (topFragment == null || fragment.getDriveType() != topFragment.getDriveType()) {
+            if (topFragment != null){
+                fragment.changeViewMode(topFragment.getVm());
+            }
             topFragment = fragment;
             changeFragment(R.id.fragmentHolder, fragment, ROOT_TAG);
             return;

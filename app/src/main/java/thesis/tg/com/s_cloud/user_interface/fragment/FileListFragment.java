@@ -127,6 +127,7 @@ public class FileListFragment extends RecycleViewFragment {
     public void changeViewMode(ViewMode vm) {
         int layout;
         this.vm = vm;
+        if (!this.isVisible())  return;
         switch (vm) {
             case GRID:
                 this.listView.setLayoutManager(glm);

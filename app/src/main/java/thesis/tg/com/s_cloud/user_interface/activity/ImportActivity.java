@@ -28,6 +28,7 @@ import java.util.Random;
 
 import fi.iki.elonen.NanoHTTPD;
 import thesis.tg.com.s_cloud.R;
+import thesis.tg.com.s_cloud.framework_components.BaseApplication;
 import thesis.tg.com.s_cloud.utils.DataUtils;
 import thesis.tg.com.s_cloud.utils.SConnectOutputstream;
 import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
@@ -192,7 +193,9 @@ public class ImportActivity extends AppCompatActivity {
                 File src = new File(tmpFilePath);
                 try {
                     InputStream in = new FileInputStream(src);
-                    SConnectOutputstream scos = new SConnectOutputstream(DataUtils.getDataHeader(),new FileOutputStream(dst));
+                    SConnectOutputstream scos = new SConnectOutputstream(
+                            (BaseApplication) ImportActivity.this.getApplicationContext(),
+                            new FileOutputStream(dst));
                     byte[] buf = new byte[65536];
                     int len;
                     while ((len = in.read(buf)) > 0) {

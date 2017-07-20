@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import com.dropbox.core.DbxException;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
 import thesis.tg.com.s_cloud.entities.SDriveFile;
 import thesis.tg.com.s_cloud.framework_components.BaseApplication;
@@ -72,7 +73,7 @@ public class TransferTask extends SuperObject{
         protected Boolean doInBackground(Void...params) {
             try {
                 transfer();
-            } catch (IOException | DbxException e) {
+            } catch (IOException | DbxException | NoSuchAlgorithmException e) {
                 e.printStackTrace();
                 return false;
             }
@@ -113,7 +114,7 @@ public class TransferTask extends SuperObject{
         manager.remove(this);
     }
 
-    protected void transfer() throws IOException, DbxException {
+    protected void transfer() throws IOException, DbxException, NoSuchAlgorithmException {
 
     }
 

@@ -193,8 +193,8 @@ public class UiUtils {
                             ba.getDriveMannager().transferDataTo(item.getItemId(),data,isSync);
                         }else{
                             Toast.makeText(context
-                                    , context.getString(R.string.not_connected_to)
-                                            + resrcMnger.getStringId(item.getItemId())
+                                    , context.getString(R.string.not_connected_to) + " "
+                                            + context.getString(resrcMnger.getStringId(item.getItemId()))
                                     ,Toast.LENGTH_LONG).show();
                         }
 

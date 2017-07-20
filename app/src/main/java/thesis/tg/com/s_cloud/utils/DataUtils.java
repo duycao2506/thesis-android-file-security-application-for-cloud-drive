@@ -3,18 +3,27 @@ package thesis.tg.com.s_cloud.utils;
 import android.app.ProgressDialog;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.util.Xml;
 
 import com.google.common.base.Charsets;
+import com.google.common.primitives.Doubles;
 
+import java.net.NetworkInterface;
 import java.net.URISyntaxException;
+import java.text.DecimalFormat;
+import java.util.Collections;
+import java.util.List;
 
 import thesis.tg.com.s_cloud.R;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
@@ -202,15 +211,114 @@ public class DataUtils {
     }
 
     public static String fileSizeToString(long fileSize) {
-        long oneotwofour = 1024;
+        double oneotwofour = 1024;
+        DecimalFormat df2 = new DecimalFormat(".##");
         String[] units = {"Bytes","KB","MB","GB"};
-        long s = fileSize;
+        double s = fileSize;
         int i = 0;
         for (; i < 4 && s > 1024;i++){
-            s = s/oneotwofour;
+            s =  s*1.0/oneotwofour;
+
         }
-        return String.valueOf(s) + " " + units[i];
+        return df2.format(s) + " " + units[i];
 
     }
+
+    public static void sendEmailAutomatically(final String to, final String from, final String content, final String subject, final MyCallBack caller){
+        new AsyncTask<Object, Object, Boolean>(){
+            @Override
+            protected Boolean doInBackground(Object... params) {
+                try {
+                    GMailSender sender = new GMailSender("rogernorman2506@gmail.com", "25061995");
+                    sender.sendMail(subject,
+                            content,
+                            from,
+                            to);
+                } catch (Exception e) {
+                    Log.e("SendMail", e.getMessage(), e);
+                    return false;
+                }
+                return true;
+            }
+
+            @Override
+            protected void onPostExecute(Boolean aVoid) {
+                super.onPostExecute(aVoid);
+                if (aVoid)
+                    caller.callback(EventConst.SEND_EMAIL, 1, "");
+                else
+                    caller.callback(EventConst.SEND_EMAIL,0,"");
+            }
+        }.execute();
+    }
+
+    public static String getMacAddress(String interfaceName,Context context){
+        SharedPreferences sp = context.getSharedPreferences(context.getPackageName(),Context.MODE_PRIVATE);
+        SharedPreferences.Editor spe = sp.edit();
+        String macaddr = sp.getString("macAddr","");
+
+
+
+
+        if (macaddr.length() == 0) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                try {
+                    Context cntxt = context.getApplicationContext();
+                    WifiManager wifi = (WifiManager) cntxt.getSystemService(Context.WIFI_SERVICE);
+                    if (wifi == null) {
+                        macaddr = "";
+                    }else {
+                        WifiInfo info = wifi.getConnectionInfo();
+                        if (info == null) {
+                            macaddr = "";
+                        }else
+                            macaddr = info.getMacAddress();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                try {
+                    List<NetworkInterface> interfaces = Collections.list(NetworkInterface.getNetworkInterfaces());
+                    for (NetworkInterface intf : interfaces) {
+                        if (interfaceName != null) {
+                            if (!intf.getName().equalsIgnoreCase(interfaceName))
+                                continue;
+                        }
+                        byte[] mac = intf.getHardwareAddress();
+
+
+                        if (mac == null) {
+                            macaddr = "";
+                        }else {
+                            StringBuilder buf = new StringBuilder();
+                            for (int idx = 0; idx < mac.length; idx++)
+                                buf.append(String.format("%02X:", mac[idx]));
+                            if (buf.length() > 0) buf.deleteCharAt(buf.length() - 1);
+                            macaddr = buf.toString();
+                        }
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+
+            }
+        }//else{
+//            DeviceAdminReceiver admin = new DeviceAdminReceiver();
+//            DevicePolicyManager devicepolicymanager = admin.getManager(context.getApplicationContext());
+//            ComponentName name1 = admin.getWho(context.getApplicationContext());
+//            String mac_address = devicepolicymanager.getWifiMacAddress(name1);
+//            caller.calback(EventConst.MAC_ADDR, 1, mac_address);
+//            return;
+//        }
+
+        if (macaddr.length() > 0){
+            spe.putString("macAddr",macaddr);
+            spe.apply();
+        }
+        return macaddr;
+    }
+
+
 }
 

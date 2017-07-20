@@ -160,4 +160,14 @@
     <string name="reg_succ_confirm">Register Successfully, please confirm the account via your email!</string>
     <string name="getgoogleinfo">Getting Google Info...</string>
     <string name="getdbxinfo">Getting Dropbox Info...</string>
+    <string name="signupfail">Sign up failed</string>
+    <string name="plsusewifi">Please use wifi at the first time</string>
+    <string name="firsttobetheroot">First device will be a root</string>
+    <string name="checkauth">Check authorization...</string>
+    <string name="otpcode">OTP Code</string>
+    <string name="type_the_otp_got_from_the_root_device">Type the OTP got from the root device</string>
+    <string name="device_auth">Device Authorization</string>
+    <string name="failt">Fail</string>
+    <string name="wrongformatotp">Wrong format of OTP</string>
+    <string name="cannotsecupack">Cannot create Security package</string>
 </resources>

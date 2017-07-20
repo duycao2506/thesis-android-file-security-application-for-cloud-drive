@@ -54,4 +54,12 @@ public interface EventConst {
     String CANCEL_SIGNUP_GOOGLE = "cancelgooglesignup";
     String CANCEL_SIGNUP_DROPBOX = "canceldropboxsignup";
     String SIGN_UP_SENT = "signupsent";
+    String MAC_ADDR = "macaddress";
+    String PRIV_COMPO = "private_exponent";
+    String KEY_FOR_CHILD = "key_for_child";
+    String ROOT_ASSIGN_SUCC = "rootassignsucc";
+    String NEED_AUTHORIZED = "needauth";
+    int OTP_REQUEST_CODE = 33;
+    int OTP_RESULT_SUCCESS = 34;
+    String SEND_EMAIL = "sendmail";
 }

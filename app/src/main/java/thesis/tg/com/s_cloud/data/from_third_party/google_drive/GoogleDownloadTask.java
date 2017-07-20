@@ -12,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.NoSuchAlgorithmException;
 
 import thesis.tg.com.s_cloud.data.from_third_party.task.DownloadTask;
 import thesis.tg.com.s_cloud.entities.SDriveFile;
@@ -37,12 +38,12 @@ public class GoogleDownloadTask extends DownloadTask {
     }
 
     @Override
-    protected void transfer() throws IOException, DbxException {
+    protected void transfer() throws IOException, DbxException, NoSuchAlgorithmException {
         super.transfer();
         SConnectOutputstream outputStream = null;
 
         OutputStream fos = file.getOutputStream(this.to,file.getName(), ba);
-        outputStream = new SConnectOutputstream(DataUtils.getDataHeader(), fos);
+        outputStream = new SConnectOutputstream(ba, fos);
         outputStream.setPrgresslistenner(at);
         InputStream is = driveService.files().get(file.getId())
                 .executeMediaAsInputStream();
