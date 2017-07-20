@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import com.dropbox.core.DbxException;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
 import thesis.tg.com.s_cloud.entities.SDriveFile;
 import thesis.tg.com.s_cloud.framework_components.BaseApplication;
@@ -21,7 +22,7 @@ public class UploadTask extends TransferTask {
     }
 
     @Override
-    protected void transfer() throws IOException, DbxException{
+    protected void transfer() throws IOException, DbxException, NoSuchAlgorithmException {
         super.transfer();
     }
 

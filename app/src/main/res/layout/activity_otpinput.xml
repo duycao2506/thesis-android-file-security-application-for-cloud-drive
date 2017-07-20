@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent"
+    tools:context="thesis.tg.com.s_cloud.user_interface.activity.OTPInputActivity">
+    <include layout="@layout/appbar_layout"/>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/margin_20">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/type_the_otp_got_from_the_root_device"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="@dimen/textSize_18"
+                android:layout_gravity="center"
+                android:layout_marginBottom="@dimen/margin_10"
+                android:layout_marginLeft="@dimen/margin_20"
+                android:layout_marginRight="@dimen/margin_20"
+                android:textAlignment="center"
+                />
+            <EditText
+                android:theme="@style/Theme.App.GrayText"
+                android:id="@+id/edtOTP"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/padding_4"
+                android:layout_gravity="center"
+                android:hint="@string/otpcode"
+                android:textAlignment="center"
+                android:textColorHint="@color/gray_light"
+                android:textColor="@color/colorPrimary"
+                android:textSize="@dimen/textSize_30" />
+        </LinearLayout>
+
+
+    </FrameLayout>
+</LinearLayout>

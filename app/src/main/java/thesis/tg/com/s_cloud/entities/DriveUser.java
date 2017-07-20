@@ -3,12 +3,15 @@ package thesis.tg.com.s_cloud.entities;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.util.Log;
 import android.util.SparseArray;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,6 +26,9 @@ import thesis.tg.com.s_cloud.framework_components.data.from_server.POSTRequestSe
 import thesis.tg.com.s_cloud.framework_components.data.from_server.RequestService;
 import thesis.tg.com.s_cloud.framework_components.entity.SuperObject;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
+import thesis.tg.com.s_cloud.security.SimpleRSACipher;
+import thesis.tg.com.s_cloud.user_interface.activity.LoginActivity;
+import thesis.tg.com.s_cloud.utils.DataUtils;
 import thesis.tg.com.s_cloud.utils.DriveType;
 import thesis.tg.com.s_cloud.utils.EventConst;
 
@@ -44,7 +50,15 @@ public class DriveUser extends SuperObject {
     private String dbx_email;
     private int defaultAvatar;
     private String accesstoken;
+    private String mainKey="%QW_RQWWW";
 
+    public String getMainKey() {
+        return mainKey;
+    }
+
+    public void setMainKey(String mainKey) {
+        this.mainKey = mainKey;
+    }
 
     public String getJob() {
         return job;
@@ -168,6 +182,7 @@ public class DriveUser extends SuperObject {
         this.setId(null);
         Map<Integer, String> sa = new HashMap<>();
         this.drive_ids.clear();
+        this.drive_ids.put(DriveType.LOCAL,"local");
     }
 
     public void copyFromJSON(String response) {
@@ -213,6 +228,22 @@ public class DriveUser extends SuperObject {
                 public void callback(String message, int code, Object data) {
                     //TODO: check validation
 
+                    final String mac_addr = DataUtils.getMacAddress("wlan0",context);
+                    if (mac_addr.length() == 0)
+                    {
+                        Toast.makeText(context, R.string.plsusewifi,Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    try {
+                        BaseApplication ba = (BaseApplication) context.getApplicationContext();
+                        ba.setSimpleCipher(new SimpleRSACipher(mac_addr, Build.MODEL,Build.BRAND));
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                        Toast.makeText(context, R.string.cannotsecupack,Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
                     //TODO: get Profile by AccessToken
                     Log.d("AutoLogin", data.toString());
                     //Processing Profile
@@ -235,5 +266,9 @@ public class DriveUser extends SuperObject {
 
     public String getAccesstoken() {
         return accesstoken;
+    }
+
+    public void setAccesstoken(String accesstoken) {
+        this.accesstoken = accesstoken;
     }
 }

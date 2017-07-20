@@ -8,11 +8,13 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.SequenceInputStream;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
 import thesis.tg.com.s_cloud.data.from_third_party.task.UploadTask;
 import thesis.tg.com.s_cloud.framework_components.BaseApplication;
-import thesis.tg.com.s_cloud.utils.DataUtils;
+import thesis.tg.com.s_cloud.security.AESCipher;
+import thesis.tg.com.s_cloud.security.HeaderHandler;
 import thesis.tg.com.s_cloud.utils.DriveType;
 import thesis.tg.com.s_cloud.utils.SConnectInputStream;
 
@@ -30,7 +32,7 @@ public class GoogleUploadTask extends UploadTask {
 
 
     @Override
-    protected void transfer() throws IOException, DbxException{
+    protected void transfer() throws IOException, DbxException, NoSuchAlgorithmException {
         super.transfer();
         SConnectInputStream scis = new SConnectInputStream(file.getInputstream(ba));
         scis.setPrgressUpdater(at);
@@ -40,7 +42,17 @@ public class GoogleUploadTask extends UploadTask {
                 file.getFileSize());
 
         if (from == DriveType.LOCAL || from == DriveType.LOCAL_STORAGE) {
-            dvic.setHeader(DataUtils.getDataHeader());
+            try {
+                HeaderHandler hh = new HeaderHandler();
+                String halfkey = AESCipher.generateNewMainKey();
+                dvic.setHeader(hh.getHeader(ba.getDriveUser().getEmail(), halfkey));
+                scis.setSm(AESCipher.initiateSecuredMachine(ba.getSimpleCipher(),halfkey,ba.getDriveUser().getMainKey()));
+            } catch (NoSuchAlgorithmException e) {
+                e.printStackTrace();
+                throw new IOException();
+            }
+
+
         }else{
             scis.setShouldEncrypt(false);
         }
@@ -84,6 +96,7 @@ public class GoogleUploadTask extends UploadTask {
 
         public void setHeader(byte[] header) {
             this.header = header;
+            this.transfersize += header.length;
         }
 
         public DriveContentInputStream(String type, SConnectInputStream sFileInputStream, long transferSize) {

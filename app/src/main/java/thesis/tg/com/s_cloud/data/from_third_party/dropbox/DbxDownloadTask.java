@@ -6,6 +6,7 @@ import com.dropbox.core.v2.DbxClientV2;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.security.NoSuchAlgorithmException;
 
 import thesis.tg.com.s_cloud.data.from_third_party.task.DownloadTask;
 import thesis.tg.com.s_cloud.entities.SDriveFile;
@@ -27,12 +28,12 @@ public class DbxDownloadTask extends DownloadTask {
     }
 
     @Override
-    protected void transfer() throws IOException, DbxException{
+    protected void transfer() throws IOException, DbxException, NoSuchAlgorithmException {
         super.transfer();
         SConnectOutputstream outputStream = null;
 
         OutputStream fos = file.getOutputStream(this.to,file.getName(),ba);
-        outputStream = new SConnectOutputstream(DataUtils.getDataHeader(), fos);
+        outputStream = new SConnectOutputstream(ba, fos);
         outputStream.setPrgresslistenner(at);
         InputStream is = dbxClientV2.files().download(file.getId()).getInputStream();
         byte[] buffer = new byte[2048];

@@ -11,6 +11,7 @@ import java.io.InputStream;
 import java.lang.reflect.Array;
 
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
+import thesis.tg.com.s_cloud.security.SecuredMachine;
 
 /**
  * Created by admin on 5/12/17.
@@ -21,6 +22,15 @@ public class SConnectInputStream extends InputStream {
     MyCallBack prgressUpdater;
     long finishSize= 0;
     boolean shouldEncrypt = true;
+    SecuredMachine sm;
+
+    public SecuredMachine getSm() {
+        return sm;
+    }
+
+    public void setSm(SecuredMachine sm) {
+        this.sm = sm;
+    }
 
     public boolean isShouldEncrypt() {
         return shouldEncrypt;
@@ -55,8 +65,13 @@ public class SConnectInputStream extends InputStream {
         int n =  this.is.read(b, off, len);
 
         if (shouldEncrypt) {
-            for (int i = off; i < off + len; i++) {
-                b[i] = (byte) (b[i] ^ 2);
+//            for (int i = off; i < off + len; i++) {
+//                b[i] = (byte) (b[i] ^ 2);
+//            }
+            if (sm!=null){
+                for (int i = off; i < off + len; i++){
+                    b[i] = sm.encrypt(b[i]);
+                }
             }
         }
         finishSize +=len;

@@ -31,9 +31,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".user_interface.activity.LoginActivity"
-            android:screenOrientation="portrait">
-
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name="com.dropbox.core.android.AuthActivity"
             android:configChanges="orientation|keyboard"
@@ -51,11 +49,13 @@
         </activity>
         <activity
             android:name=".user_interface.activity.HomeActivity"
-            android:screenOrientation="portrait"><intent-filter>
-            <action android:name="android.intent.action.MAIN" />
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter></activity>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity android:name=".user_interface.activity.ProfileActivity" />
         <activity android:name=".user_interface.activity.TransferingActivity" />
         <activity android:name=".user_interface.activity.ImportActivity" />
@@ -77,7 +77,8 @@
             android:name=".user_interface.activity.RegisterActivity"
             android:label="@string/title_activity_register"
             android:theme="@style/AppTheme" />
-        <activity android:name=".user_interface.activity.OtpActivity"/>
+        <activity android:name=".user_interface.activity.OtpActivity" />
+        <activity android:name=".user_interface.activity.OTPInputActivity"></activity>
     </application>
 
 </manifest>

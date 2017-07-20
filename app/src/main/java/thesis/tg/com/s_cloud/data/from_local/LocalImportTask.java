@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
+import java.security.NoSuchAlgorithmException;
 
 import thesis.tg.com.s_cloud.data.from_third_party.task.TransferTask;
 import thesis.tg.com.s_cloud.entities.SDriveFile;
@@ -33,7 +34,7 @@ public class LocalImportTask extends TransferTask {
     }
 
     @Override
-    protected void transfer() throws IOException, DbxException {
+    protected void transfer() throws IOException, DbxException, NoSuchAlgorithmException {
         super.transfer();
         File src = new File(this.file.getId());
         File dst = new File(this.file.getFolder() + "/" + this.file.getName());

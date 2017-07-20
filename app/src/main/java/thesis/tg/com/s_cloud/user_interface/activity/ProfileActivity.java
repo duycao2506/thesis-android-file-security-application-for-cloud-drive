@@ -226,9 +226,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     protected void onDestroy() {
-
         super.onDestroy();
-
     }
 
     @Override
