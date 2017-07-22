@@ -536,6 +536,9 @@ public class HomeActivity extends KasperActivity implements
             notconnectedFragment = new NotConnectedCloudFragment();
         }
         if (notconnectedFragment.isVisible()) return;
+        if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
+            backFolder(getSupportFragmentManager().getBackStackEntryCount()-1);
+        }
         this.changeFragment(R.id.fragmentHolder, notconnectedFragment, ROOT_TAG);
         topFragment = null;
         this.folderPathFragment.refreshWithFolder(getString(R.string.not_connected));
@@ -549,8 +552,9 @@ public class HomeActivity extends KasperActivity implements
     private void changeDrive(int id) {
         FileListFragment fragment;
         fragment = (FileListFragment) fragmentNavigator.get(id);
-        if (getSupportFragmentManager().getBackStackEntryCount() > 1)
-            backFolder(getSupportFragmentManager().getBackStackEntryCount() - 1);
+        if (getSupportFragmentManager().getBackStackEntryCount() > 1) {
+            backFolder(getSupportFragmentManager().getBackStackEntryCount()-1);
+        }
         folderPathFragment.refreshWithFolder(getString(ba.getResourcesUtils().getStringId(id)));
         if (topFragment == null || fragment.getDriveType() != topFragment.getDriveType()) {
             if (topFragment != null){
@@ -558,6 +562,7 @@ public class HomeActivity extends KasperActivity implements
             }
             topFragment = fragment;
             changeFragment(R.id.fragmentHolder, fragment, ROOT_TAG);
+            Log.e("STACK", String.valueOf(getSupportFragmentManager().getBackStackEntryCount()));
             return;
         }
         showHideFab(View.VISIBLE);
