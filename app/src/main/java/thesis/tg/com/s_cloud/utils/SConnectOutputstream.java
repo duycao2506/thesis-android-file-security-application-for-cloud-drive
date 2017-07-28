@@ -57,7 +57,7 @@ public class SConnectOutputstream extends OutputStream {
         int index = off;
         if (!checkEncrypt) {
             HeaderHandler hh = new HeaderHandler();
-            byte[] emailb = Base64.decode(ba.getDriveUser().getEmail(),Base64.NO_WRAP);
+            byte[] emailb = ba.getDriveUser().getEmail().getBytes();
             byte[] halfkey = hh.getHalfKeyFromAPacket(emailb, b);
             if (halfkey != null) {
                 sm = AESCipher.initiateSecuredMachine(ba.getSimpleCipher(),

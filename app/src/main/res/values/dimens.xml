@@ -37,7 +37,8 @@
     <dimen name="search_height">56sp</dimen>
 
     <!--PROFILE-->
-    <dimen name="profile_header_height">150sp</dimen>
+    <dimen name="profile_header_height">200sp</dimen>
+
 
     <!-- REGISTER -->
     <dimen name="item_height">90sp</dimen>

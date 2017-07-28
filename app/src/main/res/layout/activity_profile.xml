@@ -21,52 +21,72 @@
             xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/appbla"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-
+            android:layout_height="@dimen/profile_header_height"
             android:theme="@style/AppTheme.AppBarOverlay">
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="@color/transparent"
-                app:popupTheme="@style/AppTheme.PopupOverlay" />
-
             <FrameLayout
-                android:id="@+id/headerFrame"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/profile_header_height"
-                android:background="@color/colorPrimary">
-
-
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/profile_header_height"
+                    android:background="@drawable/sunny_clouds_sky"
+                    />
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/profile_header_height"
+                    android:background="@color/colorPrimary"
+                    android:alpha="0.8"
+                    />
                 <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
-                    android:orientation="vertical">
+                    android:layout_width="match_parent"
+                    android:orientation="vertical"
+                    android:layout_height="wrap_content">
+                    <android.support.v7.widget.Toolbar
+                        android:id="@+id/toolbar"
+                        android:layout_width="match_parent"
+                        android:layout_height="?attr/actionBarSize"
+                        android:background="@color/transparent"
+                        app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+                    <FrameLayout
+                        android:id="@+id/headerFrame"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
 
 
-                    <de.hdodenhof.circleimageview.CircleImageView
-                        android:id="@+id/ivProfileAvatar"
-                        android:layout_width="@dimen/news_avatar"
-                        android:layout_height="@dimen/news_avatar"
-                        app:civ_border_color="@color/white"
-                        app:civ_border_width="@dimen/padding_2"
-                        android:src="@drawable/girl" />
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:orientation="vertical">
 
-                    <android.support.v7.widget.AppCompatTextView
-                        android:id="@+id/tvHeaderName"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/padding_16"
-                        android:text="Le Thi Truong Giang"
-                        android:textColor="@color/colorSecondary"
-                        android:textSize="@dimen/textSize_18" />
+
+                            <de.hdodenhof.circleimageview.CircleImageView
+                                android:id="@+id/ivProfileAvatar"
+                                android:layout_width="@dimen/news_avatar"
+                                android:layout_height="@dimen/news_avatar"
+                                app:civ_border_color="@color/white"
+                                app:civ_border_width="@dimen/padding_2"
+                                android:src="@drawable/girl" />
+
+                            <android.support.v7.widget.AppCompatTextView
+                                android:id="@+id/tvHeaderName"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="@dimen/padding_16"
+                                android:text="Le Thi Truong Giang"
+                                android:textColor="@color/colorSecondary"
+                                android:textSize="@dimen/textSize_18" />
+                        </LinearLayout>
+
+
+                    </FrameLayout>
                 </LinearLayout>
-
-
             </FrameLayout>
+
+
         </android.support.design.widget.AppBarLayout>
 
         <include layout="@layout/content_profile"/>

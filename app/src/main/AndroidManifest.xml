@@ -31,10 +31,11 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".user_interface.activity.LoginActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait"/>
         <activity
             android:name="com.dropbox.core.android.AuthActivity"
             android:configChanges="orientation|keyboard"
+            android:screenOrientation="portrait"
             android:launchMode="singleTask">
             <intent-filter>
 
@@ -56,9 +57,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".user_interface.activity.ProfileActivity" />
-        <activity android:name=".user_interface.activity.TransferingActivity" />
-        <activity android:name=".user_interface.activity.ImportActivity" />
+        <activity android:name=".user_interface.activity.ProfileActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".user_interface.activity.TransferingActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".user_interface.activity.ImportActivity"
+            android:screenOrientation="portrait"/>
 
         <!-- <receiver -->
         <!-- android:name=".utils.InternetChangeReceiver" -->
@@ -77,8 +81,10 @@
             android:name=".user_interface.activity.RegisterActivity"
             android:label="@string/title_activity_register"
             android:theme="@style/AppTheme" />
-        <activity android:name=".user_interface.activity.OtpActivity" />
-        <activity android:name=".user_interface.activity.OTPInputActivity"></activity>
+        <activity android:name=".user_interface.activity.OtpActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".user_interface.activity.OTPInputActivity"
+            android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

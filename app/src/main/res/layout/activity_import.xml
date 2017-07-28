@@ -5,23 +5,30 @@
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary"
+    android:background="@drawable/sunny_clouds_sky"
     tools:context="thesis.tg.com.s_cloud.user_interface.activity.ImportActivity">
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
+        android:alpha="0.8"
         app:popupTheme="@style/AppTheme.PopupOverlay"
         android:theme="@style/AppTheme.AppBarOverlay"/>
     <FrameLayout
-        android:padding="@dimen/margin_30"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/colorPrimary"
+            android:alpha="0.8"
+            />
         <LinearLayout
             android:orientation="vertical"
             android:layout_gravity="center"
             android:layout_width="wrap_content"
+            android:layout_margin="@dimen/margin_30"
             android:gravity="center"
             android:layout_height="wrap_content">
             <ImageView
@@ -35,6 +42,7 @@
                 android:layout_width="wrap_content"
                 android:textSize="@dimen/textSize_18"
                 android:layout_height="wrap_content"
+                android:textAlignment="center"
                 android:textColor="@color/gray_light"
                 android:text="@string/please_access_to_this_address_on_a_web_browser"
                 />

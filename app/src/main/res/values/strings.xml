@@ -37,12 +37,12 @@
 
     <string-array name="colorChangeArray">
         <item>#e8e8e8</item>
-        <item>#ffd54f</item>
-        <item>#ffb34f</item>
-        <item>#ff9e4f</item>
-        <item>#ff794f</item>
-        <item>#ff6e4f</item>
-        <item>#ff564f</item>
+        <item>#eaff4f</item>
+        <item>#ffe84f</item>
+        <item>#ffbc4f</item>
+        <item>#ff954f</item>
+        <item>#ff7e4f</item>
+        <item>#ff644f</item>
         <item>#ff484f</item>
 
     </string-array>
@@ -170,4 +170,8 @@
     <string name="failt">Fail</string>
     <string name="wrongformatotp">Wrong format of OTP</string>
     <string name="cannotsecupack">Cannot create Security package</string>
+    <string name="unknerr">Unknown error</string>
+    <string name="faillougout">Fail to log out</string>
+    <string name="homeactivity">Fetching OTP...</string>
+    <string name="not_root">Your device is not the root one!</string>
 </resources>

@@ -177,7 +177,7 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
                         StringBuilder sb = new StringBuilder();
                         sb.append(selectedday);
                         sb.append("/");
-                        sb.append(selectedmonth);
+                        sb.append((selectedmonth+1));
                         sb.append("/");
                         sb.append(selectedyear);
                         edtBirthday.setText(sb.toString());

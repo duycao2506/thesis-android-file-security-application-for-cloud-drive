@@ -17,7 +17,7 @@ public class HeaderHandler {
 
     public byte[] getHeader(String email, String halfkey) throws NoSuchAlgorithmException {
         byte[] header;
-        byte[] emailb = Base64.decode(email,Base64.NO_WRAP);
+        byte[] emailb = email.getBytes();
         byte[] halfkeyb = Base64.decode(halfkey,Base64.NO_WRAP);
 
         header = new byte[emailb.length + halfkeyb.length];

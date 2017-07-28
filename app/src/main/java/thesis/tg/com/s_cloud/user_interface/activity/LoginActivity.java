@@ -191,10 +191,6 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
                 UiUtils.OpeningAnimate(edtusername,Techniques.FadeInLeft, UiUtils.TIME_ANIMATE_STANDARD);
                 UiUtils.OpeningAnimate(edtpassword,Techniques.FadeInRight, UiUtils.TIME_ANIMATE_STANDARD);
                 UiUtils.OpeningAnimate(btnLogin,Techniques.FadeIn, UiUtils.TIME_ANIMATE_STANDARD);
-//                UiUtils.OpeningAnimate(btnDropbox,Techniques.FadeIn, UiUtils.TIME_ANIMATE_STANDARD);
-//                UiUtils.OpeningAnimate(btnGoogle,Techniques.FadeIn, UiUtils.TIME_ANIMATE_STANDARD);
-
-
             }
         }.execute();
 
@@ -218,62 +214,63 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
         int id = v.getId();
         switch (id){
             case R.id.btnlogin:
-                progressDialog = UiUtils.getDefaultProgressDialog(this,false,getString(R.string.signin_ing));
-                progressDialog.show();
+//                progressDialog = UiUtils.getDefaultProgressDialog(this,false,getString(R.string.signin_ing));
+//                progressDialog.show();
+//
+//                final String mac_addr = DataUtils.getMacAddress("wlan0",LoginActivity.this);
+//                if (mac_addr.length() == 0)
+//                {
+//                    Toast.makeText(LoginActivity.this, R.string.plsusewifi,Toast.LENGTH_SHORT).show();
+//                    progressDialog.dismiss();
+//                    return;
+//                }
+//
+//                try {
+//                    ba.setSimpleCipher(new SimpleRSACipher(mac_addr,Build.MODEL,Build.BRAND));
+//                } catch (UnsupportedEncodingException e) {
+//                    e.printStackTrace();
+//                    Toast.makeText(LoginActivity.this, R.string.cannotsecupack,Toast.LENGTH_SHORT).show();
+//                    return;
+//                }
+//
+//                //GETACCESSTOKEN
+//                POSTRequestService prs = new POSTRequestService(this, RequestService.RequestServiceConstant.api1, new MyCallBack() {
+//                    @Override
+//                    public void callback(String message, int code, Object data) {
+//                        Log.d("RESP", ((GeneralResponse)data).getResponse());
+//                        String auth_json_string = MockData.auth_resp;
+//                        JSONObject auth_json;
+//                        try{
+//                            auth_json = new JSONObject(auth_json_string);
+//                            if (auth_json.getString("status").compareTo("success")==0)
+//                                ba.getDriveUser().saveAccToken(LoginActivity.this,auth_json.getString("auth_token"));
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//
+//                        //GETPROFILE
+//                        POSTRequestService prs2 = new POSTRequestService(LoginActivity.this, RequestService.RequestServiceConstant.api1, new MyCallBack() {
+//                            @Override
+//                            public void callback(String message, int code, Object data) {
+//                                Log.d("RESP", ((GeneralResponse)data).getResponse());
+//                                //TODO: generate response json and check success status
+//                                try{
+//                                    JSONObject jso = new JSONObject(((GeneralResponse) data).getResponse());
+//                                } catch (JSONException e) {
+//                                    e.printStackTrace();
+//                                }
+//                                ba.getDriveUser().copyFromJSON(MockData.jsonuser);
+//                                LoginActivity.this.callback(EventConst.LOGIN_SUCCESS,1,null);
+//                            }
+//                        }, new GeneralResponse());
+//                        prs2.executeService();
+//
+//                    }
+//                }, new GeneralResponse());
+//                prs.executeService();
+//                V@IRPV]T
 
-                final String mac_addr = DataUtils.getMacAddress("wlan0",LoginActivity.this);
-                if (mac_addr.length() == 0)
-                {
-                    Toast.makeText(LoginActivity.this, R.string.plsusewifi,Toast.LENGTH_SHORT).show();
-                    progressDialog.dismiss();
-                    return;
-                }
-
-                try {
-                    ba.setSimpleCipher(new SimpleRSACipher(mac_addr,Build.MODEL,Build.BRAND));
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                    Toast.makeText(LoginActivity.this, R.string.cannotsecupack,Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                //GETACCESSTOKEN
-                POSTRequestService prs = new POSTRequestService(this, RequestService.RequestServiceConstant.api1, new MyCallBack() {
-                    @Override
-                    public void callback(String message, int code, Object data) {
-                        Log.d("RESP", ((GeneralResponse)data).getResponse());
-                        String auth_json_string = MockData.auth_resp;
-                        JSONObject auth_json;
-                        try{
-                            auth_json = new JSONObject(auth_json_string);
-                            if (auth_json.getString("status").compareTo("success")==0)
-                                ba.getDriveUser().saveAccToken(LoginActivity.this,auth_json.getString("auth_token"));
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                        //GETPROFILE
-                        POSTRequestService prs2 = new POSTRequestService(LoginActivity.this, RequestService.RequestServiceConstant.api1, new MyCallBack() {
-                            @Override
-                            public void callback(String message, int code, Object data) {
-                                Log.d("RESP", ((GeneralResponse)data).getResponse());
-                                //TODO: generate response json and check success status
-                                try{
-                                    JSONObject jso = new JSONObject(((GeneralResponse) data).getResponse());
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                                ba.getDriveUser().copyFromJSON(MockData.jsonuser);
-                                LoginActivity.this.callback(EventConst.LOGIN_SUCCESS,1,null);
-                            }
-                        }, new GeneralResponse());
-                        prs2.executeService();
-
-                    }
-                }, new GeneralResponse());
-                prs.executeService();
-
-//                login("neverfail2506@gmail.com","password");
+                login("duydaodac@gmail.com","25061995");
 
 
                 break;
@@ -295,7 +292,7 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
     private void login(String email, String password) {
         String userjsonstring = "{\n" +
                 "    \"email\":" + "\""+ email +"\",\n" +
-                "    \"password\": \""+password+"\",\n" +
+                "    \"password\": \""+DataUtils.encodePassword(email,password)+"\",\n" +
                 "    \"mac_address\": \"\"\n" +
                 "}";
         JSONObject user;
@@ -310,7 +307,7 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
                 progressDialog.dismiss();
                 return;
             }
-            user.put("mac_address",mac_addr);
+            user.put("mac_address",mac_addr);//"11:22:11:22:11:22");
         } catch (JSONException e) {
             e.printStackTrace();
             Toast.makeText(LoginActivity.this, R.string.plsusewifi,Toast.LENGTH_SHORT).show();
@@ -325,10 +322,15 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
                 GeneralResponse gr = ((GeneralResponse)data);
                 String auth_json_string = gr.getResponse();
                 JSONObject auth_json;
-                if (gr.isResponseError()){
-                    this.callback(EventConst.LOGIN_FAIL,1,"");
-                    return;
-                }
+//                if (gr.isResponseError()){
+//                    try {
+//                        auth_json = new JSONObject(gr.getResponse());
+//                        LoginActivity.this.callback(EventConst.LOGIN_FAIL,1,auth_json.getString("message"));
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//                    return;
+//                }
 
                 //try requesting for root
                 try{
@@ -344,8 +346,9 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
                             // If not register root
                             if (!haveRoot) {
                                 progressDialog.setMessage(getString(R.string.firsttobetheroot));
+                                String main_key = AESCipher.generateNewMainKey();
                                 requestRoot(LoginActivity.this,auth_token, getRootAssignRequestJSONObj(
-                                        ba,firstToken, mac_addr,""), new MyCallBack() {
+                                        ba,firstToken, mac_addr,main_key), new MyCallBack() {
                                     @Override
                                     public void callback(String message, int code, Object data) {
                                         progressDialog.dismiss();
@@ -364,19 +367,21 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
                             //If not authorized device
 
                         }else {
+                            ba.getDriveUser().saveAccToken(LoginActivity.this, auth_token);
                             ba.getDriveUser().setAccesstoken(auth_token);
                             ba.getDriveUser().setMainKey(mainkey);
+
                             progressDialog.dismiss();
                             LoginActivity.this.callback(LOGIN_SUCCESS,1,"");
                         }
                     }else{
                         progressDialog.dismiss();
-                        LoginActivity.this.callback(LOGIN_FAIL,1,"");
+                        LoginActivity.this.callback(LOGIN_FAIL,1,auth_json.getString("message"));
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                     progressDialog.dismiss();
-                    LoginActivity.this.callback(LOGIN_FAIL,1,"");
+                    LoginActivity.this.callback(LOGIN_FAIL,1,getString(R.string.unknerr));
                 }
             }
         }, new GeneralResponse());
@@ -392,11 +397,12 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
                 "    \"mac_address\": \"32:23:43:4F:2S:5D\",\n" +
                 "    \"os\": \"macOS Sierra\",\n" +
                 "    \"backup_key\": \"adsfasdf123\",\n" +
-                "    \"modulus\": \"123123123124123\",\n" +
-                "    \"exponent\": \"adfasdfasdf123123\",\n" +
-                "    \"encrypted_modulus\": \"123123asdf123\",\n" +
-                "    \"encrypted_exponent\": \"asdfasdf123123\",\n" +
-                "    \"is_root\":true\n" +
+                "    \"main_key\":\"dsad\",\n" +
+//                "    \"modulus\": \"123123123124123\",\n" +
+//                "    \"exponent\": \"adfasdfasdf123123\",\n" +
+                "    \"otp_modulus\": \"123123asdf123\",\n" +
+                "    \"otp_exponent\": \"asdfasdf123123\",\n" +
+                "    \"is_root\":"+"\"True\"" +"\n" +
                 "}";
 
         JSONObject rootAssignJSONObj = new JSONObject(rootAssignSamplejsonstring);
@@ -404,10 +410,12 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
         int exponent = firstToken.getClaim("exponent").asInt();
 
 
+
         ba.setSimpleCipher(new SimpleRSACipher(mac_addr,Build.BRAND,Build.MODEL));
+        String encodedMainKey = ba.getSimpleCipher().encryptKey(mainkey);
         String encrypted_modulus = ba.getSimpleCipher().getModulus().toString();
         int encrypted_exponent = SimpleRSACipher.publicExponent.intValue();
-        String []keys = AESCipher.generateBackupKey(mainkey.length() == 0? AESCipher.generateNewMainKey() : mainkey);
+        String []keys = AESCipher.generateBackupKey(mainkey);
 
 //        SharedPreferences sharedPreferences = ba.getSharedPreferences(ba.getPackageName(),MODE_PRIVATE);
 //        SharedPreferences.Editor spe = sharedPreferences.edit();
@@ -418,10 +426,11 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
         rootAssignJSONObj.put("os", Build.VERSION.CODENAME);
         rootAssignJSONObj.put("mac_address",mac_addr);
         rootAssignJSONObj.put("backup_key",keys[1]);
-        rootAssignJSONObj.put("modulus",modulus);
-        rootAssignJSONObj.put("exponent",exponent);
-        rootAssignJSONObj.put("encrypted_exponent",encrypted_exponent);
-        rootAssignJSONObj.put("encrypted_modulus",encrypted_modulus);
+        rootAssignJSONObj.put("main_key",encodedMainKey);
+//        rootAssignJSONObj.put("modulus",modulus);
+//        rootAssignJSONObj.put("exponent",exponent);
+        rootAssignJSONObj.put("otp_exponent",encrypted_exponent);
+        rootAssignJSONObj.put("otp_modulus",encrypted_modulus);
 
         Log.e("ROOTASSIGN",rootAssignJSONObj.toString());
         Log.e("Nonunique", Build.BRAND + " " + Build.MODEL);
@@ -431,7 +440,7 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
     public static void requestForAuthorize(Context context, String authtoken, String otpcode, String mac_addr, MyCallBack caller ) throws UnsupportedEncodingException {
         JWT jwt = new JWT(authtoken);
         BaseApplication ba = (BaseApplication) context.getApplicationContext();
-        SimpleRSACipher rsac = ba.getSimpleCipher(mac_addr);
+        SimpleRSACipher rsac = new SimpleRSACipher(mac_addr,Build.BRAND,Build.MODEL);
         String modulus = rsac.getModulus().toString(); //jwt.getClaim("modulus").asString();
         int exponent = SimpleRSACipher.publicExponent.intValue(); //jwt.getClaim("exponent").asInt();
         String requestotpverisample = "{\n" +
@@ -453,7 +462,7 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
         }
     }
 
-    public static void requestRoot(Context context, String authtoken, JSONObject rootassignjsonobj, final MyCallBack caller){
+    public static void requestRoot(final Context context, String authtoken, JSONObject rootassignjsonobj, final MyCallBack caller){
         final BaseApplication ba = (BaseApplication) context.getApplicationContext();
         try {
             //Request assign this device as root
@@ -462,22 +471,26 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
                     new MyCallBack() {
                         @Override
                         public void callback(String message, int code, Object data) {
+
                             GeneralResponse gr = (GeneralResponse) data;
-                            if (!gr.isResponseError()){
-                                try {
-                                    JSONObject jsonObject = new JSONObject(gr.getResponse());
-                                    if (jsonObject.getString("status").compareTo("success")==0){
-                                        String auth_token2 = jsonObject.getString("auth_token");
-                                        JWT jwt = new JWT(auth_token2);
-                                        ba.getDriveUser().setAccesstoken(auth_token2);
-                                        ba.getDriveUser().setMainKey(jwt.getClaim("key").asString());
-                                        if (caller != null)
-                                            caller.callback(EventConst.LOGIN_SUCCESS, 1, auth_token2);
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                    caller.callback(EventConst.LOGIN_FAIL,1,"");
+                            Log.e("RESP",gr.getResponse());
+                            try {
+                                JSONObject jsonObject = new JSONObject(gr.getResponse());
+                                if (jsonObject.getString("status").compareTo("success")==0){
+                                    String auth_token2 = jsonObject.getString("auth_token");
+                                    JWT jwt = new JWT(auth_token2);
+                                    ba.getDriveUser().saveAccToken(context, auth_token2);
+                                    ba.getDriveUser().setAccesstoken(auth_token2);
+                                    ba.getDriveUser().setMainKey(jwt.getClaim("key").asString());
+                                    if (caller != null)
+                                        caller.callback(EventConst.LOGIN_SUCCESS, 1, auth_token2);
                                 }
+                                else{
+                                    caller.callback(EventConst.LOGIN_FAIL,1,jsonObject.getString("message"));
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                                caller.callback(EventConst.LOGIN_FAIL,1,context.getString(R.string.unknerr));
                             }
                         }
                     }, new GeneralResponse());
@@ -485,10 +498,11 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
             Map<String, Object> headers = RequestService.getBaseHeaders();
             headers.put("Authorization", "Bearer " +authtoken);
             rootprsc.setHeaders(headers);
+            Log.e("HEADER",headers.toString());
             rootprsc.executeService();
         } catch (Exception e) {
             e.printStackTrace();
-            caller.callback(EventConst.LOGIN_FAIL,1,"");
+            caller.callback(EventConst.LOGIN_FAIL,1,context.getString(R.string.unknerr));
         }
     }
 
@@ -532,6 +546,7 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
                 break;
             case EventConst.OTP_REQUEST_CODE:
                 if (resultCode == RESULT_OK){
+                    ba.getDriveUser().saveAccToken(this, data.getStringExtra("auth_token"));
                     ba.getDriveUser().setAccesstoken(data.getStringExtra("auth_token"));
                     ba.getDriveUser().setMainKey(data.getStringExtra("main_key"));
                     this.callback(LOGIN_SUCCESS,1,"");
@@ -553,13 +568,12 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
     public void callback(String message, int code, Object data) {
         switch (message){
             case EventConst.LOGIN_SUCCESS:
-                progressDialog.dismiss();
                 Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                 startActivity(intent);
                 finish();
                 break;
             case EventConst.LOGIN_FAIL:
-                Toast.makeText(this, R.string.fail_login,Toast.LENGTH_LONG).show();
+                Toast.makeText(this, data.toString(),Toast.LENGTH_LONG).show();
                 break;
             case EventConst.DBX_CONNECT:
             case EventConst.GOOGLE_CONNECT:
@@ -702,7 +716,7 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
                     try {
                         registerObject.put("email",fa.getEmail());
                         registerObject.put("country",fa.getCountry());
-                        registerObject.put("fullname",fa.getName());
+                        registerObject.put("fullname",fa.getName().getDisplayName());
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -736,7 +750,7 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
                     //TODO: Create User
                     try {
                         registerObject.put("email",acct.getEmail());
-                        registerObject.put("fullname",acct.getDisplayName());
+                        registerObject.put("fullname",acct.getGivenName());
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

@@ -22,6 +22,7 @@ import thesis.tg.com.s_cloud.R;
 import thesis.tg.com.s_cloud.framework_components.BaseApplication;
 import thesis.tg.com.s_cloud.framework_components.data.from_server.GeneralResponse;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
+import thesis.tg.com.s_cloud.security.RSAEncryptor;
 import thesis.tg.com.s_cloud.security.SimpleRSACipher;
 import thesis.tg.com.s_cloud.utils.EventConst;
 
@@ -71,49 +72,53 @@ public class OTPInputActivity extends AppCompatActivity {
                         @Override
                         public void callback(String message, int code, Object data) {
                             GeneralResponse gr = (GeneralResponse) data;
-                            if (!gr.isResponseError()){
-                                String json = gr.getResponse();
-                                JSONObject requestdeviceauthResp;
-                                try {
-                                    requestdeviceauthResp = new JSONObject(json);
-                                    Log.e("REQAUT", requestdeviceauthResp.toString());
-                                    if (requestdeviceauthResp.getString("status").compareTo("success")==0){
-                                        String keyraw = requestdeviceauthResp.getString("key");
-                                        SimpleRSACipher rsac = ba.getSimpleCipher();
-                                        String deMainKey = rsac.decryptKey(keyraw);
-                                        JSONObject rootrequesjso =
-                                                LoginActivity.getRootAssignRequestJSONObj(
-                                                        ba,
-                                                        new JWT(authtoken),
-                                                        mac,
-                                                        deMainKey);
-                                        rootrequesjso.put("is_root",false);
-                                        LoginActivity.requestRoot(OTPInputActivity.this,
-                                                authtoken,
-                                                rootrequesjso,
-                                                new MyCallBack() {
-                                            @Override
-                                            public void callback(String message, int code, Object data) {
-                                                switch (message){
-                                                    case EventConst.LOGIN_FAIL:
-                                                        Toast.makeText(OTPInputActivity.this,getString(R.string.failt),Toast.LENGTH_LONG).show();
-                                                        break;
-                                                    case EventConst.LOGIN_SUCCESS:
-                                                        setResult(EventConst.OTP_RESULT_SUCCESS);
-                                                        break;
+                            String json = gr.getResponse();
+                            JSONObject requestdeviceauthResp;
+                            try {
+                                requestdeviceauthResp = new JSONObject(json);
+                                Log.e("REQAUT", requestdeviceauthResp.toString());
+                                if (requestdeviceauthResp.getString("status").compareTo("success")==0){
+
+                                    SimpleRSACipher rsac = ba.getSimpleCipher();
+                                    String keyraw = new JSONObject(requestdeviceauthResp.getString("data")).getString("key");
+                                    String deMainKey = rsac.decryptKey(keyraw);
+                                    Log.e("A", keyraw);
+                                    Log.e("B", deMainKey);
+                                    JSONObject rootrequesjso =
+                                            LoginActivity.getRootAssignRequestJSONObj(
+                                                    ba,
+                                                    new JWT(authtoken),
+                                                    mac,
+                                                    deMainKey);
+                                    rootrequesjso.put("is_root","False");
+                                    LoginActivity.requestRoot(OTPInputActivity.this,
+                                            authtoken,
+                                            rootrequesjso,
+                                            new MyCallBack() {
+                                                @Override
+                                                public void callback(String message, int code, Object data) {
+                                                    switch (message){
+                                                        case EventConst.LOGIN_FAIL:
+                                                            Toast.makeText(OTPInputActivity.this,getString(R.string.failt),Toast.LENGTH_LONG).show();
+                                                            break;
+                                                        case EventConst.LOGIN_SUCCESS:
+                                                            setResult(RESULT_OK);
+                                                            finish();
+                                                            break;
+                                                    }
                                                 }
-                                            }
-                                        });
-                                    }else{
-                                        Toast.makeText(OTPInputActivity.this,"Wrong OTP code",Toast.LENGTH_SHORT).show();
-                                    }
-                                } catch (Exception e) {
-                                    e.printStackTrace();
+                                            });
+                                }else{
+                                    Toast.makeText(OTPInputActivity.this,requestdeviceauthResp.getString("message"),Toast.LENGTH_SHORT).show();
                                 }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                Toast.makeText(OTPInputActivity.this,getString(R.string.unknerr),Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
                 } catch (UnsupportedEncodingException e) {
+                    Toast.makeText(OTPInputActivity.this,getString(R.string.unknerr),Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }
                 break;

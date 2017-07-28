@@ -2,6 +2,7 @@ package thesis.tg.com.s_cloud.framework_components.data.from_server;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -33,13 +34,16 @@ public class RequestService {
     private String api;
 
     public interface RequestServiceConstant {
-        String BASE_URL2 = "https://scloud-server.herokuapp.com/";
-        String BASE_URL = "https://jsonplaceholder.typicode.com/";
+        String BASE_URL = "https://scloud-server.herokuapp.com/";
+//        String BASE_URL = "https://jsonplaceholder.typicode.com/";
         String api1 = "posts";
         String register = "auth/register";
         String login = "auth/login";
         String assign_root = "key/root";
         String request_verification = "devices/request-authorize";
+        String profile = "auth/profile";
+        String logout = "auth/logout";
+        String request_for_otp = "devices/request-otp";
     }
 
 
@@ -108,6 +112,7 @@ public class RequestService {
         if (!response.isResponseError()) {
             return;
         }
+        Log.e("RESPONSE",response.getResponse());
         throw new Exception(response.getError());
     }
 
@@ -124,7 +129,7 @@ public class RequestService {
 
     public static Map<String, Object> getBaseHeaders(){
         Map<String, Object> headers = new HashMap<String, Object>();
-        headers.put("Content-Type","application/json");
+//        headers.put("Content-Type","application/json");
         return headers;
     }
 

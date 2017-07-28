@@ -25,7 +25,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.auth0.android.jwt.JWT;
 import com.daimajia.androidanimations.library.Techniques;
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
@@ -486,7 +488,7 @@ public class HomeActivity extends KasperActivity implements
 //                        HomeActivity.this.hideFolderBar(View.GONE);
 //                        TransferingTaskFragment ttf = new TransferingTaskFragment();
 //                        HomeActivity.this.changeFragment(R.id.fragmentHolder,ttf,null);
-                        Intent inte = new Intent(HomeActivity.this, TransferingActivity.class);
+                        final Intent inte = new Intent(HomeActivity.this, TransferingActivity.class);
                         startActivity(inte);
                         break;
                     case R.id.nav_import:
@@ -494,8 +496,39 @@ public class HomeActivity extends KasperActivity implements
                         startActivity(inte2);
                         break;
                     case R.id.nav_auther:
-                        Intent inte1 = new Intent(HomeActivity.this, OtpActivity.class);
-                        startActivity(inte1);
+                        generalProgressDialog = UiUtils.getDefaultProgressDialog(HomeActivity.this,false,getString(R.string.homeactivity));
+                        generalProgressDialog.show();
+                        JWT jwt = new JWT(ba.getDriveUser().getAccesstoken());
+                        final String modulus = jwt.getClaim("modulus").asString();
+                        final String exponent = jwt.getClaim("exponent").asInt().toString();
+                        try {
+                            OtpActivity.requestForOTP(HomeActivity.this, new MyCallBack() {
+                                @Override
+                                public void callback(String message, int code, Object data) {
+                                    generalProgressDialog.dismiss();
+                                    if (code == 1) {
+                                        Intent inte1 = new Intent(HomeActivity.this, OtpActivity.class);
+                                        String otp = data.toString();
+                                        if (otp.length()<6){
+                                            for (int i = 0; i < 6 - otp.length();i++){
+                                                otp = "0" + otp;
+                                            }
+                                        }
+                                        inte1.putExtra("FirstOTP",otp);
+                                        inte1.putExtra("modulus",modulus);
+                                        inte1.putExtra("exponent",exponent);
+                                        startActivity(inte1);
+                                    }
+                                    else{
+                                        makeMessage(data.toString());
+                                    }
+                                }
+                            },modulus,exponent);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            makeMessage(getString(R.string.unknerr));
+                        }
+
                         break;
                     case R.id.nav_sigout:
                         ba.getDriveWrapper(DriveType.GOOGLE).signOut(new MyCallBack() {
@@ -510,11 +543,20 @@ public class HomeActivity extends KasperActivity implements
                                 Log.d("LGOUT", ((boolean) data) ? "True" : "False");
                             }
                         });
-                        ba.getDriveUser().signOut();
-                        ba.getDriveUser().deleteAccessToken(HomeActivity.this);
-                        Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
-                        startActivity(intent);
-                        finish();
+                        ba.getDriveUser().signOut(HomeActivity.this, new MyCallBack() {
+                            @Override
+                            public void callback(String message, int code, Object data) {
+                                if (!((boolean)data)){
+                                    Toast.makeText(HomeActivity.this, R.string.faillougout,Toast.LENGTH_LONG).show();
+                                    return;
+                                }
+                                ba.getDriveUser().deleteAccessToken(HomeActivity.this);
+                                Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }
+                        });
+
                         break;
                     default:
                         break;
