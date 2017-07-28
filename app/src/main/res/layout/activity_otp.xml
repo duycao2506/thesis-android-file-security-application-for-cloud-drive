@@ -38,7 +38,7 @@
                     android:layout_width="3sp"
                     android:background="@color/colorSecondary"
 
-                    android:layout_height="match_parent"/>
+                    android:layout_height="@dimen/margin_10"/>
             </LinearLayout>
 
         </LinearLayout>

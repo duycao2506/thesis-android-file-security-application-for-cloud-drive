@@ -64,7 +64,7 @@ public class AESCipher {
     }
 
     public static SecuredMachine initiateSecuredMachine(SimpleRSACipher cipher, String halfKeystr, String encryptedKey) {
-        String key = cipher.encryptKey(encryptedKey);
+        String key = cipher.decryptKey(encryptedKey);
         byte[] halfKey = Base64.decode(halfKeystr,Base64.NO_WRAP);
         byte[] finalKey = concat(halfKey,Base64.decode(key,Base64.NO_WRAP));
         return new SecuredMachine(finalKey);

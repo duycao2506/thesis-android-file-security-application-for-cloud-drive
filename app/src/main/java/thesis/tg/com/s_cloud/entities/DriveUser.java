@@ -8,19 +8,26 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.widget.Toast;
 
+import com.auth0.android.jwt.JWT;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 import thesis.tg.com.s_cloud.R;
 import thesis.tg.com.s_cloud.data.from_local.MockData;
 import thesis.tg.com.s_cloud.framework_components.BaseApplication;
+import thesis.tg.com.s_cloud.framework_components.data.from_server.GETRequestService;
 import thesis.tg.com.s_cloud.framework_components.data.from_server.GeneralResponse;
 import thesis.tg.com.s_cloud.framework_components.data.from_server.POSTRequestService;
 import thesis.tg.com.s_cloud.framework_components.data.from_server.RequestService;
@@ -178,11 +185,42 @@ public class DriveUser extends SuperObject {
         return availKeys;
     }
 
-    public void signOut() {
+    public void signOut(Context context, final MyCallBack caller) {
         this.setId(null);
-        Map<Integer, String> sa = new HashMap<>();
+        Map<Integer, String> sa = new HashMap<Integer, String>();
         this.drive_ids.clear();
         this.drive_ids.put(DriveType.LOCAL,"local");
+        JSONObject jso = new JSONObject();
+        try {
+            jso.put("mac_address", DataUtils.getMacAddress("wlan0",context));
+        } catch (JSONException e) {
+            e.printStackTrace();
+            caller.callback("",1, false);
+            return;
+        }
+        POSTRequestService prsc = new POSTRequestService(context, RequestService.RequestServiceConstant.logout, new MyCallBack() {
+            @Override
+            public void callback(String message, int code, Object data) {
+                GeneralResponse gr = (GeneralResponse) data;
+                try {
+                    JSONObject resp = new JSONObject(gr.getResponse());
+                    if (resp.getString("status").compareTo("success") == 0){
+                        caller.callback("",1,true);
+                    }else{
+                        caller.callback("",1,false);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    caller.callback("",1,false);
+                }
+            }
+        }, new GeneralResponse());
+        Map<String, Object> headers = RequestService.getBaseHeaders();
+        headers.put("Authorization", "Bearer " + accesstoken);
+        Log.e("ACC",accesstoken);
+        prsc.setHeaders(headers);
+        prsc.setJsonObject(jso);
+        prsc.executeService();
     }
 
     public void copyFromJSON(String response) {
@@ -217,41 +255,79 @@ public class DriveUser extends SuperObject {
     }
 
     public void autoSignIn(final Context context, final MyCallBack myCallBack) {
+        this.accesstoken = getAccessToken(context);
         if (isSignedIn()) {
             myCallBack.callback(EventConst.LOGIN_SCLOUD, 1, true);
-        } else if (getAccessToken(context) == null) {
+        } else if (this.accesstoken == null || this.accesstoken.length() == 0) {
             myCallBack.callback(EventConst.LOGIN_SCLOUD, 1, false);
         } else {
-            POSTRequestService prs = new POSTRequestService
-                    (context, RequestService.RequestServiceConstant.api1, new MyCallBack() {
+            final JWT acctoken = new JWT(this.accesstoken);
+            boolean isExpired = acctoken.getExpiresAt().compareTo(new Date()) < 0;
+            if (isExpired){
+                myCallBack.callback(EventConst.LOGIN_SCLOUD,1,false);
+                saveAccToken(context,"");
+                return;
+            }
+            Log.e("accesst",accesstoken);
+
+
+
+            GETRequestService prs = new GETRequestService
+                    (context, RequestService.RequestServiceConstant.profile, new MyCallBack() {
                 @Override
                 public void callback(String message, int code, Object data) {
-                    //TODO: check validation
-
-                    final String mac_addr = DataUtils.getMacAddress("wlan0",context);
-                    if (mac_addr.length() == 0)
-                    {
-                        Toast.makeText(context, R.string.plsusewifi,Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
+                    GeneralResponse gr = (GeneralResponse) data;
+                    JSONObject jso;
                     try {
+                        jso = new JSONObject(gr.getResponse());
+                        if (jso.getString("status").compareTo("success") != 0){
+                            myCallBack.callback(EventConst.LOGIN_SCLOUD,1,false);
+                            return;
+                        }
                         BaseApplication ba = (BaseApplication) context.getApplicationContext();
-                        ba.setSimpleCipher(new SimpleRSACipher(mac_addr, Build.MODEL,Build.BRAND));
-                    } catch (UnsupportedEncodingException e) {
+                        if (ba.getSimpleCipher()==null) {
+                            final String mac_addr = DataUtils.getMacAddress("wlan0", context);
+                            if (mac_addr.length() == 0) {
+                                Toast.makeText(context, R.string.plsusewifi, Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
+                            try {
+
+                                ba.setSimpleCipher(new SimpleRSACipher(mac_addr, Build.BRAND, Build.MODEL));
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                                Toast.makeText(context, R.string.cannotsecupack, Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+
+                        //TODO: get Profile
+                        setMainKey(acctoken.getClaim("key").asString());
+                        setId(acctoken.getClaim("sub").asString());
+                        setJob(jso.getString("job"));
+                        setName(jso.getString("fullname"));
+                        if (!jso.isNull("birthday") && jso.getString("birthday").length() > 0){
+                            SimpleDateFormat sdf = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzz", Locale.ENGLISH);
+                            Date d = sdf.parse(jso.getString("birthday"));
+                            SimpleDateFormat sdf2 = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+                            setBirthday(sdf2.format(d));
+                        }
+                        setCountry(jso.getString("country"));
+                        if (jso.has("email"))
+                            setEmail(jso.getString("email"));
+                    } catch (JSONException | ParseException e) {
                         e.printStackTrace();
-                        Toast.makeText(context, R.string.cannotsecupack,Toast.LENGTH_SHORT).show();
+                        myCallBack.callback(EventConst.LOGIN_SCLOUD,1,false);
                         return;
                     }
+                    myCallBack.callback(EventConst.LOGIN_SCLOUD,1,true);
 
-                    //TODO: get Profile by AccessToken
-                    Log.d("AutoLogin", data.toString());
-                    //Processing Profile
-                    ((BaseApplication)context.getApplicationContext())
-                            .getDriveUser().copyFromJSON(MockData.jsonuser);
-                    myCallBack.callback(EventConst.LOGIN_SCLOUD, 1, true);
                 }
             }, new GeneralResponse());
+            Map<String, Object> headers = RequestService.getBaseHeaders();
+            headers.put("Authorization", "Bearer " + accesstoken);
+            prs.setHeaders(headers);
             prs.executeService();
         }
     }

@@ -70,7 +70,7 @@ public class SimpleRSACipher extends RSAKeyGenerator {
         return encrypted.modPow(this.privateExponent,this.modulus).toString();
     }
     private String encrypt(BigInteger raw){
-        return raw.modPow(this.publicExponent,this.modulus).toString();
+        return raw.modPow(publicExponent,this.modulus).toString();
     }
 
     public BigInteger getPrivateComp() {

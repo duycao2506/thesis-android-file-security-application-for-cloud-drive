@@ -83,7 +83,7 @@ public class RegisterActivity extends AppCompatActivity {
                         StringBuilder sb = new StringBuilder();
                         sb.append(selectedday);
                         sb.append("/");
-                        sb.append(selectedmonth);
+                        sb.append((selectedmonth+1));
                         sb.append("/");
                         sb.append(selectedyear);
                         edtBirthday.setText(sb.toString());

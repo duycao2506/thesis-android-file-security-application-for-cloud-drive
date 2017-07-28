@@ -316,6 +316,7 @@ public class DataUtils {
             spe.putString("macAddr",macaddr);
             spe.apply();
         }
+        Log.e("MAC", macaddr);
         return macaddr;
     }
 

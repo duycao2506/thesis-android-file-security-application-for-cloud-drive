@@ -1,5 +1,7 @@
 package thesis.tg.com.s_cloud.framework_components.data.from_server;
 
+import android.util.Base64;
+
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
@@ -18,6 +20,7 @@ public class GeneralResponse implements Response.Listener<String>, Response.Erro
         gotResponse = true;
         responseError = true;
         this.error = error.getMessage();
+        this.response = new String(error.networkResponse.data);
     }
 
     @Override

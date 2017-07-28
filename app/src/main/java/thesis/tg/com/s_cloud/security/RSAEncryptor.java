@@ -1,5 +1,6 @@
 package thesis.tg.com.s_cloud.security;
 import android.util.Base64;
+import android.util.Log;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -36,8 +37,10 @@ public class RSAEncryptor extends RSACipher{
      * @return void
      * @exception InvalidKeySpecException when invalid modulus and exponent is provided
      * */
-    RSAEncryptor(String modulus, String public_exponent) throws InvalidKeySpecException{
+    public RSAEncryptor(String modulus, String public_exponent) throws InvalidKeySpecException{
         /*Convert the string of private exponent to big integer*/
+        Log.e("MOD", modulus);
+        Log.e("EXP", public_exponent);
         BigInteger public_exp = new BigInteger(1, Base64.decode(public_exponent,Base64.NO_WRAP));
         /*Convert the string of modulus to big integer*/
         BigInteger public_mod = new BigInteger(1, Base64.decode(modulus,Base64.NO_WRAP));
@@ -80,6 +83,9 @@ public class RSAEncryptor extends RSACipher{
             e.printStackTrace();
         }
     }
+
+
+
     /**
      * <h1>Encrypt Function</h1>
      * This constructor is used for randomly generated key that is provided with
