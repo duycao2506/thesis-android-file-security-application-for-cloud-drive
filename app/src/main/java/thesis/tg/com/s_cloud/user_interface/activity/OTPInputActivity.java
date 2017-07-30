@@ -30,6 +30,7 @@ public class OTPInputActivity extends AppCompatActivity {
 
 
     EditText edtOTP;
+    String email;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +42,7 @@ public class OTPInputActivity extends AppCompatActivity {
         setSupportActionBar(tb);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         edtOTP = (EditText) findViewById(R.id.edtOTP);
+        email = getIntent().getStringExtra("email");
     }
 
 
@@ -91,7 +93,7 @@ public class OTPInputActivity extends AppCompatActivity {
                                                     mac,
                                                     deMainKey);
                                     rootrequesjso.put("is_root","False");
-                                    LoginActivity.requestRoot(OTPInputActivity.this,
+                                    LoginActivity.requestRoot(email,OTPInputActivity.this,
                                             authtoken,
                                             rootrequesjso,
                                             new MyCallBack() {

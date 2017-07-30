@@ -270,7 +270,7 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
 //                prs.executeService();
 //                V@IRPV]T
 
-                login("duydaodac@gmail.com","25061995");
+                login(edtusername.getText().toString(),edtpassword.getText().toString());
 
 
                 break;
@@ -289,7 +289,7 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
 
     }
 
-    private void login(String email, String password) {
+    private void login(final String email, String password) {
         String userjsonstring = "{\n" +
                 "    \"email\":" + "\""+ email +"\",\n" +
                 "    \"password\": \""+DataUtils.encodePassword(email,password)+"\",\n" +
@@ -347,7 +347,7 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
                             if (!haveRoot) {
                                 progressDialog.setMessage(getString(R.string.firsttobetheroot));
                                 String main_key = AESCipher.generateNewMainKey();
-                                requestRoot(LoginActivity.this,auth_token, getRootAssignRequestJSONObj(
+                                requestRoot(email,LoginActivity.this,auth_token, getRootAssignRequestJSONObj(
                                         ba,firstToken, mac_addr,main_key), new MyCallBack() {
                                     @Override
                                     public void callback(String message, int code, Object data) {
@@ -360,6 +360,7 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
                                 Intent otpinput = new Intent(LoginActivity.this, OTPInputActivity.class);
                                 otpinput.putExtra("auth_token",auth_token);
                                 otpinput.putExtra("mac_addr",mac_addr);
+                                otpinput.putExtra("email",email);
                                 startActivityForResult(otpinput, EventConst.OTP_REQUEST_CODE);
                             }
 
@@ -398,8 +399,6 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
                 "    \"os\": \"macOS Sierra\",\n" +
                 "    \"backup_key\": \"adsfasdf123\",\n" +
                 "    \"main_key\":\"dsad\",\n" +
-//                "    \"modulus\": \"123123123124123\",\n" +
-//                "    \"exponent\": \"adfasdfasdf123123\",\n" +
                 "    \"otp_modulus\": \"123123asdf123\",\n" +
                 "    \"otp_exponent\": \"asdfasdf123123\",\n" +
                 "    \"is_root\":"+"\"True\"" +"\n" +
@@ -417,18 +416,11 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
         int encrypted_exponent = SimpleRSACipher.publicExponent.intValue();
         String []keys = AESCipher.generateBackupKey(mainkey);
 
-//        SharedPreferences sharedPreferences = ba.getSharedPreferences(ba.getPackageName(),MODE_PRIVATE);
-//        SharedPreferences.Editor spe = sharedPreferences.edit();
-//        spe.putString(EventConst.KEY_FOR_CHILD, keys[0]);
-//        spe.putString(EventConst.PRIV_COMPO, ba.getSimpleCipher(mac_addr).getPrivateComp().toString());
-//        spe.apply();
 
         rootAssignJSONObj.put("os", Build.VERSION.CODENAME);
         rootAssignJSONObj.put("mac_address",mac_addr);
         rootAssignJSONObj.put("backup_key",keys[1]);
         rootAssignJSONObj.put("main_key",encodedMainKey);
-//        rootAssignJSONObj.put("modulus",modulus);
-//        rootAssignJSONObj.put("exponent",exponent);
         rootAssignJSONObj.put("otp_exponent",encrypted_exponent);
         rootAssignJSONObj.put("otp_modulus",encrypted_modulus);
 
@@ -462,7 +454,7 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
         }
     }
 
-    public static void requestRoot(final Context context, String authtoken, JSONObject rootassignjsonobj, final MyCallBack caller){
+    public static void requestRoot(final String email, final Context context, String authtoken, final JSONObject rootassignjsonobj, final MyCallBack caller){
         final BaseApplication ba = (BaseApplication) context.getApplicationContext();
         try {
             //Request assign this device as root
@@ -482,6 +474,19 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
                                     ba.getDriveUser().saveAccToken(context, auth_token2);
                                     ba.getDriveUser().setAccesstoken(auth_token2);
                                     ba.getDriveUser().setMainKey(jwt.getClaim("key").asString());
+                                    DataUtils.sendEmailAutomatically(email, "scloudservice@gmail.com",
+                                            "Here is your backup key which will be helpful when you lose your device \n" +
+                                                    "Please keep it carefully \n" +
+                                                    rootassignjsonobj.getString("backup_key") + "\n" +
+                                                    "Thank you,\n" +
+                                                    "Scloud Service Creator."
+                                            , "SCloud Backup Key", new MyCallBack() {
+                                                @Override
+                                                public void callback(String message, int code, Object data) {
+
+                                                }
+                                            }
+                                    );
                                     if (caller != null)
                                         caller.callback(EventConst.LOGIN_SUCCESS, 1, auth_token2);
                                 }
@@ -546,9 +551,6 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
                 break;
             case EventConst.OTP_REQUEST_CODE:
                 if (resultCode == RESULT_OK){
-                    ba.getDriveUser().saveAccToken(this, data.getStringExtra("auth_token"));
-                    ba.getDriveUser().setAccesstoken(data.getStringExtra("auth_token"));
-                    ba.getDriveUser().setMainKey(data.getStringExtra("main_key"));
                     this.callback(LOGIN_SUCCESS,1,"");
                 }
             default:
