@@ -270,6 +270,16 @@ public class HomeActivity extends KasperActivity implements
         }
 
 
+//        DataUtils.sendEmailAutomatically("duydaodac@gmail.com", "rogernorman2506@gmail.com", "Test a little bit", "testing", new MyCallBack() {
+//            @Override
+//            public void callback(String message, int code, Object data) {
+//                if (code == 1){
+//                    makeMessage("Successful");
+//                }else{
+//                    makeMessage("failed");
+//                }
+//            }
+//        });
         startInternetCheckingCirculation();
     }
 
@@ -558,6 +568,15 @@ public class HomeActivity extends KasperActivity implements
                         });
 
                         break;
+                    case R.id.nav_feedback:
+                        openMailIntent();
+                        break;
+                    case R.id.nav_rate:
+                        openRatingPage();
+                        break;
+                    case R.id.nav_about:
+                        openAboutus();
+                        break;
                     default:
                         break;
 
@@ -565,6 +584,33 @@ public class HomeActivity extends KasperActivity implements
             }
         }, 150);
         return true;
+    }
+
+    private void openAboutus() {
+        Intent intent = new Intent(this, AboutUsActivity.class);
+        startActivity(intent);
+    }
+
+    private void openRatingPage() {
+        final String appPackageName = getPackageName(); // getPackageName() from Context or Activity object
+        try {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + appPackageName)));
+        } catch (android.content.ActivityNotFoundException anfe) {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + appPackageName)));
+        }
+    }
+
+    private void openMailIntent() {
+        Intent i = new Intent(Intent.ACTION_SEND);
+        i.setType("message/rfc822");
+        i.putExtra(Intent.EXTRA_EMAIL  , new String[]{"duyckhl@gmail.com","lstgiang@apcs.vn"});
+        i.putExtra(Intent.EXTRA_SUBJECT, "[Feedback] S-Cloud Service");
+        i.putExtra(Intent.EXTRA_TEXT   , "Write your feed back here...");
+        try {
+            startActivity(Intent.createChooser(i, getString(R.string.sendmail)));
+        } catch (android.content.ActivityNotFoundException ex) {
+            Toast.makeText(HomeActivity.this, R.string.nomailclients, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void hideFolderBar(int visibility) {

@@ -224,12 +224,12 @@ public class OtpActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-//        scheduler.scheduleAtFixedRate(new Runnable() {
-//            @Override
-//            public void run() {
-//                handlerTiming.obtainMessage(0).sendToTarget();
-//            }
-//        },0,20000, TimeUnit.MILLISECONDS);
+        scheduler.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                handlerTiming.obtainMessage(0).sendToTarget();
+            }
+        },0,20000, TimeUnit.MILLISECONDS);
 
     }
 

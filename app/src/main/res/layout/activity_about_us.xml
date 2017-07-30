@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="thesis.tg.com.s_cloud.user_interface.activity.AboutUsActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="match_parent">
+        <include layout="@layout/appbar_layout"/>
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:orientation="vertical"
+                android:paddingLeft="@dimen/margin_20"
+                android:paddingRight="@dimen/margin_20"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.v7.widget.CardView
+                    android:layout_marginTop="@dimen/margin_20"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:layout_margin="@dimen/margin_20"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:layout_width="@dimen/other_user_profile_view_avatar"
+                            android:layout_height="@dimen/other_user_profile_view_avatar"
+                            android:src="@drawable/avatar"
+
+                            app:civ_border_color="@color/colorPrimary"
+                            app:civ_border_width="1sp"
+                            android:layout_gravity="center_horizontal"
+                            />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:textAlignment="center"
+                            android:text="Dr.Tran Thai Son"
+                            android:textStyle="bold"
+                            android:layout_marginTop="@dimen/margin_20"
+                            />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:textAlignment="center"
+                            android:text="Advisor"
+                            />
+
+                    </LinearLayout>
+
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
+
+                    android:layout_marginTop="@dimen/margin_20"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_margin="@dimen/margin_20"
+                        android:layout_width="match_parent"
+                        android:gravity="start"
+                        android:layout_height="wrap_content">
+
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:layout_width="@dimen/other_user_profile_view_avatar"
+                            android:layout_height="@dimen/other_user_profile_view_avatar"
+                            android:layout_gravity="center_horizontal"
+                            app:civ_border_color="@color/colorSecondary"
+                            android:src="@drawable/lstgiang"
+                            app:civ_border_width="1sp" />
+                        <LinearLayout
+                            android:orientation="vertical"
+                            android:layout_width="wrap_content"
+                            android:gravity="center_vertical"
+                            android:layout_marginLeft="@dimen/margin_20"
+                            android:layout_height="wrap_content">
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:text="Le Su Truong Giang"
+                                android:textStyle="bold"
+                                android:layout_marginTop="@dimen/margin_20"
+                                android:layout_marginBottom="@dimen/margin_10"
+                                />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:text="Student 1"
+                                />
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+                </android.support.v7.widget.CardView>
+
+                <android.support.v7.widget.CardView
+                    android:layout_marginTop="@dimen/margin_20"
+                    android:layout_marginBottom="@dimen/margin_20"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_margin="@dimen/margin_20"
+                        android:layout_width="match_parent"
+                        android:gravity="end"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:orientation="vertical"
+                            android:layout_width="wrap_content"
+                            android:gravity="center_vertical"
+                            android:layout_marginRight="@dimen/margin_20"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_marginBottom="@dimen/margin_10"
+                                android:layout_marginTop="@dimen/margin_20"
+                                android:text="Cao Khac Le Duy"
+                                android:gravity="end"
+                                android:textAlignment="textEnd"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:text="Student 2"
+                                android:gravity="end"
+                                android:textAlignment="textEnd" />
+                        </LinearLayout>
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:layout_width="@dimen/other_user_profile_view_avatar"
+                            android:layout_height="@dimen/other_user_profile_view_avatar"
+                            android:src="@drawable/ckld"
+                            app:civ_border_color="@color/colorSecondary"
+                            app:civ_border_width="1sp"
+                            android:layout_gravity="center_horizontal"
+                            />
+
+                    </LinearLayout>
+                </android.support.v7.widget.CardView>
+
+            </LinearLayout>
+
+        </ScrollView>
+    </LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>

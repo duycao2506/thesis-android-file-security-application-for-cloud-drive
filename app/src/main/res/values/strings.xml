@@ -174,4 +174,9 @@
     <string name="faillougout">Fail to log out</string>
     <string name="homeactivity">Fetching OTP...</string>
     <string name="not_root">Your device is not the root one!</string>
+    <string name="updateprofilesucc">Update profile successfully</string>
+    <string name="updating">Updating...</string>
+    <string name="nomailclients">There are no email clients installed.</string>
+    <string name="sendmail">Send mail...</string>
+    <string name="abtus">About us</string>
 </resources>
