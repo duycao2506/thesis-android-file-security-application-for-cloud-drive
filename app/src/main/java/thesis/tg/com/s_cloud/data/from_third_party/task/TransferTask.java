@@ -1,6 +1,8 @@
 package thesis.tg.com.s_cloud.data.from_third_party.task;
 
 import android.os.AsyncTask;
+import android.os.SystemClock;
+import android.util.Log;
 
 import com.dropbox.core.DbxException;
 
@@ -11,6 +13,7 @@ import thesis.tg.com.s_cloud.entities.SDriveFile;
 import thesis.tg.com.s_cloud.framework_components.BaseApplication;
 import thesis.tg.com.s_cloud.framework_components.entity.SuperObject;
 import thesis.tg.com.s_cloud.framework_components.utils.MyCallBack;
+import thesis.tg.com.s_cloud.utils.DataUtils;
 import thesis.tg.com.s_cloud.utils.EventConst;
 
 /**
@@ -18,6 +21,7 @@ import thesis.tg.com.s_cloud.utils.EventConst;
  */
 
 public class TransferTask extends SuperObject{
+    double speed = 0.0;
     TransferTaskManager manager;
     protected BaseApplication ba;
     MyCallBack caller;
@@ -69,14 +73,18 @@ public class TransferTask extends SuperObject{
     protected TransferInternalTask at = new TransferInternalTask();
 
     private class TransferInternalTask extends  AsyncTask<Void, Long, Boolean> implements MyCallBack {
+        long start = 0;
+        long end = 0;
         @Override
         protected Boolean doInBackground(Void...params) {
+            start = System.currentTimeMillis();
             try {
                 transfer();
             } catch (IOException | DbxException | NoSuchAlgorithmException e) {
                 e.printStackTrace();
                 return false;
             }
+            end = System.currentTimeMillis();
             return true;
         }
 
@@ -91,6 +99,8 @@ public class TransferTask extends SuperObject{
         @Override
         protected void onPostExecute(Boolean aVoid) {
             super.onPostExecute(aVoid);
+            double second = (end - start)*1.0 / 1000;
+            speed = file.getFileSize() / second;
             afterTransfer(aVoid);
         }
 

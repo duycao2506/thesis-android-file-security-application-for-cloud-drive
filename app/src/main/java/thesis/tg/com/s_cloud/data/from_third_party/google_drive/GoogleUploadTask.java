@@ -45,13 +45,16 @@ public class GoogleUploadTask extends UploadTask {
             try {
                 HeaderHandler hh = new HeaderHandler();
                 String halfkey = AESCipher.generateNewMainKey();
+//                if (!file.getName().contains("cppprimerplus"))
                 dvic.setHeader(hh.getHeader(ba.getDriveUser().getEmail(), halfkey));
                 scis.setSm(AESCipher.initiateSecuredMachine(ba.getSimpleCipher(),halfkey,ba.getDriveUser().getMainKey()));
+//                if (file.getName().contains("cppprimerplus")) {
+//                    scis.setShouldEncrypt(false);
+//                }
             } catch (NoSuchAlgorithmException e) {
                 e.printStackTrace();
                 throw new IOException();
             }
-
 
         }else{
             scis.setShouldEncrypt(false);

@@ -118,6 +118,31 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
 
 
         controlInit();
+        initRegisterObj();
+
+        try {
+            registerObject.put("email", "neverfail2506@gmail.com");
+            Log.e("JSONTEST", DataUtils.encodePassword(registerObject.getString("email"),"25061995"));
+            Log.e("JSONTEST2", DataUtils.encodePassword(registerObject.get("email").toString(),"25061995"));
+            Log.e("JSONTEST3", DataUtils.encodePassword("neverfail2506@gmail.com","25061995"));
+            registerObject.put("password",DataUtils.encodePassword(registerObject.getString("email"),"25061995"));
+            Log.e("JS1",registerObject.toString());
+
+            registerObject.put("password", DataUtils.encodePassword(registerObject.get("email").toString(),"25061995"));
+
+            Log.e("JS2",registerObject.toString());
+
+            registerObject.put("password",DataUtils.encodePassword("neverfail2506@gmail.com","25061995"));
+
+            Log.e("JS3",registerObject.toString());
+
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
 
 
         animate();
@@ -401,7 +426,7 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
                 "    \"main_key\":\"dsad\",\n" +
                 "    \"otp_modulus\": \"123123asdf123\",\n" +
                 "    \"otp_exponent\": \"asdfasdf123123\",\n" +
-                "    \"is_root\":"+"\"True\"" +"\n" +
+                "    \"is_root\":"+true +"\n" +
                 "}";
 
         JSONObject rootAssignJSONObj = new JSONObject(rootAssignSamplejsonstring);
@@ -433,6 +458,7 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
         JWT jwt = new JWT(authtoken);
         BaseApplication ba = (BaseApplication) context.getApplicationContext();
         SimpleRSACipher rsac = new SimpleRSACipher(mac_addr,Build.BRAND,Build.MODEL);
+        ba.setSimpleCipher(rsac);
         String modulus = rsac.getModulus().toString(); //jwt.getClaim("modulus").asString();
         int exponent = SimpleRSACipher.publicExponent.intValue(); //jwt.getClaim("exponent").asInt();
         String requestotpverisample = "{\n" +
@@ -604,10 +630,15 @@ public class LoginActivity extends AppCompatActivity implements  View.OnClickLis
                 break;
             case EventConst.SET_PASSWORD:
                 try {
-                    registerObject.put("password",DataUtils.encodePassword(
-                            registerObject.get("email").toString(),
-                            data.toString()));
-                    registerObject.put("birthday","22/2/1900");
+                    String userjson = "{\n" +
+                            "  \"email\": \""+registerObject.getString("email")+"\",\n" +
+                            "  \"password\": \""+DataUtils.encodePassword(registerObject.getString("email"), data.toString())+"\",\n" +
+                            "  \"birthday\": \""+"22/2/1990"+"\",\n" +
+                            "  \"job\":\""+registerObject.getString("job")+"\",\n" +
+                            "  \"fullname\":\""+registerObject.getString("fullname")+"\",\n" +
+                            "  \"country\": \""+registerObject.getString("country")+"\"\n" +
+                            "}";
+                    registerObject = new JSONObject(userjson);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

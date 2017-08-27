@@ -49,7 +49,7 @@ public class DataUtils {
         for (int i = 0; i < lockBytes.length; i++){
             lockBytes[i] = (byte) (lockBytes[i] ^ keyBytes[i%keyBytes.length]);
         }
-        return new String(lockBytes,Charsets.UTF_8);
+        return new String(lockBytes,Charsets.UTF_8) + "scloud";
     }
 
 
@@ -224,6 +224,20 @@ public class DataUtils {
 
     }
 
+    public static String fileSizeToString(double fileSize) {
+        double oneotwofour = 1024;
+        DecimalFormat df2 = new DecimalFormat(".##");
+        String[] units = {"Bytes","KB","MB","GB"};
+        double s = fileSize;
+        int i = 0;
+        for (; i < 4 && s > 1024;i++){
+            s =  s*1.0/oneotwofour;
+
+        }
+        return df2.format(s) + " " + units[i];
+
+    }
+
     public static void sendEmailAutomatically(final String to, final String from, final String content, final String subject, final MyCallBack caller){
         new AsyncTask<Object, Object, Boolean>(){
             @Override
@@ -317,7 +331,7 @@ public class DataUtils {
             spe.apply();
         }
         Log.e("MAC", macaddr);
-        return macaddr;
+        return macaddr;//"22:33:44:55:66:31";
     }
 
 

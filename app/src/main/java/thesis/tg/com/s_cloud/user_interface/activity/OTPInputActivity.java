@@ -92,7 +92,7 @@ public class OTPInputActivity extends AppCompatActivity {
                                                     new JWT(authtoken),
                                                     mac,
                                                     deMainKey);
-                                    rootrequesjso.put("is_root","False");
+                                    rootrequesjso.put("is_root",false);
                                     LoginActivity.requestRoot(email,OTPInputActivity.this,
                                             authtoken,
                                             rootrequesjso,

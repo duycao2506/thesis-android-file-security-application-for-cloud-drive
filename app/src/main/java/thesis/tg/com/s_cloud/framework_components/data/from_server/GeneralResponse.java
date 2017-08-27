@@ -20,7 +20,13 @@ public class GeneralResponse implements Response.Listener<String>, Response.Erro
         gotResponse = true;
         responseError = true;
         this.error = error.getMessage();
-        this.response = new String(error.networkResponse.data);
+        if(error.networkResponse != null)
+            this.response = new String(error.networkResponse.data);
+        else
+            this.response = "{\n" +
+                    "  \t\"message\": \""+"No internet connection"+"\",\n" +
+                    "    \"status\":"+"failed"+",\n" +
+                    "}";
     }
 
     @Override

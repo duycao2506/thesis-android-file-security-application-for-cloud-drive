@@ -1,17 +1,23 @@
 package thesis.tg.com.s_cloud.user_interface.activity;
 
+import android.Manifest;
+import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -310,6 +316,7 @@ public class HomeActivity extends KasperActivity implements
         intent.setType("*/*");
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+
 
         try {
             startActivityForResult(
@@ -791,6 +798,16 @@ public class HomeActivity extends KasperActivity implements
     }
 
 
+    @TargetApi(Build.VERSION_CODES.M)
+    private void requestPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) ==
+                PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, EventConst.READ_EXT_PERMISSION);
+    }
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -798,6 +815,10 @@ public class HomeActivity extends KasperActivity implements
             case EventConst.FILE_SELECT_REQUEST_CODE:
                 if (resultCode == RESULT_OK) {
                     // Get the Uri of the selected file
+                    int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+                    if (currentapiVersion > Build.VERSION_CODES.LOLLIPOP) {
+                        requestPermission();
+                    }
                     Uri uri = data.getData();
                     Log.d("TAG", "File Uri: " + uri.toString());
                     // Get the path
@@ -832,6 +853,7 @@ public class HomeActivity extends KasperActivity implements
 
                 break;
             default:
+                super.onActivityResult(requestCode,resultCode,data);
                 break;
         }
     }

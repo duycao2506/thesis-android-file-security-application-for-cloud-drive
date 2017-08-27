@@ -139,14 +139,15 @@ public class RegisterActivity extends AppCompatActivity {
         boolean email = Patterns.EMAIL_ADDRESS.matcher(edtEmail.getText()).matches();
         if (!email)
         {
-            Toast.makeText(this, R.string.wrongemail,Toast.LENGTH_SHORT).show();
+            edtEmail.setError(getString(R.string.wrongemail));
             return false;
         }
 
         boolean pass = edtPass.getText().length() > 6
                 && edtPass.getText().toString().compareTo(edtConfirmPass.getText().toString()) == 0;
         if (!pass){
-            Toast.makeText(this, R.string.checkpass,Toast.LENGTH_SHORT).show();
+            edtPass.setError(getString(R.string.checkpass));
+            edtConfirmPass.setError(getString(R.string.checkpass));
             return false;
         }
         return true;
@@ -159,16 +160,19 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     public JSONObject getRegisterObj(){
-        JSONObject jsoRegister = new JSONObject();
+
+        String password = edtPass.getText().toString();
+        String registerObj = "{\n" +
+                "  \"email\": \""+edtEmail.getText().toString()+"\",\n" +
+                "  \"password\": \""+DataUtils.encodePassword(edtEmail.getText().toString(), password)+"\",\n" +
+                "  \"birthday\": \""+edtBirthday.getText()+"\",\n" +
+                "  \"job\":\""+edtJob.getText()+"\",\n" +
+                "  \"fullname\":\""+edtFullname.getText()+"\",\n" +
+                "  \"country\": \""+edtCountry.getText()+"\"\n" +
+                "}";
+        JSONObject jsoRegister = null;
         try {
-            jsoRegister.put("email",edtEmail.getText().toString());
-            jsoRegister.put("password", DataUtils.encodePassword(
-                    edtEmail.getText().toString(),
-                    edtPass.getText().toString()));
-            jsoRegister.put("fullname", edtFullname.getText());
-            jsoRegister.put("job",edtJob.getText());
-            jsoRegister.put("country", edtCountry.getText());
-            jsoRegister.put("birthday",edtBirthday.getText());
+            jsoRegister = new JSONObject(registerObj);
         } catch (JSONException e) {
             e.printStackTrace();
         }

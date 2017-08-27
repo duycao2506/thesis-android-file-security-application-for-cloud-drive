@@ -9,6 +9,8 @@
 
     <include layout="@layout/activity_stateful" />
 
+
+    <!--TODO: Fix icon size of navigation to Square Size -->
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"
         android:background="@color/white"

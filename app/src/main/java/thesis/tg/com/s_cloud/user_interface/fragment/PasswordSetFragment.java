@@ -1,6 +1,7 @@
 package thesis.tg.com.s_cloud.user_interface.fragment;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.view.View;
 import android.widget.EditText;
@@ -22,7 +23,10 @@ public class PasswordSetFragment extends BottomSheetDialogFragment implements Vi
     View parent;
     ImageView btnOk, btnCancel;
 
+    boolean isCancel = true;
+
     int drivetype;
+    private String pass;
 
     public int getDrivetype() {
         return drivetype;
@@ -72,31 +76,42 @@ public class PasswordSetFragment extends BottomSheetDialogFragment implements Vi
         int id = v.getId();
         switch (id){
             case R.id.btnCancelRegister:
-                caller.callback(
-                        drivetype == DriveType.DROPBOX?
-                                EventConst.CANCEL_SIGNUP_DROPBOX : EventConst.CANCEL_SIGNUP_GOOGLE,
-                            EventConst.FAIL,
-                            "");
+
                 dismiss();
+
                 break;
             case R.id.btnOkRegister:
                 String confpass = edtConfPass.getText().toString();
-                String pass = edtPass.getText().toString();
+                pass = edtPass.getText().toString();
                 if (pass.length() < 6 || confpass.length() < 6){
-                    Toast.makeText(this.getContext(), R.string.more6,Toast.LENGTH_LONG).show();
+                    edtPass.setError(getString(R.string.more6));
                     return;
                 }
                 if (pass.compareTo(confpass) != 0){
-                    Toast.makeText(this.getContext(), getString(R.string.confirm_wrong),Toast.LENGTH_LONG).show();
+                    edtConfPass.setError(getString(R.string.confirm_wrong));
                     return;
                 }
-                caller.callback(EventConst.SET_PASSWORD, EventConst.SUCCESS, pass);
+
+                isCancel = false;
                 dismiss();
+
                 break;
 
         }
 
     }
 
-
+    @Override
+    public void onDismiss(DialogInterface dialog) {
+        super.onDismiss(dialog);
+        if (isCancel) {
+            caller.callback(
+                    drivetype == DriveType.DROPBOX ?
+                            EventConst.CANCEL_SIGNUP_DROPBOX : EventConst.CANCEL_SIGNUP_GOOGLE,
+                    EventConst.FAIL,
+                    "");
+        }else{
+            caller.callback(EventConst.SET_PASSWORD, EventConst.SUCCESS, pass);
+        }
+    }
 }

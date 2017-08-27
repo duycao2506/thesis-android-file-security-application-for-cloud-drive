@@ -62,4 +62,5 @@ public interface EventConst {
     int OTP_REQUEST_CODE = 33;
     int OTP_RESULT_SUCCESS = 34;
     String SEND_EMAIL = "sendmail";
+    int READ_EXT_PERMISSION = 101;
 }

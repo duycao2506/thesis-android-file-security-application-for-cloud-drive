@@ -121,12 +121,12 @@
                 android:drawableLeft="@drawable/ic_person_white_24dp"
                 android:drawablePadding="@dimen/margin_10"
                 android:hint="@string/username"
-                android:inputType="textPersonName"
+                android:inputType="textEmailAddress"
                 android:textColor="@color/white"
                 android:textColorHint="@color/whiteBack"
                 android:textSize="18sp"
                 android:theme="@style/Theme.App.WhiteText"
-                android:visibility="visible" />
+                android:visibility="invisible" />
 
             <EditText
                 android:id="@+id/edtPassword"
@@ -135,12 +135,12 @@
                 android:drawableLeft="@drawable/ic_lock_white_24dp"
                 android:drawablePadding="@dimen/margin_10"
                 android:hint="@string/password"
-                android:inputType="textPersonName"
+                android:inputType="textPassword"
                 android:textColor="@color/white"
                 android:textColorHint="@color/whiteBack"
                 android:textSize="18sp"
                 android:theme="@style/Theme.App.WhiteText"
-                android:visibility="visible" />
+                android:visibility="invisible" />
 
 
             <Button
@@ -153,7 +153,7 @@
                 android:textStyle="bold"
                 android:theme="@style/KasperButton"
                 android:typeface="serif"
-                android:visibility="visible" />
+                android:visibility="invisible" />
 
 
                 />

@@ -47,7 +47,7 @@ public class SConnectOutputstream extends OutputStream {
 
     @Override
     public void write(int b) throws IOException {
-
+        outputStream.write(b);
     }
 
     @Override
@@ -71,8 +71,18 @@ public class SConnectOutputstream extends OutputStream {
 
         byte[] tmp = new byte[len - (index - off)];
 
-        for (int i = index; i < len; i++){
-            tmp[i-index] = sm != null? sm.decrypt(b[i]) : b[i];
+        if (sm == null){
+            System.arraycopy(b,index,tmp,0,len);
+//            for (int i = index; i < len; i++) {
+////                this.write((int) b[i]);
+//                tmp[i-index] = b[i];
+//            }
+        }
+        else{
+            for (int i = index; i < len ; i++){
+                tmp[i-index] =sm.decrypt(b[i]);
+//                        this.write((int) sm.decrypt(b[i]));
+            }
         }
 
         this.outputStream.write(tmp, 0, len - index);
